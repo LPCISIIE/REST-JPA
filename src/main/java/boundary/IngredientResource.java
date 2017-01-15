@@ -1,7 +1,9 @@
 package boundary;
 
+import entity.Category;
 import entity.Ingredient;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.CacheStoreMode;
 import javax.persistence.EntityManager;
@@ -16,6 +18,9 @@ public class IngredientResource {
 
     @PersistenceContext
     EntityManager entityManager;
+
+    @EJB
+    CategoryResource catManager;
 
     /**
      * Method that returns an ingredient for an id given
@@ -50,20 +55,38 @@ public class IngredientResource {
      * Method that creates fake insert into the database
      */
     public void feedCatalog(){
-        this.insert(new Ingredient("Laitue",1.00));
-        this.insert(new Ingredient("Roquette",1.00));
-        this.insert(new Ingredient("Mache",1.00));
-        this.insert(new Ingredient("Carotte",1.50));
-        this.insert(new Ingredient("Concombre",1.50));
-        this.insert(new Ingredient("Tomate",1.50));
-        this.insert(new Ingredient("Jambon",2.50));
-        this.insert(new Ingredient("Jambon cru",2.50));
-        this.insert(new Ingredient("Burger",3.00));
-        this.insert(new Ingredient("Confit",3.00));
-        this.insert(new Ingredient("Emmental",1.50));
-        this.insert(new Ingredient("Comté",1.50));
-        this.insert(new Ingredient("Vinaigrette",0.50));
-        this.insert(new Ingredient("Moutarde",0.50));
+
+        Category category = catManager.insert(new Category("Salade"));
+
+        this.insert(new Ingredient(category,"Laitue",1.00));
+        this.insert(new Ingredient(category,"Roquette",1.00));
+        this.insert(new Ingredient(category,"Mache",1.00));
+
+        category = catManager.insert(new Category("Crudité"));
+
+        this.insert(new Ingredient(category,"Carotte",1.50));
+        this.insert(new Ingredient(category,"Concombre",1.50));
+        this.insert(new Ingredient(category,"Tomate",1.50));
+
+        category = catManager.insert(new Category("Charcuterie"));
+
+        this.insert(new Ingredient(category,"Jambon",2.50));
+        this.insert(new Ingredient(category,"Jambon cru",2.50));
+
+        category = catManager.insert(new Category("Viande"));
+
+        this.insert(new Ingredient(category,"Burger",3.00));
+        this.insert(new Ingredient(category,"Confit",3.00));
+
+        category = catManager.insert(new Category("Fromage"));
+
+        this.insert(new Ingredient(category,"Emmental",1.50));
+        this.insert(new Ingredient(category,"Comté",1.50));
+
+        category = catManager.insert(new Category("Sauce"));
+
+        this.insert(new Ingredient(category,"Vinaigrette",0.50));
+        this.insert(new Ingredient(category,"Moutarde",0.50));
     }
 
 }
