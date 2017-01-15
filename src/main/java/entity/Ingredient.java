@@ -1,16 +1,24 @@
+package entity;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 
 @Entity
 @XmlRootElement
 @NamedQueries({
         @NamedQuery(name = "Ingredient.findAll", query = "SELECT i FROM Ingredient i"),
-        @NamedQuery(name="Ingredient.findByName", query="SELECT i FROM Ingredient i WHERE i.name = :name"),
+        @NamedQuery(name = "Ingredient.findByName", query = "SELECT i FROM Ingredient i WHERE i.name = :name"),
 })
 public class Ingredient implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Id private String id;
+    @Id
+    private String id;
     private String name;
     private double price;
 
@@ -28,7 +36,6 @@ public class Ingredient implements Serializable {
         this.name = n;
         this.price = p;
     }
-
 
     /**
      * - Getter and Setter functions -
