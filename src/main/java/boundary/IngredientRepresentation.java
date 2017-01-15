@@ -24,8 +24,10 @@ public class IngredientRepresentation {
 
     @GET
     public Response getIngredients() {
+        ingredientResource.feedCatalog();
         GenericEntity<List<Ingredient>> list = new GenericEntity<List<Ingredient>>(ingredientResource.findAll()){};
         return Response.ok(list, MediaType.APPLICATION_JSON).build();
     }
+
 
 }
