@@ -37,5 +37,19 @@ public class IngredientRepresentation {
             return Response.status(Response.Status.NOT_FOUND).build();
     }
 
+    @GET
+    @Path("/ingredient/name/{ingredientName}")
+    public Response getIngredientByName(@PathParam("ingredientName") String ingredientName) {
+        ingredientResource.feedCatalog();
+        List<Ingredient> ingredients = ingredientResource.findByName(ingredientName);
+
+        if (ingredients.isEmpty())
+            return Response.status(Response.Status.NOT_FOUND).build();
+
+        GenericEntity<List<Ingredient>> list = new GenericEntity<List<Ingredient>>(ingredients){};
+        return Response.ok(list, MediaType.APPLICATION_JSON).build();
+
+    }
+
 
 }
