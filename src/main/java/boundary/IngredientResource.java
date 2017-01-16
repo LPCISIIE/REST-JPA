@@ -56,11 +56,15 @@ public class IngredientResource {
     /**
      * Method that inserts an ingredient into the database
      * @param ingredient to add
-     * @return the ingredient added
+     * @return the ingredient added or null if the Category doesn't exist
      */
     public Ingredient insert(Ingredient ingredient) {
         ingredient.setId(UUID.randomUUID().toString());
-        return this.entityManager.merge(ingredient);
+
+        if (catManager.findById(ingredient.getCategory().getId()) != null)
+            return entityManager.merge(ingredient);
+
+        return null;
     }
 
     /**
