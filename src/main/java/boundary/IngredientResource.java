@@ -42,6 +42,18 @@ public class IngredientResource {
     }
 
     /**
+     * Method that returns ingredients for a name given
+     * @param name of the ingredient we're looking for
+     * @return List of Ingredient
+     */
+    public List<Ingredient> findByName(String name){
+        Query query = entityManager.createQuery("SELECT i FROM Ingredient i where i.name = :name ");
+        query.setParameter("name", name);
+        query.setHint("javax.persistence.cache.storeMode", CacheStoreMode.REFRESH); // Solve cache issues
+        return query.getResultList();
+    }
+
+    /**
      * Method that inserts an ingredient into the database
      * @param ingredient to add
      * @return the ingredient added
