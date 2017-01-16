@@ -5,10 +5,7 @@ import entity.Ingredient;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.persistence.CacheStoreMode;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -64,6 +61,22 @@ public class IngredientResource {
     public Ingredient insert(Ingredient ingredient) {
         ingredient.setId(UUID.randomUUID().toString());
         return this.entityManager.merge(ingredient);
+    }
+
+    /**
+     * Method that delete an ingredient
+     * @param ingredientId
+     * @return if it's deleted
+     */
+    public boolean delete(String ingredientId) {
+        Ingredient ingredient = entityManager.find(Ingredient.class, ingredientId);
+
+        if (ingredient != null) {
+            entityManager.remove(ingredient);
+            return true;
+        }
+
+        return false;
     }
 
     /**
