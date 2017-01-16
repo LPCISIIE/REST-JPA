@@ -60,5 +60,16 @@ public class IngredientRepresentation {
             return Response.status(Response.Status.NO_CONTENT).build();
     }
 
+    @POST
+    @Path("/id")
+    public Response add (
+            @FormParam("name") String name,
+            @FormParam("categoryId") String categoryId,
+            @FormParam("price") double price,
+            @FormParam("description") String description
+    ) {
+        return null;
+    }
+
 
 }
