@@ -36,9 +36,9 @@ public class IngredientResource {
      * @return List of Ingredient
      */
     public List<Ingredient> findAll(){
-        Query query = entityManager.createNamedQuery("Ingredient.findAll", Ingredient.class);
-        query.setHint("javax.persistence.cache.storeMode", CacheStoreMode.REFRESH); // Solve cache issues
-        return query.getResultList();
+        return entityManager.createNamedQuery("Ingredient.findAll", Ingredient.class)
+                .setHint("javax.persistence.cache.storeMode", CacheStoreMode.REFRESH)
+                .getResultList();
     }
 
     /**
@@ -47,10 +47,10 @@ public class IngredientResource {
      * @return List of Ingredient
      */
     public List<Ingredient> findByName(String name){
-        Query query = entityManager.createQuery("SELECT i FROM Ingredient i where i.name = :name ");
-        query.setParameter("name", name);
-        query.setHint("javax.persistence.cache.storeMode", CacheStoreMode.REFRESH); // Solve cache issues
-        return query.getResultList();
+        return entityManager.createQuery("SELECT i FROM Ingredient i where i.name = :name ")
+                .setParameter("name", name)
+                .setHint("javax.persistence.cache.storeMode", CacheStoreMode.REFRESH)
+                .getResultList();
     }
 
     /**

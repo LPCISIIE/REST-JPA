@@ -32,9 +32,9 @@ public class CategoryResource {
      * @return List of Category
      */
     public List<Category> findAll(){
-        Query query = entityManager.createNamedQuery("Category.findAll", Category.class);
-        query.setHint("javax.persistence.cache.storeMode", CacheStoreMode.REFRESH); // Solve cache issues
-        return query.getResultList();
+        return entityManager.createNamedQuery("Category.findAll", Category.class)
+                .setHint("javax.persistence.cache.storeMode", CacheStoreMode.REFRESH)
+                .getResultList();
     }
 
     /**
