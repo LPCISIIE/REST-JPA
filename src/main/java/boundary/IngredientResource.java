@@ -61,7 +61,7 @@ public class IngredientResource {
     public Ingredient insert(Ingredient ingredient) {
         ingredient.setId(UUID.randomUUID().toString());
 
-        if (catManager.findById(ingredient.getCategory().getId()) != null)
+        if (catManager.findById(ingredient.getCategory()) != null)
             return entityManager.merge(ingredient);
 
         return null;

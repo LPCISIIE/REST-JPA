@@ -22,7 +22,7 @@ public class Ingredient implements Serializable {
 
     private String name, description;
     private double price;
-    private Category category;
+    private String category;
 
     /**
      * Empty constructor
@@ -30,16 +30,31 @@ public class Ingredient implements Serializable {
     public Ingredient(){}
 
     /**
-     *  Constructor of an ingredient
+     * Constructor of an ingredient
+     * @param c the category
      * @param n the name
      * @param p the price
      */
     public Ingredient(Category c , String n, double p, String d) {
+        this.category = c.getId();
+        this.name = n;
+        this.price = p;
+        this.description = d;
+    }
+
+    /**
+     * Constructor of an ingredient
+     * @param c the category
+     * @param n the name
+     * @param p the price
+     */
+    public Ingredient(String c , String n, double p, String d) {
         this.category = c;
         this.name = n;
         this.price = p;
         this.description = d;
     }
+
 
     /**
      * - Getter and Setter functions -
@@ -53,11 +68,11 @@ public class Ingredient implements Serializable {
         this.id = id;
     }
 
-    public Category getCategory(){
+    public String getCategory(){
         return category;
     }
 
-    public void setCategory(Category category) {
+    public void setCategory(String category) {
         this.category = category;
     }
 
