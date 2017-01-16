@@ -20,7 +20,8 @@ public class IngredientRepresentation {
     @EJB
     IngredientResource ingredientResource;
 
-
+    @EJB
+    CategoryResource categoryResource;
 
     @GET
     public Response getIngredients() {
@@ -72,13 +73,29 @@ public class IngredientRepresentation {
             @FormParam("price") double price,
             @FormParam("description") String description
     ) {
-        ingredientResource.feedCatalog();
-
         if (ingredientResource.insert(new Ingredient(categoryId,name,price,description)) == null)
             return Response.status(Response.Status.EXPECTATION_FAILED).build();
 
        return Response.ok().build();
     }
 
+    @POST
+    @Path("/bread/add")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response addBread (
+            @FormParam("name") String name,
+            @FormParam("price") double price,
+            @FormParam("description") String description
+    ) {
+
+        if (name == null || Double.toString(price) == null || description == null)
+            return Response.status(Response.Status.EXPECTATION_FAILED).build();
+
+        List<Category> query = categoryResource.findByName("Pain");
+        Category breadCategory = (query.size() > 0) ? query.get(0) : categoryResource.insert(new Category("Pain"));
+        ingredientResource.insert(new Ingredient(breadCategory,name,price,description));
+
+        return Response.ok().build();
+    }
 
 }
