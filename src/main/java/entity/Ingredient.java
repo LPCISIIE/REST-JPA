@@ -19,7 +19,8 @@ public class Ingredient implements Serializable {
 
     @Id
     private String id;
-    private String name;
+
+    private String name, description;
     private double price;
     private Category category;
 
@@ -33,10 +34,11 @@ public class Ingredient implements Serializable {
      * @param n the name
      * @param p the price
      */
-    public Ingredient(Category c , String n, double p) {
+    public Ingredient(Category c , String n, double p, String d) {
         this.category = c;
         this.name = n;
         this.price = p;
+        this.description = d;
     }
 
     /**
@@ -65,6 +67,14 @@ public class Ingredient implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDescription(){
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public double getPrice() {
