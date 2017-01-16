@@ -27,7 +27,7 @@ public class IngredientRepresentation {
     }
 
     @GET
-    @Path("/ingredient/id/{ingredientId}")
+    @Path("/id/{ingredientId}")
     public Response getIngredient(@PathParam("ingredientId") String ingredientId) {
         ingredientResource.feedCatalog();
         Ingredient ingredient = ingredientResource.findById(ingredientId);
@@ -38,7 +38,7 @@ public class IngredientRepresentation {
     }
 
     @GET
-    @Path("/ingredient/name/{ingredientName}")
+    @Path("/name/{ingredientName}")
     public Response getIngredientByName(@PathParam("ingredientName") String ingredientName) {
         ingredientResource.feedCatalog();
         List<Ingredient> ingredients = ingredientResource.findByName(ingredientName);
@@ -49,6 +49,15 @@ public class IngredientRepresentation {
         GenericEntity<List<Ingredient>> list = new GenericEntity<List<Ingredient>>(ingredients){};
         return Response.ok(list, MediaType.APPLICATION_JSON).build();
 
+    }
+
+    @DELETE
+    @Path("/id/{ingredientId}")
+    public Response deleteIngredient(@PathParam("ingredientId") String ingredientId) {
+        if (ingredientResource.delete(ingredientId))
+            return Response.ok().build();
+        else
+            return Response.status(Response.Status.NO_CONTENT).build();
     }
 
 
