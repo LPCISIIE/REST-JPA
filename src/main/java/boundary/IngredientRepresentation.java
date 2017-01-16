@@ -1,5 +1,6 @@
 package boundary;
 
+import entity.Category;
 import entity.Ingredient;
 
 import javax.ejb.EJB;
@@ -11,13 +12,15 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 
 @Path("/catalog")
-@Consumes(MediaType.APPLICATION_JSON)
+
 @Produces(MediaType.APPLICATION_JSON)
 @Stateless
 public class IngredientRepresentation {
 
     @EJB
     IngredientResource ingredientResource;
+
+
 
     @GET
     public Response getIngredients() {
@@ -61,14 +64,20 @@ public class IngredientRepresentation {
     }
 
     @POST
-    @Path("/id")
+    @Path("/add")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response add (
             @FormParam("name") String name,
             @FormParam("categoryId") String categoryId,
             @FormParam("price") double price,
             @FormParam("description") String description
     ) {
-        return null;
+        ingredientResource.feedCatalog();
+
+        if (ingredientResource.insert(new Ingredient(categoryId,name,price,description)) == null)
+            return Response.status(Response.Status.EXPECTATION_FAILED).build();
+
+       return Response.ok().build();
     }
 
 
