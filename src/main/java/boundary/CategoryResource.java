@@ -25,6 +25,8 @@ public class CategoryResource {
         return entityManager.find(Category.class, id);
     }
 
+
+
     /**
      * Method that returns all the categories
      * @return List of Category
@@ -33,6 +35,18 @@ public class CategoryResource {
         Query query = entityManager.createNamedQuery("Category.findAll", Category.class);
         query.setHint("javax.persistence.cache.storeMode", CacheStoreMode.REFRESH); // Solve cache issues
         return query.getResultList();
+    }
+
+    /**
+     * Method that returns categories for a name given
+     * @param name of the category we're looking for
+     * @return List of Category
+     */
+    public List<Category> findByName(String name){
+        return entityManager.createQuery("SELECT c FROM Category c where c.name = :name ")
+                .setParameter("name", name)
+                .setHint("javax.persistence.cache.storeMode", CacheStoreMode.REFRESH)
+                .getResultList();
     }
 
     /**
