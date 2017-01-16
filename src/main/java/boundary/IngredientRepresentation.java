@@ -4,10 +4,7 @@ import entity.Ingredient;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -27,6 +24,17 @@ public class IngredientRepresentation {
         ingredientResource.feedCatalog();
         GenericEntity<List<Ingredient>> list = new GenericEntity<List<Ingredient>>(ingredientResource.findAll()){};
         return Response.ok(list, MediaType.APPLICATION_JSON).build();
+    }
+
+    @GET
+    @Path("/ingredient/id/{ingredientId}")
+    public Response getIngredient(@PathParam("ingredientId") String ingredientId) {
+        ingredientResource.feedCatalog();
+        Ingredient ingredient = ingredientResource.findById(ingredientId);
+        if (ingredient != null)
+            return Response.ok(ingredient, MediaType.APPLICATION_JSON).build();
+        else
+            return Response.status(Response.Status.NOT_FOUND).build();
     }
 
 
