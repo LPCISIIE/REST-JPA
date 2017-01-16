@@ -42,7 +42,7 @@ public class IngredientResource {
     }
 
     /**
-     * Method that insert an ingredient into the database
+     * Method that inserts an ingredient into the database
      * @param ingredient to add
      * @return the ingredient added
      */
@@ -52,7 +52,7 @@ public class IngredientResource {
     }
 
     /**
-     * Method that creates fake insert into the database
+     * Method that creates fake insertions into the database
      */
     public void feedCatalog(){
 

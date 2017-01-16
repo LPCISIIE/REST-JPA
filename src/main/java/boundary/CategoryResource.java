@@ -36,7 +36,7 @@ public class CategoryResource {
     }
 
     /**
-     * Method that insert a category into the database
+     * Method that inserts a category into the database
      * @param category to add
      * @return the category added
      */
