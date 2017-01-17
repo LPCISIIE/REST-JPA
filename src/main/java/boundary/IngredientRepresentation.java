@@ -55,6 +55,21 @@ public class IngredientRepresentation {
 
     }
 
+    @POST
+    @Path("/id/{ingredientId}")
+    public Response editIngredient(
+            @PathParam("ingredientId") String ingredientId,
+            @FormParam("name") String name,
+            @FormParam("categoryId") String categoryId,
+            @FormParam("price") double price,
+            @FormParam("description") String description
+    ) {
+        if (ingredientResource.delete(ingredientId))
+            return Response.ok().build();
+        else
+            return Response.status(Response.Status.NO_CONTENT).build();
+    }
+
     @DELETE
     @Path("/id/{ingredientId}")
     public Response deleteIngredient(@PathParam("ingredientId") String ingredientId) {
@@ -64,7 +79,7 @@ public class IngredientRepresentation {
             return Response.status(Response.Status.NO_CONTENT).build();
     }
 
-    @POST
+    @PUT
     @Path("/add")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response add (
@@ -79,7 +94,7 @@ public class IngredientRepresentation {
        return Response.ok().build();
     }
 
-    @POST
+    @PUT
     @Path("/bread/add")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response addBread (
@@ -97,5 +112,7 @@ public class IngredientRepresentation {
 
         return Response.ok().build();
     }
+
+
 
 }
