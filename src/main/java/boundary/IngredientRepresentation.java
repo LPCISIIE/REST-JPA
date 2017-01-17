@@ -64,10 +64,36 @@ public class IngredientRepresentation {
             @FormParam("price") double price,
             @FormParam("description") String description
     ) {
-        if (ingredientResource.delete(ingredientId))
-            return Response.ok().build();
-        else
-            return Response.status(Response.Status.NO_CONTENT).build();
+        Ingredient ingredient = ingredientResource.findById(ingredientId);
+
+        boolean isFormEmpty = (name == null && categoryId == null && Double.toString(price) == null && description == null);
+
+        if (ingredient == null || isFormEmpty)
+            return Response.notModified().build();
+
+        String c,n,d;
+        double p;
+
+        n = (name == null) ? ingredient.getName() : name ;
+        if (categoryId == null)
+            c = ingredient.getCategory() ;
+        else {
+            Category cat = categoryResource.findById(categoryId);
+            if (cat == null)
+                return Response.notModified().build();
+            else
+                c = cat.getId();
+        }
+
+        d = (description == null) ? ingredient.getDescription() : description ;
+        p = (Double.toString(price) == null) ? ingredient.getPrice() : price;
+
+
+        if (ingredientResource.update(ingredient.update(c,n,p,d)) == null)
+            return Response.notModified().build();
+
+
+        return Response.ok().build();
     }
 
     @DELETE
