@@ -11,6 +11,7 @@ import javax.ejb.EJB;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
@@ -35,8 +36,8 @@ public class AuthenticationEndpoint {
     private UriInfo uriInfo;
 
     @POST
-    @Produces("application/json")
-    @Consumes("application/x-www-form-urlencoded")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response authenticateUser(@FormParam("email") String email, @FormParam("password") String password) {
         try {
             authenticate(email, password);
@@ -50,17 +51,13 @@ public class AuthenticationEndpoint {
      * Authenticate against a LDAP
      * @param email
      * @param password
-     * @throws Exception if the credentials are invalid
+     * @throws NotAuthorizedException if the credentials are invalid
      */
-    private void authenticate(String email, String password) throws Exception {
+    private void authenticate(String email, String password) throws NotAuthorizedException {
+        Account account = accountResource.findByEmail(email);
 
-        accountResource.findById()
-
-        if (login.equals("xavier") && BCrypt.checkpw(password,passwordDB)) {
-
-        } else {
-            throw new NotAuthorizedException("PB Authentification");
-        }
+        if (account == null && !BCrypt.checkpw(password,account.getPassword()))
+            throw new NotAuthorizedException("Email address or password is invalid");
     }
 
     /**
@@ -72,8 +69,13 @@ public class AuthenticationEndpoint {
         return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
     }
 
+    /**
+     * Method that issues a JWT token
+     * @param email of the associated user
+     * @return the issued token
+     */
     private String issueToken(String email) {
-        return  Jwts.builder()
+        return Jwts.builder()
                 .setSubject(email)
                 .setIssuer(uriInfo.getAbsolutePath().toString())
                 .setIssuedAt(new Date())
