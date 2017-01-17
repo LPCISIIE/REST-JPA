@@ -5,8 +5,10 @@ import entity.Account;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 @Path("/account")
 @Stateless
@@ -16,6 +18,12 @@ public class AccountRepresentation {
     @EJB
     AccountResource accountResource;
 
+    @GET
+    @Path("/all")
+    public Response getAllAccounts(){
+        GenericEntity<List<Account>> list = new GenericEntity<List<Account>>(accountResource.findAll()){};
+        return Response.ok(list, MediaType.APPLICATION_JSON).build();
+    }
 
     @POST
     @Path("/signup")
