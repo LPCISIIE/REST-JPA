@@ -52,6 +52,13 @@ public class IngredientResource {
                 .setHint("javax.persistence.cache.storeMode", CacheStoreMode.REFRESH)
                 .getResultList();
     }
+    
+    public List<Ingredient> findByCategory(String category) {
+        return entityManager.createQuery("SELECT i from Ingredient i where i.category = :category ")
+                .setParameter("category", category)
+                .setHint("javax.persistence.cache.storeMode", CacheStoreMode.REFRESH)
+                .getResultList();
+    }
 
     /**
      * Method that inserts an ingredient into the database
