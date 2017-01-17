@@ -1,6 +1,5 @@
 package boundary.Account;
 
-import com.sun.tools.internal.ws.wsdl.framework.DuplicateEntityException;
 import entity.Account;
 
 import javax.ejb.DuplicateKeyException;
@@ -24,7 +23,6 @@ public class AccountResource {
         return entityManager.find(Account.class, email);
     }
 
-
     /**
      * Method that returns all the accounts
      * NEVER USE THIS IN PUBLIC LMAO
@@ -35,7 +33,6 @@ public class AccountResource {
                 .setHint("javax.persistence.cache.storeMode", CacheStoreMode.REFRESH)
                 .getResultList();
     }
-
 
 
     /**
