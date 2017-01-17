@@ -17,9 +17,9 @@ public class Account implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    private String id;
+    private String email;
 
-    private String name, email, address, password;
+    private String name, address, password;
 
     private boolean hasVIPCard;
 
