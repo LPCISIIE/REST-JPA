@@ -19,7 +19,7 @@ public class Account implements Serializable {
     @Id
     private String email;
 
-    private String name, address, password;
+    private String name, password;
 
     private boolean hasVIPCard;
 
@@ -30,14 +30,13 @@ public class Account implements Serializable {
 
     /**
      * Constructor of an account
+     * @param n the name
      * @param e the email address
-     * @param a the address
      * @param p the password
      */
-    public Account(String n, String e, String a, String p) {
+    public Account(String n, String e, String p) {
         this.name = n;
         this.email = e;
-        this.address = a;
         this.password = p;
         this.hasVIPCard = false;
     }
@@ -45,14 +44,6 @@ public class Account implements Serializable {
     /**
      * - Getter and Setter functions -
      */
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public String getName(){
         return name;
