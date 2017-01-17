@@ -3,12 +3,14 @@ package boundary.Account;
 import entity.Account;
 
 import javax.ejb.DuplicateKeyException;
+import javax.ejb.Stateless;
 import javax.persistence.CacheStoreMode;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
 import java.util.UUID;
 
+@Stateless
 public class AccountResource {
 
     @PersistenceContext
