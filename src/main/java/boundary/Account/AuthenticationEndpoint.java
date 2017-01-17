@@ -1,11 +1,13 @@
-package boundary;
+package boundary.Account;
 
 
 import control.KeyGenerator;
+import entity.Account;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.mindrot.jbcrypt.BCrypt;
 
+import javax.ejb.EJB;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -25,6 +27,9 @@ public class AuthenticationEndpoint {
 
     @Inject
     private KeyGenerator keyGenerator;
+
+    @EJB
+    private AccountResource accountResource;
 
     @Context
     private UriInfo uriInfo;
@@ -48,6 +53,8 @@ public class AuthenticationEndpoint {
      * @throws Exception if the credentials are invalid
      */
     private void authenticate(String email, String password) throws Exception {
+
+        accountResource.findById()
 
         if (login.equals("xavier") && BCrypt.checkpw(password,passwordDB)) {
 
