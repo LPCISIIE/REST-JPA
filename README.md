@@ -1,7 +1,15 @@
-# API using Java Enterprise Edition
+# RESTful Web Services with JAX-RS (JavaEE)
 <p align="center"><img style="margin-bottom:3em;" width="150"src="http://www.monitis.com/blog/wp-content/uploads/uploads/2012/03/jboss_logo2.jpg"> 
 </p>  <br>
 
+
+## API Docs
+https://app.swaggerhub.com/api/xchopin/JPA-Example/1.0.0
+
+## Install
+
+Add this dependency to the project : 
+https://mvnrepository.com/artifact/com.airhacks/javaee7-essentials-archetype/1.3
 
 
 ## Authors
