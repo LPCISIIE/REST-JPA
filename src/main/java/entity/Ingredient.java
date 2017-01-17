@@ -55,6 +55,19 @@ public class Ingredient implements Serializable {
         this.description = d;
     }
 
+    /**
+     * Method that updates an ingredient
+     * @param c the category
+     * @param n the name
+     * @param p the price
+     */
+    public Ingredient update(String c , String n, double p, String d){
+        this.category = c;
+        this.name = n;
+        this.price = p;
+        this.description = d;
+        return this;
+    }
 
     /**
      * - Getter and Setter functions -
