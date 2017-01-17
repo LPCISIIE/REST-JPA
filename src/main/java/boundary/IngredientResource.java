@@ -68,6 +68,15 @@ public class IngredientResource {
     }
 
     /**
+     * Method that updates an ingredient
+     * @param ingredient to update
+     * @return the new ingredient
+     */
+    public Ingredient update(Ingredient ingredient) {
+        return entityManager.merge(ingredient);
+    }
+
+    /**
      * Method that delete an ingredient
      * @param ingredientId
      * @return if it's deleted
