@@ -1,5 +1,6 @@
-package boundary;
+package boundary.Ingredient;
 
+import boundary.Category.CategoryResource;
 import entity.Category;
 import entity.Ingredient;
 
