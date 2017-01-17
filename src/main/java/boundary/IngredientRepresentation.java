@@ -54,6 +54,21 @@ public class IngredientRepresentation {
         return Response.ok(list, MediaType.APPLICATION_JSON).build();
 
     }
+    
+    @GET
+    @Path("/id/category/{id}")
+    public Response getIngredientCategory(@PathParam("id") String ingredientId) {
+        ingredientResource.feedCatalog();
+        Ingredient ingredient = ingredientResource.findById(ingredientId);
+        if (ingredient != null) {
+            Category cat = categoryResource.findById(ingredient.getCategory());
+            
+            return Response.ok(cat, MediaType.APPLICATION_JSON).build();
+        }
+        else {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+    }
 
     @POST
     @Path("/id/{ingredientId}")
