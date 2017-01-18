@@ -10,7 +10,9 @@ import java.io.Serializable;
 @Entity
 @XmlRootElement
 @NamedQueries({
-        @NamedQuery(name = "Account.findAll", query = "SELECT a FROM Account a"),
+        @NamedQuery(name = "Account.findAll", query = "SELECT a FROM Account a ORDER BY a.email DESC"),
+        @NamedQuery(name = "Account.findByEmailAndPassword", query = "SELECT a FROM Account a WHERE a.email = :email AND a.password = :password"),
+        @NamedQuery(name = "Account.countAll", query = "SELECT COUNT(a) FROM Account a")
 })
 public class Account implements Serializable {
 
