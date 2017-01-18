@@ -27,7 +27,6 @@ public class AccountResource {
 
     /**
      * Method that returns all the accounts
-     * NEVER USE THIS IN PUBLIC LMAO
      * @return List of Account
      */
     public List<Account> findAll(){
