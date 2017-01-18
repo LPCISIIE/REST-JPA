@@ -48,5 +48,26 @@ public class AccountRepresentation {
         }
     }
 
+    @POST
+    @Path("/admin-signup")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response createAdmin(
+            @FormParam("name") String name,
+            @FormParam("email") String email,
+            @FormParam("password") String password)
+    {
+        if ((name == null || email == null || password == null))
+            return Response.status(Response.Status.NOT_FOUND).build();
+
+        try {
+            Account admin = new Account(name,email, PasswordManagement.digestPassword(password));
+            admin.setRole(AccountRole.ADMIN);
+            accountResource.insert(admin);
+            return Response.ok().build();
+        } catch (Exception e) {
+            return Response.serverError().build();
+        }
+    }
+
 
 }
