@@ -6,6 +6,7 @@ import entity.Account;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.mindrot.jbcrypt.BCrypt;
+import provider.Secured;
 
 import javax.ejb.EJB;
 import javax.inject.Inject;
@@ -57,7 +58,7 @@ public class AuthenticationEndpoint {
         Account account = accountResource.findByEmail(email);
 
         if (account == null && !BCrypt.checkpw(password,account.getPassword()))
-            throw new NotAuthorizedException("Email address or password is invalid");
+            throw new SecurityException("Email address or password is invalid");
     }
 
     /**
@@ -79,7 +80,7 @@ public class AuthenticationEndpoint {
                 .setSubject(email)
                 .setIssuer(uriInfo.getAbsolutePath().toString())
                 .setIssuedAt(new Date())
-                .setExpiration(toDate(LocalDateTime.now().plusMinutes(2L)))
+                .setExpiration(toDate(LocalDateTime.now().plusMinutes(5L)))
                 .signWith(SignatureAlgorithm.HS512, keyGenerator.generateKey())
                 .compact();
     }
