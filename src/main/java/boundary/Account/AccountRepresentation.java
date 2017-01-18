@@ -2,6 +2,8 @@ package boundary.Account;
 
 import control.PasswordManagement;
 import entity.Account;
+import provider.Secured;
+
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
@@ -20,6 +22,7 @@ public class AccountRepresentation {
 
     @GET
     @Path("/all")
+    @Secured
     public Response getAllAccounts(){
         GenericEntity<List<Account>> list = new GenericEntity<List<Account>>(accountResource.findAll()){};
         return Response.ok(list, MediaType.APPLICATION_JSON).build();
