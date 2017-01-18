@@ -25,6 +25,8 @@ public class Account implements Serializable {
 
     private boolean hasVIPCard;
 
+    private AccountRole role;
+
     /**
      * Empty constructor
      */
@@ -41,6 +43,7 @@ public class Account implements Serializable {
         this.email = e;
         this.password = p;
         this.hasVIPCard = false;
+        this.role = AccountRole.CUSTOMER;
     }
 
     /**
@@ -77,5 +80,13 @@ public class Account implements Serializable {
 
     public void setVIPCard(boolean answer){
         hasVIPCard = answer;
+    }
+
+    public AccountRole getRole() {
+        return role;
+    }
+
+    public void setRole(AccountRole role) {
+        this.role = role;
     }
 }
