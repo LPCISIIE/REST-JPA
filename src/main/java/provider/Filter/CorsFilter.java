@@ -1,4 +1,4 @@
-package provider;
+package provider.Filter;
 
 import javax.ws.rs.container.*;
 import javax.ws.rs.core.Response;

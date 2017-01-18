@@ -1,9 +1,15 @@
-package provider;
+package provider.Filter;
 
 import control.KeyGenerator;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
+import provider.AuthenticatedAccount;
+import provider.Secured;
 
 import javax.annotation.Priority;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -19,6 +25,10 @@ import java.security.Key;
 @Priority(Priorities.AUTHENTICATION)
 public class AuthenticationFilter implements ContainerRequestFilter {
 
+    @Inject
+    @AuthenticatedAccount
+    Event<String> accountAuthenticatedEvent;
+
     @Override
     public void filter(ContainerRequestContext requestContext) throws NotAuthorizedException {
         String authHeader = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
@@ -29,11 +39,20 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         String token = authHeader.substring("Bearer".length()).trim();
 
         try {
+
             Key key = new KeyGenerator().generateKey();
-            Jwts.parser().setSigningKey(key).parseClaimsJws(token);
+
+            Jws<Claims> jwts = Jwts.parser().setSigningKey(key).parseClaimsJws(token);
+
+            String email = jwts.getBody().getSubject();
+
+            accountAuthenticatedEvent.fire(email);
+
         } catch (Exception e) {
             requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());
         }
     }
+
+
 
 }
