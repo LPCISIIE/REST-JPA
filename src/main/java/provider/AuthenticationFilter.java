@@ -11,7 +11,6 @@ import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
-import java.io.IOException;
 import java.security.Key;
 
 
@@ -21,11 +20,14 @@ import java.security.Key;
 public class AuthenticationFilter implements ContainerRequestFilter {
 
     @Override
-    public void filter(ContainerRequestContext requestContext) throws IOException {
+    public void filter(ContainerRequestContext requestContext) throws NotAuthorizedException {
         String authHeader = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
+
         if ( authHeader == null || !authHeader.startsWith("Bearer "))
-            throw new NotAuthorizedException("Not Authorized !");
+            throw new NotAuthorizedException("Authorization header must be provided");
+
         String token = authHeader.substring("Bearer".length()).trim();
+
         try {
             Key key = new KeyGenerator().generateKey();
             Jwts.parser().setSigningKey(key).parseClaimsJws(token);
