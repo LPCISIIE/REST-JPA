@@ -10,7 +10,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
-@Path("/sandwichs")
+@Path("/sandwiches")
 
 @Produces(MediaType.APPLICATION_JSON)
 @Stateless
@@ -36,7 +36,7 @@ public class SandwichRepresentation {
     }
     
     
-    @PUT
+    @POST
     @Path("/add") 
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response add (
