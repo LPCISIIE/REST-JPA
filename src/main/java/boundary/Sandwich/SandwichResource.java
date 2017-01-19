@@ -2,6 +2,7 @@ package boundary.Sandwich;
 
 import boundary.Ingredient.IngredientResource;
 import entity.Category;
+import entity.Ingredient;
 import entity.Sandwich;
 
 import javax.ejb.EJB;
@@ -18,7 +19,7 @@ public class SandwichResource {
     EntityManager entityManager;
 
     @EJB
-    IngredientResource ingResource;
+    IngredientResource ingredientResource;
 
     /**
      * Method that returns a sandwich for an id given
@@ -46,15 +47,40 @@ public class SandwichResource {
      */
     public Sandwich insert(Sandwich sandwich) {
         sandwich.setId(UUID.randomUUID().toString());
-        if (
-            ingResource.findById(sandwich.getSalades()) != null &&
-            ingResource.findById(sandwich.getCharcuterie()) != null &&
-            ingResource.findById(sandwich.getCrudite()) != null &&
-            ingResource.findById(sandwich.getFromage()) != null &&
-            ingResource.findById(sandwich.getSauce()) != null &&
-            ingResource.findById(sandwich.getViande()) != null
-        )   return entityManager.merge(sandwich);
-        return null; 
+
+        for (Ingredient ingredient : sandwich.getIngredientList()) {
+            if (ingredientResource.findById(ingredient.getId()) == null)
+                return null;
+        }
+
+     return entityManager.merge(sandwich);
+
+    }
+
+    /**
+     * Method that inserts a sandwich into the database
+     * @param ingrdients of the sandwich to add
+     * @return the sandwich added or null if the Ingredient doesn't exist
+     */
+    public Sandwich insert(String ... ingredients) {
+        Ingredient array[] = new Ingredient[ingredients.length];
+        Ingredient i;
+        int counter = 0;
+        for (String ingredient : ingredients) {
+            i = ingredientResource.findById(ingredient);
+            if (i == null)
+                return null;
+
+            array[counter++]=i;
+        }
+
+        if (array[0] == null)
+            return null;
+
+        Sandwich sandwich = new Sandwich(array);
+        sandwich.setId(UUID.randomUUID().toString());
+
+        return entityManager.merge(sandwich);
     }
 
      /**
