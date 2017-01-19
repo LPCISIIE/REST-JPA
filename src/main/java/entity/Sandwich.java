@@ -23,7 +23,7 @@ public class Sandwich implements Serializable {
     private String id;
 
     @ManyToMany
-    List<Ingredient> ingredientsList; // Have to convert it into EntityList ==> Expected ':' instead of '}'
+    List<Ingredient> ingredientsList; // Have to convert it into GenericEntity ==> Expected ':' instead of '}'
 
     /**
      * Empty constructor
