@@ -4,6 +4,7 @@ import boundary.Category.CategoryResource;
 
 import javax.ejb.EJB;
 import javax.persistence.*;
+import javax.ws.rs.core.GenericEntity;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ public class Sandwich implements Serializable {
     private String id;
 
     @ManyToMany
-    List<Ingredient> ingredientsList;
+    List<Ingredient> ingredientsList; // Have to convert it into EntityList ==> Expected ':' instead of '}'
 
     /**
      * Empty constructor
@@ -37,6 +38,7 @@ public class Sandwich implements Serializable {
         ingredientsList = new ArrayList<>();
         for (Ingredient ingredient : ingredients)
             ingredientsList.add(ingredient);
+
     }
 
     /**
@@ -49,6 +51,14 @@ public class Sandwich implements Serializable {
         for (Ingredient ingredient : ingredients)
             ingredientsList.add(ingredient);
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return "Sandwich{" +
+                "id='" + id + '\'' +
+                ", ingredientsList=" + ingredientsList +
+                '}';
     }
 
     /**
