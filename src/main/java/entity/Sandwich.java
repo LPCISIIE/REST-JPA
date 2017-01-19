@@ -1,11 +1,13 @@
 package entity;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
+import boundary.Category.CategoryResource;
+
+import javax.ejb.EJB;
+import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @XmlRootElement
@@ -19,36 +21,32 @@ public class Sandwich implements Serializable {
     @Id
     private String id;
 
-    private String salades, crudite, charcuterie, fromage, sauce, viande;
+    @ManyToMany
+    List<Ingredient> ingredientsList;
 
     /**
      * Empty constructor
      */
     public Sandwich(){}
 
-
     /**
      * Constructor of a sandwich
-     * @param c the category
-     * @param n the name
-     * @param p the price
+     * @param ingredients the ingredients in a sandwich
      */
-    public Sandwich(String sal,String cr,String ch,String fr,String sau,String v) {
-     this.salades=sal;
-     this.crudite=cr;
-     this.charcuterie=ch;
-     this.fromage=fr;
-     this.sauce=sau;
-     this.viande=v;
+    public Sandwich(Ingredient ... ingredients) {
+        ingredientsList = new ArrayList<>();
+        for (Ingredient ingredient : ingredients)
+            ingredientsList.add(ingredient);
     }
 
     /**
      * Method that updates a sandwich
-     * @param c the category
-     * @param n the name
-     * @param p the price
+     * @param ingredients the ingredients in a sandwich
      */
-    public Sandwich update(String c , String n, double p, String d){
+    public Sandwich update(Ingredient ... ingredients){
+        ingredientsList.clear();
+        for (Ingredient ingredient : ingredients)
+            ingredientsList.add(ingredient);
         return this;
     }
 
@@ -64,52 +62,32 @@ public class Sandwich implements Serializable {
         this.id = id;
     }
 
-    public String getSalades() {
-        return salades;
+    public List<Ingredient> getIngredient() {
+        return ingredientsList;
     }
 
-    public void setSalades(String salades) {
-        this.salades = salades;
+    public void setIngredientsList(List<Ingredient> ingredientsList) {
+        this.ingredientsList = ingredientsList;
     }
 
-    public String getCrudite() {
-        return crudite;
-    }
+    /**
+     * Method that returns the ingredients which belongs the category given
+     * @param category of the ingredient
+     * @return List of Ingredient if it's found else null
+     */
+    public List<Ingredient> getIngredient(String category) {
+        if (!ingredientsList.isEmpty()) {
+            List<Ingredient> res = new ArrayList<>();
+            String name;
+            for (Ingredient ingredient : ingredientsList) {
+                if (ingredient.categoryName().equals(category))
+                    ingredientsList.add(ingredient);
+            }
 
-    public void setCrudite(String crudite) {
-        this.crudite = crudite;
-    }
-
-    public String getCharcuterie() {
-        return charcuterie;
-    }
-
-    public void setCharcuterie(String charcuterie) {
-        this.charcuterie = charcuterie;
-    }
-
-    public String getFromage() {
-        return fromage;
-    }
-
-    public void setFromage(String fromage) {
-        this.fromage = fromage;
-    }
-
-    public String getSauce() {
-        return sauce;
-    }
-
-    public void setSauce(String sauce) {
-        this.sauce = sauce;
-    }
-
-    public String getViande() {
-        return viande;
-    }
-
-    public void setViande(String viande) {
-        this.viande = viande;
+            if (!res.isEmpty())
+                return res;
+        }
+            return null;
     }
 
 }
