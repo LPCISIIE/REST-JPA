@@ -1,9 +1,6 @@
 package entity;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
+import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
@@ -22,6 +19,8 @@ public class Ingredient implements Serializable {
 
     private String name, description;
     private double price;
+
+    @ManyToOne
     private Category category;
 
     /**
