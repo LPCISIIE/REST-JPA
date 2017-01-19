@@ -59,7 +59,7 @@ public class SandwichResource {
 
     /**
      * Method that inserts a sandwich into the database
-     * @param ingrdients of the sandwich to add
+     * @param ingredients of the sandwich to add
      * @return the sandwich added or null if the Ingredient doesn't exist
      */
     public Sandwich insert(String ... ingredients) {
