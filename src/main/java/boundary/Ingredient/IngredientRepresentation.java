@@ -1,5 +1,6 @@
-package boundary;
+package boundary.Ingredient;
 
+import boundary.Category.CategoryResource;
 import entity.Category;
 import entity.Ingredient;
 
@@ -55,7 +56,7 @@ public class IngredientRepresentation {
 
     }
 
-    @POST
+    @PUT
     @Path("/id/{ingredientId}")
     public Response editIngredient(
             @PathParam("ingredientId") String ingredientId,
@@ -102,10 +103,10 @@ public class IngredientRepresentation {
         if (ingredientResource.delete(ingredientId))
             return Response.ok().build();
         else
-            return Response.status(Response.Status.NO_CONTENT).build();
+            return Response.status(Response.Status.NOT_FOUND).build();
     }
 
-    @PUT
+    @POST
     @Path("/add")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response add (
@@ -115,12 +116,12 @@ public class IngredientRepresentation {
             @FormParam("description") String description
     ) {
         if (ingredientResource.insert(new Ingredient(categoryId,name,price,description)) == null)
-            return Response.status(Response.Status.EXPECTATION_FAILED).build();
+            return Response.status(Response.Status.NOT_FOUND).build();
 
        return Response.ok().build();
     }
 
-    @PUT
+    @POST
     @Path("/bread/add")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response addBread (

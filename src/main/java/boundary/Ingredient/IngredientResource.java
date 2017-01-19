@@ -1,12 +1,12 @@
-package boundary;
+package boundary.Ingredient;
 
+import boundary.Category.CategoryResource;
 import entity.Category;
 import entity.Ingredient;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -17,7 +17,7 @@ public class IngredientResource {
     EntityManager entityManager;
 
     @EJB
-    CategoryResource catManager;
+    CategoryResource categoryResource;
 
     // To feed the database
     boolean done = false;
@@ -68,7 +68,7 @@ public class IngredientResource {
     public Ingredient insert(Ingredient ingredient) {
         ingredient.setId(UUID.randomUUID().toString());
 
-        if (catManager.findById(ingredient.getCategory()) != null)
+        if (categoryResource.findById(ingredient.getCategory()) != null)
             return entityManager.merge(ingredient);
 
         return null;
@@ -104,34 +104,34 @@ public class IngredientResource {
      */
     public void feedCatalog(){
         if (!done) {
-            Category category = catManager.insert(new Category("Salade"));
+            Category category = categoryResource.insert(new Category("Salade"));
 
             this.insert(new Ingredient(category,"Laitue",1.00, "A salad with a french name"));
             this.insert(new Ingredient(category,"Roquette",1.00, "A salad with a french name"));
             this.insert(new Ingredient(category,"Mache",1.00, "A salad with a french name"));
 
-            category = catManager.insert(new Category("Crudité"));
+            category = categoryResource.insert(new Category("Crudité"));
 
             this.insert(new Ingredient(category,"Carotte",1.50, "A carrot with a french name"));
             this.insert(new Ingredient(category,"Concombre",1.50, "A cucumber with a french name"));
             this.insert(new Ingredient(category,"Tomate",1.50, "A tomato with a french name"));
 
-            category = catManager.insert(new Category("Charcuterie"));
+            category = categoryResource.insert(new Category("Charcuterie"));
 
             this.insert(new Ingredient(category,"Jambon",2.50, "Vegan people would hate you !"));
             this.insert(new Ingredient(category,"Jambon cru",2.50, "Vegan people would hate you !"));
 
-            category = catManager.insert(new Category("Viande"));
+            category = categoryResource.insert(new Category("Viande"));
 
             this.insert(new Ingredient(category,"Burger",3.00, "Vegan people would hate you !"));
             this.insert(new Ingredient(category,"Confit",3.00, "Vegan people would hate you !"));
 
-            category = catManager.insert(new Category("Fromage"));
+            category = categoryResource.insert(new Category("Fromage"));
 
             this.insert(new Ingredient(category,"Emmental",1.50, "Is it swiss or french ?"));
             this.insert(new Ingredient(category,"Comté",1.50, "For strong people like you!"));
 
-            category = catManager.insert(new Category("Sauce"));
+            category = categoryResource.insert(new Category("Sauce"));
 
             this.insert(new Ingredient(category,"Vinaigrette",0.50, "At first it was wine but something weird happened"));
             this.insert(new Ingredient(category,"Moutarde",0.50, "You don't choose mustard it's it that chooses you"));
