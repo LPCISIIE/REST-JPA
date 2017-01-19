@@ -72,27 +72,17 @@ public class IngredientRepresentation {
         if (ingredient == null || isFormEmpty)
             return Response.notModified().build();
 
-        String c,n,d;
+        Category c;
+        String n,d;
         double p;
 
         n = (name == null) ? ingredient.getName() : name ;
-        if (categoryId == null)
-            c = ingredient.getCategory() ;
-        else {
-            Category cat = categoryResource.findById(categoryId);
-            if (cat == null)
-                return Response.notModified().build();
-            else
-                c = cat.getId();
-        }
-
         d = (description == null) ? ingredient.getDescription() : description ;
         p = (Double.toString(price) == null) ? ingredient.getPrice() : price;
+        c = (categoryId == null) ? ingredient.getCategory() : categoryResource.findById(categoryId);
 
-
-        if (ingredientResource.update(ingredient.update(c,n,p,d)) == null)
+        if (c == null || ingredientResource.update(ingredient.update(c,n,p,d)) == null)
             return Response.notModified().build();
-
 
         return Response.ok().build();
     }
@@ -115,7 +105,12 @@ public class IngredientRepresentation {
             @FormParam("price") double price,
             @FormParam("description") String description
     ) {
-        if (ingredientResource.insert(new Ingredient(categoryId,name,price,description)) == null)
+
+        Ingredient ingredient = new Ingredient(categoryResource.findById(categoryId),name,price,description);
+
+        if (ingredientResource.insert(ingredient) == null)
+
+
             return Response.status(Response.Status.NOT_FOUND).build();
 
        return Response.ok().build();
