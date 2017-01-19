@@ -1,4 +1,4 @@
-package boundary;
+package boundary.Category;
 
 import entity.Category;
 

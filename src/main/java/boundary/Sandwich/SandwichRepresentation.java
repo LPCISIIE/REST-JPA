@@ -1,7 +1,5 @@
-package boundary;
+package boundary.Sandwich;
 
-import entity.Category;
-import entity.Sandwich;
 import entity.Sandwich;
 
 import javax.ejb.EJB;

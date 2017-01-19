@@ -1,5 +1,6 @@
-package boundary;
+package boundary.Sandwich;
 
+import boundary.Ingredient.IngredientResource;
 import entity.Category;
 import entity.Sandwich;
 
@@ -19,11 +20,8 @@ public class SandwichResource {
     @EJB
     IngredientResource ingResource;
 
-    // To feed the database
-    boolean done = false;
-
     /**
-     * Method that returns an sandwich for an id given
+     * Method that returns a sandwich for an id given
      * @param id
      * @return Sandwich
      */
@@ -32,7 +30,7 @@ public class SandwichResource {
     }
 
     /**
-     * Method that returns all the sandwichs
+     * Method that returns all the sandwiches
      * @return List of Sandwich
      */
     public List<Sandwich> findAll(){
@@ -42,9 +40,9 @@ public class SandwichResource {
     }
 
     /**
-     * Method that inserts an sandwich into the database
+     * Method that inserts a sandwich into the database
      * @param sandwich to add
-     * @return the sandwich added or null if the Category doesn't exist
+     * @return the sandwich added or null if the Ingredient doesn't exist
      */
     public Sandwich insert(Sandwich sandwich) {
         sandwich.setId(UUID.randomUUID().toString());
@@ -58,29 +56,29 @@ public class SandwichResource {
         )   return entityManager.merge(sandwich);
         return null; 
     }
-//
-//    /**
-//     * Method that updates an sandwich
-//     * @param sandwich to update
-//     * @return the new sandwich
-//     */
-//    public Sandwich update(Sandwich sandwich) {
-//        return entityManager.merge(sandwich);
-//    }
-//
-//    /**
-//     * Method that delete an sandwich
-//     * @param sandwichId
-//     * @return if it's deleted
-//     */
-//    public boolean delete(String sandwichId) {
-//        Sandwich sandwich = entityManager.find(Sandwich.class, sandwichId);
-//
-//        if (sandwich != null) {
-//            entityManager.remove(sandwich);
-//            return true;
-//        }
-//
-//        return false;
-//    }
+
+     /**
+      * Method that updates an sandwich
+      * @param sandwich to update
+      * @return the new sandwich
+      */
+     public Sandwich update(Sandwich sandwich) {
+         return entityManager.merge(sandwich);
+     }
+
+     /**
+      * Method that deletes an sandwich
+      * @param sandwichId
+      * @return if it's deleted
+      */
+      public boolean delete(String sandwichId) {
+          Sandwich sandwich = entityManager.find(Sandwich.class, sandwichId);
+
+          if (sandwich != null) {
+              entityManager.remove(sandwich);
+              return true;
+          }
+
+          return false;
+      }
 }

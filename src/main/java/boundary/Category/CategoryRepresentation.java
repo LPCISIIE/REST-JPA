@@ -1,5 +1,6 @@
-package boundary;
+package boundary.Category;
 
+import boundary.Ingredient.IngredientResource;
 import entity.Category;
 import entity.Ingredient;
 
@@ -23,14 +24,14 @@ public class CategoryRepresentation {
     @EJB
     CategoryResource categoryResource;
 
-    //récupère toutes les catégories
+
     @GET
     public Response getCategories() {
         GenericEntity<List<Category>> list = new GenericEntity<List<Category>>(categoryResource.findAll()){};
         return Response.ok(list, MediaType.APPLICATION_JSON).build();
     }
 
-    //récupère une catégorie en particulier
+
     @GET
     @Path("/id/{id}")
     public Response getCategory(@PathParam("id") String id) {
@@ -41,7 +42,6 @@ public class CategoryRepresentation {
             return Response.status(Response.Status.NOT_FOUND).build();
     }
 
-    //récupère une liste de catégories selon leurs noms
     @GET
     @Path("/name/{name}")
     public Response getCategoryByName(@PathParam("name") String categoryName) {
@@ -59,7 +59,7 @@ public class CategoryRepresentation {
     public Response getCategoryIngredients(@PathParam("id") String categoryId) {
         Category cat = categoryResource.findById(categoryId);
         
-        if(cat == null) 
+        if (cat == null)
             return Response.status(Response.Status.NOT_FOUND).build();
         
         List<Ingredient> ingredients = ingredientResource.findByCategory(cat.getId());
