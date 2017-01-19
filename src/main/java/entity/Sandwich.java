@@ -42,6 +42,7 @@ public class Sandwich implements Serializable {
     /**
      * Method that updates a sandwich
      * @param ingredients the ingredients in a sandwich
+     * @return the sandiwch
      */
     public Sandwich update(Ingredient ... ingredients){
         ingredientsList.clear();
@@ -62,7 +63,7 @@ public class Sandwich implements Serializable {
         this.id = id;
     }
 
-    public List<Ingredient> getIngredient() {
+    public List<Ingredient> getIngredientList() {
         return ingredientsList;
     }
 
