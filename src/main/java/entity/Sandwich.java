@@ -1,6 +1,7 @@
 package entity;
 
 import boundary.Category.CategoryResource;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.ejb.EJB;
 import javax.persistence.*;
@@ -23,6 +24,7 @@ public class Sandwich implements Serializable {
     private String id;
 
     @ManyToMany
+    @JsonManagedReference
     List<Ingredient> ingredientsList; // Have to convert it into GenericEntity ==> Expected ':' instead of '}'
 
     /**
