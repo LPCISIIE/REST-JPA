@@ -50,12 +50,28 @@ public class Ingredient implements Serializable {
      * @param n the name
      * @param p the price
      */
-    public Ingredient update(String c , String n, double p, String d){
+    public Ingredient update(Category c , String n, double p, String d){
         this.category = c;
         this.name = n;
         this.price = p;
         this.description = d;
         return this;
+    }
+
+    /**
+     * Helper method
+     * @return the category name
+     */
+    public String categoryName() {
+        return category.getName();
+    }
+
+    /**
+     * Helper method
+     * @return the category id
+     */
+    public String categoryId() {
+        return category.getId();
     }
 
     /**
@@ -101,4 +117,5 @@ public class Ingredient implements Serializable {
     public void setPrice(double price) {
         this.price = price;
     }
+
 }
