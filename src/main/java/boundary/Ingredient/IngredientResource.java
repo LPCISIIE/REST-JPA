@@ -104,7 +104,14 @@ public class IngredientResource {
      */
     public void feedCatalog(){
         if (!done) {
-            Category category = categoryResource.insert(new Category("Salade"));
+
+            Category category = categoryResource.insert(new Category("Pain"));
+
+            this.insert(new Ingredient(category,"Pain Blanc",1.00, "The bread hated by the SJW"));
+            this.insert(new Ingredient(category,"Pain Complet",1.50, "To get healthy !"));
+            this.insert(new Ingredient(category,"Céréales",1.50, "A bread made with Froot Loops"));
+            
+            category = categoryResource.insert(new Category("Salade"));
 
             this.insert(new Ingredient(category,"Laitue",1.00, "A salad with a french name"));
             this.insert(new Ingredient(category,"Roquette",1.00, "A salad with a french name"));
