@@ -20,8 +20,6 @@ public class SandwichRepresentation {
     @EJB
     SandwichResource sandwichResource;
 
-   
-
     @GET
     public Response getSandwichs(@Context UriInfo uriInfo) {
         List<Sandwich> list = sandwichResource.findAll();
