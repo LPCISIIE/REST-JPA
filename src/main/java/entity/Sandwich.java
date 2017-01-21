@@ -1,11 +1,8 @@
 package entity;
 
-import boundary.Category.CategoryResource;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-
-import javax.ejb.EJB;
 import javax.persistence.*;
-import javax.ws.rs.core.GenericEntity;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -23,20 +20,44 @@ public class Sandwich implements Serializable {
     @Id
     private String id;
 
+    private String name;
+
+    private final static String SANDWICH_CUSTOM = "CUSTOM";
+
     @ManyToMany
     @JsonManagedReference
-    List<Ingredient> ingredientsList; // Have to convert it into GenericEntity ==> Expected ':' instead of '}'
+    List<Ingredient> ingredientsList;
+    @XmlElement(name="_links")
+    @Transient
+    private List<Link> links = new ArrayList<>();
 
     /**
      * Empty constructor
      */
-    public Sandwich(){}
+    public Sandwich() {
+        name = SANDWICH_CUSTOM;
+        ingredientsList = new ArrayList<>();
+    }
 
     /**
      * Constructor of a sandwich
      * @param ingredients the ingredients in a sandwich
      */
     public Sandwich(Ingredient ... ingredients) {
+        name = SANDWICH_CUSTOM;
+        ingredientsList = new ArrayList<>();
+        for (Ingredient ingredient : ingredients)
+            ingredientsList.add(ingredient);
+
+    }
+
+    /**
+     * Constructor of a sandwich
+     * @param name the sandwich name
+     * @param ingredients the ingredients in a sandwich
+     */
+    public Sandwich(String name, Ingredient ... ingredients) {
+        this.name = name;
         ingredientsList = new ArrayList<>();
         for (Ingredient ingredient : ingredients)
             ingredientsList.add(ingredient);
@@ -55,17 +76,37 @@ public class Sandwich implements Serializable {
         return this;
     }
 
-    @Override
+     @Override
     public String toString() {
-        return "Sandwich{" +
-                "id='" + id + '\'' +
-                ", ingredientsList=" + ingredientsList +
-                '}';
+        String res = "Sandwich{" +
+                "id='" + id + '\''
+                + " Ingredients : [";
+        for (Ingredient i: ingredientsList)
+            res += i.getName() + " - " + i.getId() + '\'';
+        res+= ']';
+
+        return res;
+    }
+
+    public void addLink(String uri, String rel) {
+        this.links.add(new Link(rel,uri));
     }
 
     /**
      * - Getter and Setter functions -
      */
+
+    public List<Link> getLinks() {
+        return links;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public String getId() {
         return id;
@@ -75,12 +116,12 @@ public class Sandwich implements Serializable {
         this.id = id;
     }
 
-    public List<Ingredient> getIngredientList() {
+    public List<Ingredient> getIngredientsList() {
         return ingredientsList;
     }
 
     public void setIngredientsList(List<Ingredient> ingredientsList) {
-        this.ingredientsList = ingredientsList;
+        this.ingredientsList = new ArrayList<>(ingredientsList);
     }
 
     /**
@@ -91,7 +132,6 @@ public class Sandwich implements Serializable {
     public List<Ingredient> getIngredient(String category) {
         if (!ingredientsList.isEmpty()) {
             List<Ingredient> res = new ArrayList<>();
-            String name;
             for (Ingredient ingredient : ingredientsList) {
                 if (ingredient.categoryName().equals(category))
                     ingredientsList.add(ingredient);
