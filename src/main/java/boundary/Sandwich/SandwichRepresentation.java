@@ -58,17 +58,39 @@ public class SandwichRepresentation {
     @Path("/add") 
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response add (
+            @FormParam("size") String size,
+            @FormParam("bread") String bread,
             @FormParam("meat") String meat,
             @FormParam("cold_meats") String coldMeats,
             @FormParam("cheese") String cheese,
             @FormParam("salad") String salad,
-            @FormParam("sauce") String sauce
+            @FormParam("crudite") String crudite,
+            @FormParam("sauce") String sauce,
+            @FormParam("extra") String extra,
+            @FormParam("extra2") String extra2,
+            @FormParam("extra3") String extra3
     ) {
 
-        if (sandwichResource.insert(meat, coldMeats, cheese, salad, sauce) == null)
+        boolean isEmpty = (size == null || meat == null || coldMeats == null || cheese == null || salad == null || sauce == null || crudite == null || bread == null);
+
+        if (isEmpty)
             return Response.status(Response.Status.EXPECTATION_FAILED).build();
 
-       return Response.ok().build();
+        if (extra == null && extra2 == null && extra3 == null) {
+            if (sandwichResource.insert(size, bread, meat, coldMeats, cheese, salad, crudite, sauce) == null)
+                return Response.status(Response.Status.EXPECTATION_FAILED).build();
+        } else if (extra != null && extra2 == null && extra3 == null) {
+             if (sandwichResource.insert(size, bread, meat, coldMeats, cheese, salad, crudite, sauce, extra) == null)
+                 return Response.status(Response.Status.EXPECTATION_FAILED).build();
+        } else if (extra != null && extra2 != null && extra3 == null) {
+            if (sandwichResource.insert(size, bread, meat, coldMeats, cheese, salad, crudite, sauce, extra, extra2) == null)
+                return Response.status(Response.Status.EXPECTATION_FAILED).build();
+        } else if (extra != null && extra2 != null && extra3 != null) {
+            if (sandwichResource.insert(size, bread, meat, coldMeats, cheese, salad, crudite, sauce, extra, extra2, extra3) == null)
+                return Response.status(Response.Status.EXPECTATION_FAILED).build();
+        }
+
+        return Response.ok().build();
     }
 
     @DELETE
