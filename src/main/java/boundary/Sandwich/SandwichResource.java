@@ -48,13 +48,13 @@ public class SandwichResource {
     public Sandwich insert(Sandwich sandwich) {
         sandwich.setId(UUID.randomUUID().toString());
 
-        for (Ingredient ingredient : sandwich.getIngredientList()) {
+        for (Ingredient ingredient : sandwich.getIngredientsList()) {
             if (ingredientResource.findById(ingredient.getId()) == null)
                 return null;
         }
 
-     return entityManager.merge(sandwich);
-
+        sandwich.setIngredientsList(new ArrayList<>());
+        return entityManager.merge(sandwich);
     }
 
     /**
