@@ -53,19 +53,31 @@ public class SandwichResource {
                 return null;
         }
 
-        sandwich.setIngredientsList(new ArrayList<>());
-        return entityManager.merge(sandwich);
+        sandwich.calculatePrice();
+
+        if (sandwich.validate())
+            return entityManager.merge(sandwich);
+
+        return null;
     }
 
     /**
      * Method that inserts a sandwich into the database
      * @param ingredients of the sandwich to add
-     * @return the sandwich added or null if the Ingredient doesn't exist
+     * @return the sandwich added or null if the size or Ingredient doesn't exist
      */
-    public Sandwich insert(String ... ingredients) {
+    public Sandwich insert(String size, String ... ingredients) {
         Ingredient array[] = new Ingredient[ingredients.length];
         Ingredient i;
         int counter = 0;
+
+        if ( !size.equals(Sandwich.getSandwichSize0()) && !size.equals(Sandwich.getSandwichSize1()) &&
+             !size.equals(Sandwich.getSandwichSize2()) && !size.equals(Sandwich.getSandwichSize3())
+           )
+            return null;
+
+
+
         for (String ingredient : ingredients) {
             i = ingredientResource.findById(ingredient);
             if (i == null)
@@ -77,10 +89,15 @@ public class SandwichResource {
         if (array[0] == null)
             return null;
 
-        Sandwich sandwich = new Sandwich(array);
-        sandwich.setId(UUID.randomUUID().toString());
 
-        return entityManager.merge(sandwich);
+        Sandwich sandwich = new Sandwich(size,array);
+        if (sandwich.validate()) {
+            sandwich.setId(UUID.randomUUID().toString());
+            sandwich.calculatePrice();
+            return entityManager.merge(sandwich);
+        }
+
+        return null;
     }
 
      /**
