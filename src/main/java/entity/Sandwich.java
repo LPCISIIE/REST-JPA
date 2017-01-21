@@ -93,6 +93,37 @@ public class Sandwich implements Serializable {
     }
 
     /**
+     * Method that returns the ingredients which belongs the category given
+     * @param category of the ingredient
+     * @return List of Ingredient if it's found else null
+     */
+    public List<Ingredient> getIngredient(String category) {
+        if (!ingredientsList.isEmpty()) {
+            List<Ingredient> res = new ArrayList<>();
+            for (Ingredient ingredient : ingredientsList) {
+                if (ingredient.categoryName().equals(category))
+                    ingredientsList.add(ingredient);
+            }
+
+            if (!res.isEmpty())
+                return res;
+        }
+        return null;
+    }
+
+    public boolean validate() {
+        boolean salad = getIngredient("Salade").isEmpty();
+        boolean meat = getIngredient("Viande").isEmpty();
+        boolean coldMeat = getIngredient("Charcuterie").isEmpty();
+        boolean cheese = getIngredient("Fromage").isEmpty();
+        boolean sauce = getIngredient("Sauce").isEmpty();
+
+        if ( salad && meat && coldMeat && cheese && sauce )
+            return true;
+        return false;
+    }
+
+    /**
      * - Getter and Setter functions -
      */
 
@@ -122,25 +153,6 @@ public class Sandwich implements Serializable {
 
     public void setIngredientsList(List<Ingredient> ingredientsList) {
         this.ingredientsList = new ArrayList<>(ingredientsList);
-    }
-
-    /**
-     * Method that returns the ingredients which belongs the category given
-     * @param category of the ingredient
-     * @return List of Ingredient if it's found else null
-     */
-    public List<Ingredient> getIngredient(String category) {
-        if (!ingredientsList.isEmpty()) {
-            List<Ingredient> res = new ArrayList<>();
-            for (Ingredient ingredient : ingredientsList) {
-                if (ingredient.categoryName().equals(category))
-                    ingredientsList.add(ingredient);
-            }
-
-            if (!res.isEmpty())
-                return res;
-        }
-            return null;
     }
 
 }
