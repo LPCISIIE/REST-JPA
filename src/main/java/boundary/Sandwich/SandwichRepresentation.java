@@ -49,6 +49,11 @@ public class SandwichRepresentation {
 
         List<Ingredient> ingredientsList = sandwich.getIngredientsList();
 
+        for (Ingredient ingredient : ingredientsList) {
+            ingredient.getLinks().clear();
+            ingredient.addLink(this.getUriForSelfIngredient(uriInfo,ingredient,sandwich), "self");
+        }
+
         sandwich.setIngredientsList(ingredientsList);
 
         return Response.ok(sandwich, MediaType.APPLICATION_JSON).build();
@@ -89,6 +94,40 @@ public class SandwichRepresentation {
             if (sandwichResource.insert(size, bread, meat, coldMeats, cheese, salad, crudite, sauce, extra, extra2, extra3) == null)
                 return Response.status(Response.Status.EXPECTATION_FAILED).build();
         }
+
+        return Response.ok().build();
+    }
+
+    @PUT
+    @Path("/id/{sandwichId}")
+    public Response editIngredient(
+            @PathParam("sandwichId") String sandwichId,
+            @FormParam("name") String name,
+            @FormParam("description") String description,
+            @FormParam("size") String size
+    ) {
+
+        Sandwich sandwich = sandwichResource.findById(sandwichId);
+
+        boolean isFormEmpty = (name == null && description == null && size == null);
+
+        if (sandwich == null || isFormEmpty)
+            return Response.notModified().build();
+
+        String n,d;
+
+        n = (name == null) ? sandwich.getName() : name ;
+        d = (description == null) ? sandwich.getDescription() : description ;
+
+        if (size != null) {
+            if (!Sandwich.isSizeOk(size))
+                return Response.notModified().build();
+        } else {
+            size = sandwich.getSize();
+        }
+
+        if (sandwichResource.update(sandwich.update(size,n,d)) == null)
+            return Response.notModified().build();
 
         return Response.ok().build();
     }
