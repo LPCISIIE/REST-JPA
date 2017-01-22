@@ -48,6 +48,7 @@ public class Sandwich implements Serializable {
     public Sandwich() {
         size = SANDWICH_SIZE_UNDEFINED;
         name = SANDWICH_CUSTOM;
+        description = "UNDEFINED";
         price = 0;
         ingredientsList = new ArrayList<>();
     }
@@ -60,6 +61,7 @@ public class Sandwich implements Serializable {
         price = 0;
         name = SANDWICH_CUSTOM;
         this.size = size;
+        description = "UNDEFINED";
         ingredientsList = new ArrayList<>();
         for (Ingredient ingredient : ingredients)
             ingredientsList.add(ingredient);
@@ -90,7 +92,7 @@ public class Sandwich implements Serializable {
      * @return a Sandwich
      */
     public Sandwich update(String size, String name, String description){
-
+        
         this.name = name;
         this.description = description;
 
@@ -146,8 +148,21 @@ public class Sandwich implements Serializable {
         }
 
         this.size = size;
-        return this;
+        this.calculatePrice();
 
+        return this;
+    }
+
+    /**
+     * Method that tell you if the size exists
+     * @param size the size to test
+     * @return boolean
+     */
+    public static boolean isSizeOk(String size) {
+        if (size.equals(SANDWICH_SIZE_0) || size.equals(SANDWICH_SIZE_1) || size.equals(SANDWICH_SIZE_2) || size.equals(SANDWICH_SIZE_3))
+            return true;
+
+        return false;
     }
 
      @Override
