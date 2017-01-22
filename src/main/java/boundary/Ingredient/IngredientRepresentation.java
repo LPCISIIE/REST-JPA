@@ -1,12 +1,15 @@
 package boundary.Ingredient;
 
 import boundary.Category.CategoryResource;
+import boundary.Sandwich.SandwichResource;
+import control.DatabaseSeeder;
 import entity.Category;
 import entity.Ingredient;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
+import javax.ws.rs.container.PreMatching;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -18,15 +21,20 @@ import java.util.List;
 @Stateless
 public class IngredientRepresentation {
 
+
     @EJB
     IngredientResource ingredientResource;
 
     @EJB
     CategoryResource categoryResource;
 
+    @EJB
+    SandwichResource sandwichResource;
+
+
     @GET
     public Response getIngredients() {
-        ingredientResource.feedCatalog();
+        DatabaseSeeder.feedCatalog(ingredientResource,categoryResource, sandwichResource);
         GenericEntity<List<Ingredient>> list = new GenericEntity<List<Ingredient>>(ingredientResource.findAll()){};
         return Response.ok(list, MediaType.APPLICATION_JSON).build();
     }
@@ -34,7 +42,8 @@ public class IngredientRepresentation {
     @GET
     @Path("/id/{ingredientId}")
     public Response getIngredient(@PathParam("ingredientId") String ingredientId) {
-        ingredientResource.feedCatalog();
+        DatabaseSeeder.feedCatalog(ingredientResource,categoryResource, sandwichResource);
+
         Ingredient ingredient = ingredientResource.findById(ingredientId);
         if (ingredient != null)
             return Response.ok(ingredient, MediaType.APPLICATION_JSON).build();
@@ -45,7 +54,8 @@ public class IngredientRepresentation {
     @GET
     @Path("/name/{ingredientName}")
     public Response getIngredientByName(@PathParam("ingredientName") String ingredientName) {
-        ingredientResource.feedCatalog();
+        DatabaseSeeder.feedCatalog(ingredientResource,categoryResource, sandwichResource);
+
         List<Ingredient> ingredients = ingredientResource.findByName(ingredientName);
 
         if (ingredients.isEmpty())
