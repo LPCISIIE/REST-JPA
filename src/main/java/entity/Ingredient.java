@@ -1,11 +1,11 @@
 package entity;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
+import javax.persistence.*;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @XmlRootElement
@@ -22,7 +22,13 @@ public class Ingredient implements Serializable {
 
     private String name, description;
     private double price;
+
+    @ManyToOne
     private Category category;
+
+    @XmlElement(name="_links")
+    @Transient
+    private List<Link> links = new ArrayList<>();
 
     /**
      * Empty constructor
@@ -41,8 +47,6 @@ public class Ingredient implements Serializable {
         this.price = p;
         this.description = d;
     }
-
-
 
     /**
      * Method that updates an ingredient
@@ -74,9 +78,17 @@ public class Ingredient implements Serializable {
         return category.getId();
     }
 
+    public void addLink(String uri, String rel) {
+        this.links.add(new Link(rel,uri));
+    }
+
     /**
      * - Getter and Setter functions -
      */
+
+    public List<Link> getLinks() {
+        return links;
+    }
 
     public String getId() {
         return id;
