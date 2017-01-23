@@ -44,7 +44,7 @@ public class AuthenticationEndpoint {
             authenticate(email, password);
             return Response.ok().header(AUTHORIZATION, "Bearer " + issueToken(email)).build();
         } catch (Exception e) {
-            return Response.status(Response.Status.UNAUTHORIZED).build();
+            return Response.status(Response.Status.UNAUTHORIZED).type("text/plain").entity("Invalid token").build();
         }
     }
 
