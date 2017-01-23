@@ -1,9 +1,11 @@
 package boundary.Order;
 
+import boundary.Sandwich.SandwichResource;
 import entity.Account;
 import entity.Shipment;
 import entity.Sandwich;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.CacheStoreMode;
 import javax.persistence.EntityManager;
@@ -17,6 +19,9 @@ public class OrderResource {
 
     @PersistenceContext
     EntityManager entityManager;
+
+    @EJB
+    SandwichResource sandwichResource;
 
     /**
      * Method that returns an order for an id given
@@ -46,16 +51,24 @@ public class OrderResource {
         if (date == null)
             return null;
 
+
         order.setDateTime(date);
+
         Sandwich sandwich;
 
         for (String id : sandwichesId) {
-           sandwich = entityManager.find(Sandwich.class, id);
-           if (sandwich == null)
-               return null;
-           else
-               order.addSandwich(sandwich);
+           sandwich = sandwichResource.findById(id);
+
+
+            if (sandwich == null) {
+                return null;
+            } else {
+                Sandwich copy = new Sandwich(sandwich);
+                sandwichResource.insert(copy);
+                order.addSandwich(copy);
+            }
         }
+
 
         order.setId(UUID.randomUUID().toString());
 
