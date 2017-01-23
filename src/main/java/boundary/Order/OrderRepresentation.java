@@ -17,11 +17,17 @@ import javax.ws.rs.core.*;
 import java.util.List;
 
 
-@Path("/orders")
 
 @Produces(MediaType.APPLICATION_JSON)
 @Stateless
+@Path("/orders")
 public class OrderRepresentation {
+
+    @Context
+    SecurityContext securityContext;
+
+    @Context
+    UriInfo uriInfo;
 
     @EJB
     OrderResource orderResource;
@@ -29,49 +35,63 @@ public class OrderRepresentation {
     @EJB
     AccountResource accountResource;
 
-
     //@Secured({AccountRole.ADMIN})
     @GET
-    public Response getAll(@Context UriInfo uriInfo){
+    public Response getAll(){
         List<Shipment> list = orderResource.findAll();
-        list.stream().forEach(Commande -> {
-            List<Sandwich> sandwiches = Commande.getSandwiches();
-            Commande.addLink(this.getUriForSelfShipment(uriInfo,Commande),"self");
+        list.stream().forEach(order -> {
+            List<Sandwich> sandwiches = order.getSandwiches();
+            order.addLink(this.getUriForSelfShipment(uriInfo,order),"self");
             for (Sandwich sandwich : sandwiches) {
                 sandwich.getLinks().clear();
                 sandwich.addLink(this.getUriForSelfSandwich(uriInfo,sandwich), "self");
             }
-            Commande.setSandwiches(sandwiches);
+            order.setSandwiches(sandwiches);
         });
 
         GenericEntity<List<Shipment>> listGenericEntity = new GenericEntity<List<Shipment>>(list){};
         return Response.ok(listGenericEntity, MediaType.APPLICATION_JSON).build();
     }
 
+
+    @GET
+    @Path("/{id}")
+    public Response add(@PathParam("id") String id) {
+
+        Shipment shipment = orderResource.findById(id);
+
+        if (shipment == null)
+            return Response.status(Response.Status.NOT_FOUND).build();
+
+
+        return Response.ok(shipment, MediaType.APPLICATION_JSON).build();
+    }
+
     @POST
-    @Path("/add")
     @Secured({AccountRole.CUSTOMER})
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response add(UriInfo uriInfo, ContainerRequestContext requestContext, @FormParam("date") String dateTime, @FormParam("sandwichId") String sandwichId) {
-        Account account = accountResource.findByToken(requestContext);
+    @Path("/add")
+    public Response add(@Context SecurityContext securityContext, @FormParam("dateTime") String dateTime, @FormParam("sandwichId") String sandwichId) {
+        Account account = accountResource.findByEmail(securityContext.getUserPrincipal().getName());
 
         if (account == null)
             return Response.status(Response.Status.UNAUTHORIZED).build();
 
-        Shipment Commande = orderResource.insert(account, dateTime, sandwichId);
+        Shipment shipment = orderResource.insert(account, dateTime, sandwichId);
 
-        if (Commande == null)
+        if (shipment == null)
             return Response.status(Response.Status.NOT_FOUND).build();
 
-        Commande.addLink(getUriForSelfShipment(uriInfo, Commande), "self");
-        return Response.ok(Commande, MediaType.APPLICATION_JSON).build();
+        shipment.addLink(getUriForSelfShipment(uriInfo, shipment), "self");
+        return Response.ok(shipment, MediaType.APPLICATION_JSON).build();
+
     }
 
 
     private String getUriForSelfShipment(UriInfo uriInfo, Shipment Commande) {
         return uriInfo.getBaseUriBuilder()
-                .path(Shipment.class)
-                .path("id/" + Commande.getId())
+                .path(OrderRepresentation.class)
+                .path(Commande.getId())
                 .build()
                 .toString();
     }
