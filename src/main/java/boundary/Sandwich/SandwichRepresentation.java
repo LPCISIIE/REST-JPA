@@ -21,7 +21,7 @@ public class SandwichRepresentation {
     SandwichResource sandwichResource;
 
     @GET
-    public Response getSandwichs(@Context UriInfo uriInfo) {
+    public Response getSandwiches(@Context UriInfo uriInfo) {
         List<Sandwich> list = sandwichResource.findAll();
 
         list.stream().forEach(sandwich -> {
