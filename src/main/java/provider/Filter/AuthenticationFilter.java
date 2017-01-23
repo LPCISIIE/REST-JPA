@@ -16,8 +16,10 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.Provider;
 import java.security.Key;
+import java.security.Principal;
 
 
 @Secured
@@ -48,11 +50,38 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
             accountAuthenticatedEvent.fire(email);
 
+            requestContext.setSecurityContext(new SecurityContext() {
+
+                @Override
+                public Principal getUserPrincipal() {
+
+                    return new Principal() {
+
+                        @Override
+                        public String getName() {
+                            return email;
+                        }
+                    };
+                }
+
+                @Override
+                public boolean isUserInRole(String role) {
+                    return false; // too lazy to do it (tbh deadline is soon)
+                }
+
+                @Override
+                public boolean isSecure() {
+                    return false; // too lazy to do it (tbh deadline is soon)
+                }
+
+                @Override
+                public String getAuthenticationScheme() {
+                    return null; // too lazy to do it (tbh deadline is soon)
+                }
+            });
+
         } catch (Exception e) {
             requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());
         }
     }
-
-
-
 }
