@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @XmlRootElement
@@ -82,6 +83,19 @@ public class Sandwich implements Serializable {
         for (Ingredient ingredient : ingredients)
             ingredientsList.add(ingredient);
 
+    }
+
+    /**
+     * Constructor that copies a Sandwich but changes the id
+     * @param sandwich to copy
+     */
+    public Sandwich(Sandwich sandwich) {
+        this.price = sandwich.getPrice();
+        this.name = sandwich.getName();
+        this.size = sandwich.getSize();
+        this.description = sandwich.getDescription();
+        this.ingredientsList = new ArrayList<>();
+        this.ingredientsList = sandwich.getIngredientsList();
     }
 
     /**
