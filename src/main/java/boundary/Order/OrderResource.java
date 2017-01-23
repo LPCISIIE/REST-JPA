@@ -32,7 +32,7 @@ public class OrderResource {
      * @return List of Order
      */
     public List<Shipment> findAll() {
-        return entityManager.createNamedQuery("Sandwich.findAll", Shipment.class)
+        return entityManager.createNamedQuery("Shipment.findAll", Shipment.class)
                 .setHint("javax.persistence.cache.storeMode", CacheStoreMode.REFRESH)
                 .getResultList();
     }

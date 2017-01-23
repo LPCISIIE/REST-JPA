@@ -34,9 +34,7 @@ public class OrderRepresentation {
     @GET
     public Response getAll(@Context UriInfo uriInfo){
         List<Shipment> list = orderResource.findAll();
-        System.out.println('a');
         list.stream().forEach(Commande -> {
-            System.out.println('s');
             List<Sandwich> sandwiches = Commande.getSandwiches();
             Commande.addLink(this.getUriForSelfShipment(uriInfo,Commande),"self");
             for (Sandwich sandwich : sandwiches) {

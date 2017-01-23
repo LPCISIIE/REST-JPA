@@ -17,7 +17,7 @@ import java.util.List;
 @Entity
 @XmlRootElement
 @NamedQueries({
-        @NamedQuery(name = "Commande.findAll", query = "SELECT o FROM Shipment o")
+        @NamedQuery(name = "Shipment.findAll", query = "SELECT s FROM Shipment s")
 })
 public class Shipment implements Serializable {
 // NOT ORDER because JAVA is so stupid it makes a SQL error with the name Order ... thanks Oracle
