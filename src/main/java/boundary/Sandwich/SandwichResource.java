@@ -101,7 +101,7 @@ public class SandwichResource {
     }
 
      /**
-      * Method that updates an sandwich
+      * Method that updates a sandwich
       * @param sandwich to update
       * @return the new sandwich
       */
