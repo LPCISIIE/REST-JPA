@@ -29,7 +29,7 @@ public class SandwichRepresentation {
             sandwich.addLink(this.getUriForSelfSandwich(uriInfo,sandwich),"self");
             for (Ingredient ingredient : ingredientsList) {
                 ingredient.getLinks().clear();
-                ingredient.addLink(this.getUriForSelfIngredient(uriInfo,ingredient,sandwich), "self");
+                ingredient.addLink(this.getUriForSelfIngredient(uriInfo,ingredient), "self");
             }
             sandwich.setIngredientsList(ingredientsList);
         });
@@ -51,7 +51,7 @@ public class SandwichRepresentation {
 
         for (Ingredient ingredient : ingredientsList) {
             ingredient.getLinks().clear();
-            ingredient.addLink(this.getUriForSelfIngredient(uriInfo,ingredient,sandwich), "self");
+            ingredient.addLink(this.getUriForSelfIngredient(uriInfo,ingredient), "self");
         }
 
         sandwich.setIngredientsList(ingredientsList);
@@ -156,7 +156,7 @@ public class SandwichRepresentation {
                 .toString();
     }
 
-    private String getUriForSelfIngredient(UriInfo uriInfo, Ingredient ingredient, Sandwich sandwich) {
+    private String getUriForSelfIngredient(UriInfo uriInfo, Ingredient ingredient) {
         return uriInfo.getBaseUriBuilder()
                 .path(IngredientRepresentation.class)
                 .path("id/" + ingredient.getId())
@@ -164,7 +164,7 @@ public class SandwichRepresentation {
                 .toString();
     }
 
-    private String getUriForIngredient(UriInfo uriInfo, Sandwich sandwich) {
+    private String getUriForIngredient(UriInfo uriInfo) {
         return uriInfo.getBaseUriBuilder()
                 .path(IngredientRepresentation.class)
                 .build()
