@@ -28,8 +28,8 @@ public class Order implements Serializable {
     final static String ORDER_DELIVERED = "Order delivered";
 
     private Date dateTime;
-
     private String status;
+    private double price;
 
     @Id
     private String id;
@@ -46,13 +46,22 @@ public class Order implements Serializable {
     @Transient
     private List<Link> links = new ArrayList<>();
 
-    public Order(){}
+    public Order(){
+        this.price = 0;
+    }
 
     public Order(Account customer, Date dateTime, List<Sandwich> sandwiches) {
+        this.price = 0;
         this.customer = customer;
         this.dateTime = dateTime;
         this.sandwiches = sandwiches;
         this.status = ORDER_CREATED;
+
+        if (!sandwiches.isEmpty()) {
+            for (Sandwich sandwich : sandwiches) {
+                this.price += sandwich.getPrice();
+            }
+        }
     }
 
     /**
@@ -61,6 +70,7 @@ public class Order implements Serializable {
      */
     public void addSandwich(Sandwich sandwich) {
         sandwiches.add(sandwich);
+        price+= sandwich.getPrice();
     }
 
     /**
@@ -72,6 +82,7 @@ public class Order implements Serializable {
         for (Sandwich sandwich : sandwiches) {
             if (sandwich.getId().equals(id)) {
                 sandwiches.remove(sandwich);
+                price-= sandwich.getPrice();
                 return true;
             }
         }
@@ -141,5 +152,13 @@ public class Order implements Serializable {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
     }
 }
