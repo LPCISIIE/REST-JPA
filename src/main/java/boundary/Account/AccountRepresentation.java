@@ -33,7 +33,6 @@ public class AccountRepresentation {
     }
 
     @GET
-    @Path("/all")
     @Secured({AccountRole.ADMIN})
     public Response getAll(){
         GenericEntity<List<Account>> list = new GenericEntity<List<Account>>(accountResource.findAll()){};
