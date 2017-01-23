@@ -21,10 +21,21 @@ public class AccountRepresentation {
     @EJB
     AccountResource accountResource;
 
+
+    @GET
+    @Path("/email/{email}")
+    public Response get(@PathParam("email") String email) {
+        Account account = accountResource.findByEmail(email);
+        if (account != null)
+            return Response.ok(account, MediaType.APPLICATION_JSON).build();
+        else
+            return Response.status(Response.Status.NOT_FOUND).build();
+    }
+
     @GET
     @Path("/all")
     @Secured({AccountRole.ADMIN})
-    public Response getAllAccounts(){
+    public Response getAll(){
         GenericEntity<List<Account>> list = new GenericEntity<List<Account>>(accountResource.findAll()){};
         return Response.ok(list, MediaType.APPLICATION_JSON).build();
     }
