@@ -1,11 +1,13 @@
 package entity;
 
+
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -15,9 +17,10 @@ import java.util.List;
 @Entity
 @XmlRootElement
 @NamedQueries({
-        @NamedQuery(name = "Order.findAll", query = "SELECT o FROM Order o")
+        @NamedQuery(name = "Commande.findAll", query = "SELECT o FROM Shipment o")
 })
-public class Order implements Serializable {
+public class Shipment implements Serializable {
+// NOT ORDER because JAVA is so stupid it makes a SQL error with the name Order ... thanks Oracle
 
     private static final long serialVersionUID = 1L;
 
@@ -46,11 +49,11 @@ public class Order implements Serializable {
     @Transient
     private List<Link> links = new ArrayList<>();
 
-    public Order(){
+    public Shipment(){
         this.price = 0;
     }
 
-    public Order(Account customer, Date dateTime, List<Sandwich> sandwiches) {
+    public Shipment(Account customer, Date dateTime, List<Sandwich> sandwiches) {
         this.price = 0;
         this.customer = customer;
         this.dateTime = dateTime;
@@ -102,7 +105,6 @@ public class Order implements Serializable {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
         return date;
     }
 

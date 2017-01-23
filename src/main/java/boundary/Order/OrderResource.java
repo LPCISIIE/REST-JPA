@@ -1,9 +1,10 @@
 package boundary.Order;
 
 import entity.Account;
-import entity.Order;
+import entity.Shipment;
 import entity.Sandwich;
 
+import javax.ejb.Stateless;
 import javax.persistence.CacheStoreMode;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -11,7 +12,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+@Stateless
 public class OrderResource {
+
     @PersistenceContext
     EntityManager entityManager;
 
@@ -20,26 +23,23 @@ public class OrderResource {
      * @param id
      * @return Order
      */
-    public Order findById(String id) {
-        return entityManager.find(Order.class, id);
+    public Shipment findById(String id) {
+        return entityManager.find(Shipment.class, id);
     }
 
     /**
      * Method that returns all the orders
      * @return List of Order
      */
-    public List<Order> findAll() {
-        return entityManager.createNamedQuery("Sandwich.findAll", Order.class)
+    public List<Shipment> findAll() {
+        return entityManager.createNamedQuery("Sandwich.findAll", Shipment.class)
                 .setHint("javax.persistence.cache.storeMode", CacheStoreMode.REFRESH)
                 .getResultList();
     }
 
-    public Order insert(String accountId, String dateTime, String ...sandwichesId) {
-        Account account = entityManager.find(Account.class, accountId);
-        if (account == null)
-            return null;
+    public Shipment insert(Account account, String dateTime, String ...sandwichesId) {
 
-        Order order = new Order();
+        Shipment order = new Shipment();
         order.setCustomer(account);
         Date date = order.toDate(dateTime);
 
@@ -67,7 +67,7 @@ public class OrderResource {
      * @param order to update
      * @return the new order
      */
-    public Order update(Order order) {
+    public Shipment update(Shipment order) {
         return entityManager.merge(order);
     }
 
@@ -77,7 +77,7 @@ public class OrderResource {
      * @return if it's deleted
      */
     public boolean delete(String orderId) {
-        Order order = entityManager.find(Order.class, orderId);
+        Shipment order = entityManager.find(Shipment.class, orderId);
 
         if (order != null) {
             entityManager.remove(order);
