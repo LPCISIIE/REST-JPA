@@ -1,12 +1,21 @@
 package boundary.Account;
 
+import control.KeyGenerator;
 import entity.Account;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
 
 import javax.ejb.DuplicateKeyException;
 import javax.ejb.Stateless;
 import javax.persistence.CacheStoreMode;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.ws.rs.NotAuthorizedException;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.core.HttpHeaders;
+import java.io.IOException;
+import java.security.Key;
 import java.util.List;
 import java.util.UUID;
 
@@ -47,6 +56,23 @@ public class AccountResource {
         }catch (Exception e){
             throw new DuplicateKeyException();
         }
+    }
+
+    /**
+     * Method that gives you an account for an authenticate header given
+     * You MUST use @Secured before to call this method
+     * @param requestContext
+     * @return the account or null if it doesn't exist
+     */
+    public Account findByToken(ContainerRequestContext requestContext) {
+        String authHeader = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
+
+        String token = authHeader.substring("Bearer".length()).trim();
+        Key key = new KeyGenerator().generateKey();
+
+        Jws<Claims> jwts = Jwts.parser().setSigningKey(key).parseClaimsJws(token);
+
+        return findByEmail(jwts.getBody().getSubject());
     }
 
 }
