@@ -75,6 +75,5 @@ public class AuthorizationFilter implements ContainerRequestFilter {
         if (!allowedRoles.contains(accountLogged.getRole())) {
             throw new ForbiddenException(accountLogged.getRole()+ " is not allowed to do this action");
         }
-
     }
 }
