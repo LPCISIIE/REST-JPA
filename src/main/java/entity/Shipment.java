@@ -145,7 +145,7 @@ public class Shipment implements Serializable {
     }
 
     public void setSandwiches(List<Sandwich> sandwiches) {
-        this.sandwiches = sandwiches;
+        this.sandwiches = new ArrayList<>(sandwiches);
     }
 
     public String getStatus() {
