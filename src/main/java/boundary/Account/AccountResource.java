@@ -58,21 +58,4 @@ public class AccountResource {
         }
     }
 
-    /**
-     * Method that gives you an account for an authenticate header given
-     * You MUST use @Secured before to call this method
-     * @param requestContext
-     * @return the account or null if it doesn't exist
-     */
-    public Account findByToken(ContainerRequestContext requestContext) {
-        String authHeader = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
-
-        String token = authHeader.substring("Bearer".length()).trim();
-        Key key = new KeyGenerator().generateKey();
-
-        Jws<Claims> jwts = Jwts.parser().setSigningKey(key).parseClaimsJws(token);
-
-        return findByEmail(jwts.getBody().getSubject());
-    }
-
 }
