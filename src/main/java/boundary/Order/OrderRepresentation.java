@@ -1,22 +1,24 @@
 package boundary.Order;
 
 import boundary.Account.AccountRepresentation;
+import boundary.Account.AccountResource;
 import boundary.Sandwich.SandwichRepresentation;
 import entity.Account;
 import entity.AccountRole;
-import entity.Order;
+import entity.Shipment;
 import entity.Sandwich;
 import provider.Secured;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
+import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.*;
 import java.util.List;
 
+
 @Path("/orders")
+
 @Produces(MediaType.APPLICATION_JSON)
 @Stateless
 public class OrderRepresentation {
@@ -24,36 +26,59 @@ public class OrderRepresentation {
     @EJB
     OrderResource orderResource;
 
-    @GET
-    @Path("/all")
-    //@Secured({AccountRole.ADMIN})
-    public Response getAll(@Context UriInfo uriInfo){
-        List<Order> list = orderResource.findAll();
+    @EJB
+    AccountResource accountResource;
 
-        list.stream().forEach(order -> {
-             List<Sandwich> sandwiches = order.getSandwiches();
-             order.addLink(this.getUriForSelfOrder(uriInfo,order),"self");
-             for (Sandwich sandwich : sandwiches) {
-                 sandwich.getLinks().clear();
-                 sandwich.addLink(this.getUriForSelfSandwich(uriInfo,sandwich), "self");
-             }
-             order.setSandwiches(sandwiches);
+
+    //@Secured({AccountRole.ADMIN})
+    @GET
+    public Response getAll(@Context UriInfo uriInfo){
+        List<Shipment> list = orderResource.findAll();
+        System.out.println('a');
+        list.stream().forEach(Commande -> {
+            System.out.println('s');
+            List<Sandwich> sandwiches = Commande.getSandwiches();
+            Commande.addLink(this.getUriForSelfShipment(uriInfo,Commande),"self");
+            for (Sandwich sandwich : sandwiches) {
+                sandwich.getLinks().clear();
+                sandwich.addLink(this.getUriForSelfSandwich(uriInfo,sandwich), "self");
+            }
+            Commande.setSandwiches(sandwiches);
         });
 
-        GenericEntity<List<Order>> listGenericEntity = new GenericEntity<List<Order>>(list) {};
+        GenericEntity<List<Shipment>> listGenericEntity = new GenericEntity<List<Shipment>>(list){};
         return Response.ok(listGenericEntity, MediaType.APPLICATION_JSON).build();
     }
 
+    @POST
+    @Path("/add")
+    @Secured({AccountRole.CUSTOMER})
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response add(UriInfo uriInfo, ContainerRequestContext requestContext, @FormParam("date") String dateTime, @FormParam("sandwichId") String sandwichId) {
+        Account account = accountResource.findByToken(requestContext);
 
-    private String getUriForSelfOrder(UriInfo uriInfo, Order order) {
+        if (account == null)
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+
+        Shipment Commande = orderResource.insert(account, dateTime, sandwichId);
+
+        if (Commande == null)
+            return Response.status(Response.Status.NOT_FOUND).build();
+
+        Commande.addLink(getUriForSelfShipment(uriInfo, Commande), "self");
+        return Response.ok(Commande, MediaType.APPLICATION_JSON).build();
+    }
+
+
+    private String getUriForSelfShipment(UriInfo uriInfo, Shipment Commande) {
         return uriInfo.getBaseUriBuilder()
-                .path(Order.class)
-                .path("id/" + order.getId())
+                .path(Shipment.class)
+                .path("id/" + Commande.getId())
                 .build()
                 .toString();
     }
 
-    private String getUriForOrder(UriInfo uriInfo) {
+    private String getUriForShipment(UriInfo uriInfo) {
         return uriInfo.getBaseUriBuilder()
                 .path(OrderRepresentation.class)
                 .build()
