@@ -98,7 +98,6 @@ public class OrderResource {
 
         sandwich.setSize(size);
         sandwichResource.update(sandwich);
-        System.out.println(sandwich.getSize());
         return entityManager.merge(order);
     }
 
