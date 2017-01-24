@@ -33,7 +33,7 @@ public class OrderRepresentation {
     @EJB
     AccountResource accountResource;
 
-    //@Secured({AccountRole.ADMIN})
+    @Secured({AccountRole.ADMIN})
     @GET
     public Response getAll(){
         List<Shipment> list = orderResource.findAll();
@@ -58,21 +58,54 @@ public class OrderRepresentation {
 
     @GET
     @Path("/{id}")
-    public Response add(@PathParam("id") String id) {
+    public Response get(@PathParam("id") String id) {
+        Shipment order = orderResource.findById(id);
+
+        if (order == null)
+            return Response.status(Response.Status.NOT_FOUND).build();
+
+        List<Sandwich> sandwiches = order.getSandwiches();
+        order.addLink(this.getUriForSelfShipment(uriInfo,order),"self");
+        for (Sandwich sandwich : sandwiches) {
+            sandwich.getLinks().clear();
+            sandwich.addLink(this.getUriForSelfSandwich(uriInfo,sandwich), "self");
+            for (Ingredient ingredient : sandwich.getIngredientsList()) {
+                ingredient.getLinks().clear();
+                ingredient.addLink(this.getUriForSelfIngredient(uriInfo,ingredient), "self");
+            }
+        }
+
+        order.setSandwiches(sandwiches);
+
+        return Response.ok(order, MediaType.APPLICATION_JSON).build();
+    }
+
+    @PUT
+    @Path("/{id}")
+    @Secured({AccountRole.CUSTOMER})
+    public Response update(@Context SecurityContext securityContext, @PathParam("id") String id,@FormParam("sandwichId") String sandwichId, @FormParam("size") String size ) {
+        Account account = accountResource.findByEmail(securityContext.getUserPrincipal().getName());
+
+        if (account == null)
+            return Response.status(Response.Status.UNAUTHORIZED).build();
 
         Shipment shipment = orderResource.findById(id);
 
-        if (shipment == null)
+        if (sandwichId == null || size == null || shipment == null)
             return Response.status(Response.Status.NOT_FOUND).build();
 
+        if (!shipment.getCustomer().equals(account))
+            return Response.status(Response.Status.UNAUTHORIZED).build();
 
-        return Response.ok(shipment, MediaType.APPLICATION_JSON).build();
+        if (orderResource.updateSize(shipment,sandwichId,size) != null)
+            return Response.ok().build();
+
+        return Response.status(Response.Status.NOT_FOUND).build();
     }
 
     @POST
     @Secured({AccountRole.CUSTOMER})
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Path("/add")
     public Response add(@Context SecurityContext securityContext, @FormParam("dateTime") String dateTime, @FormParam("sandwichId") String sandwichId) {
         Account account = accountResource.findByEmail(securityContext.getUserPrincipal().getName());
 
@@ -88,7 +121,6 @@ public class OrderRepresentation {
         return Response.ok(shipment, MediaType.APPLICATION_JSON).build();
 
     }
-
 
     private String getUriForSelfShipment(UriInfo uriInfo, Shipment Commande) {
         return uriInfo.getBaseUriBuilder()
