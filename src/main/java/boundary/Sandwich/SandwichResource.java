@@ -53,12 +53,12 @@ public class SandwichResource {
                 return null;
         }
 
+        if (!sandwich.validate())
+            return null;
+
         sandwich.calculatePrice();
-
-        if (sandwich.validate())
-            return entityManager.merge(sandwich);
-
-        return null;
+        sandwich.setId(UUID.randomUUID().toString());
+        return entityManager.merge(sandwich);
     }
 
     /**
@@ -101,7 +101,7 @@ public class SandwichResource {
     }
 
      /**
-      * Method that updates an sandwich
+      * Method that updates a sandwich
       * @param sandwich to update
       * @return the new sandwich
       */

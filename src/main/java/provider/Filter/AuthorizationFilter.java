@@ -48,7 +48,10 @@ public class AuthorizationFilter implements ContainerRequestFilter {
                 checkPermissions(methodRoles);
 
         } catch (Exception e) {
-            requestContext.abortWith( Response.status(Response.Status.FORBIDDEN).build() );
+            requestContext.abortWith( Response.status(Response.Status.FORBIDDEN)
+                    .type("text/plain")
+                    .entity("You are not allowed to do this !")
+                    .build() );
         }
     }
 
@@ -72,6 +75,5 @@ public class AuthorizationFilter implements ContainerRequestFilter {
         if (!allowedRoles.contains(accountLogged.getRole())) {
             throw new ForbiddenException(accountLogged.getRole()+ " is not allowed to do this action");
         }
-
     }
 }

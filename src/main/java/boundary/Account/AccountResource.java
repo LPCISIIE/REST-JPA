@@ -1,12 +1,21 @@
 package boundary.Account;
 
+import control.KeyGenerator;
 import entity.Account;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
 
 import javax.ejb.DuplicateKeyException;
 import javax.ejb.Stateless;
 import javax.persistence.CacheStoreMode;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.ws.rs.NotAuthorizedException;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.core.HttpHeaders;
+import java.io.IOException;
+import java.security.Key;
 import java.util.List;
 import java.util.UUID;
 

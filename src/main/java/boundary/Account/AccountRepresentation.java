@@ -13,7 +13,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
-@Path("/account")
+@Path("/accounts")
 @Stateless
 @Produces(MediaType.APPLICATION_JSON)
 public class AccountRepresentation {
@@ -21,10 +21,20 @@ public class AccountRepresentation {
     @EJB
     AccountResource accountResource;
 
+
     @GET
-    @Path("/all")
+    @Path("/email/{email}")
+    public Response get(@PathParam("email") String email) {
+        Account account = accountResource.findByEmail(email);
+        if (account != null)
+            return Response.ok(account, MediaType.APPLICATION_JSON).build();
+        else
+            return Response.status(Response.Status.NOT_FOUND).build();
+    }
+
+    @GET
     @Secured({AccountRole.ADMIN})
-    public Response getAllAccounts(){
+    public Response getAll(){
         GenericEntity<List<Account>> list = new GenericEntity<List<Account>>(accountResource.findAll()){};
         return Response.ok(list, MediaType.APPLICATION_JSON).build();
     }
