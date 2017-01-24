@@ -25,7 +25,7 @@ public class Shipment implements Serializable {
     private static final long serialVersionUID = 1L;
 
     final static String ORDER_CREATED = "Created";
-    final static String ORDER_PAYED = "Payed";
+    final static String ORDER_PAYED = "Paid";
     final static String ORDER_IN_PROCESS = "In process";
     final static String ORDER_READY = "Available for pickup";
     final static String ORDER_DELIVERED = "Order delivered";
@@ -110,6 +110,16 @@ public class Shipment implements Serializable {
         else if(etat.equals(Shipment.ORDER_READY)) {
             this.status = Shipment.ORDER_READY;
         }
+    }
+    
+    public double getHighestOrderSandwich() {
+        double price = 0.0;
+        for(int i=0;i<this.sandwiches.size();i++) {
+            if(this.sandwiches.get(i).getPrice() > price) {
+                price = this.sandwiches.get(i).getPrice();
+            }
+        }
+        return price;
     }
 
     /**
