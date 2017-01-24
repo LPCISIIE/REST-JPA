@@ -24,11 +24,11 @@ public class Shipment implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public final static String ORDER_CREATED = "Created";
-    public final static String ORDER_PAYED = "Payed";
-    public final static String ORDER_IN_PROCESS = "In process";
-    public final static String ORDER_READY = "Available for pickup";
-    public final static String ORDER_DELIVERED = "Order delivered";
+    final static String ORDER_CREATED = "Created";
+    final static String ORDER_PAYED = "Paid";
+    final static String ORDER_IN_PROCESS = "In process";
+    final static String ORDER_READY = "Available for pickup";
+    final static String ORDER_DELIVERED = "Order delivered";
 
     private Date dateTime;
     private String status;
@@ -91,6 +91,26 @@ public class Shipment implements Serializable {
             }
         }
         return false;
+    }
+    
+    //m�thode pour modifier l'�tat de la commande, prend en param�tre l'�tat auquel on
+    //veut la mettre
+    public boolean changeState(String etat) {
+        if(this.isStatusOk(etat) == true) {
+            this.status = etat;
+            return true;
+        }
+        return false;
+    }
+    
+    public double getHighestOrderSandwich() {
+        double price = 0.0;
+        for(int i=0;i<this.sandwiches.size();i++) {
+            if(this.sandwiches.get(i).getPrice() > price) {
+                price = this.sandwiches.get(i).getPrice();
+            }
+        }
+        return price;
     }
 
     /**
