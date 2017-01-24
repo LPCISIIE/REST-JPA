@@ -51,14 +51,12 @@ public class OrderResource {
         if (date == null)
             return null;
 
-
         order.setDateTime(date);
 
         Sandwich sandwich;
 
         for (String id : sandwichesId) {
            sandwich = sandwichResource.findById(id);
-
 
             if (sandwich == null) {
                 return null;
@@ -78,13 +76,42 @@ public class OrderResource {
     /**
      * Method that updates an Order
      * @param order to update
+     * @param state of the order
      * @return the new order
      */
+
     public Shipment update(Shipment order, String state) {
         if(order.changeState(state)) {
             return entityManager.merge(order);
         }
-        return null;
+    }
+  
+    /**
+     * Method that updates an Order
+     * @param order to update
+     * @return the new order
+     */    
+    public Shipment update(Shipment order) {
+
+        return entityManager.merge(order);
+    }
+
+    /**
+     * Method that updates the size of a Sandwich
+     * @param order to update
+     * @param sandwichId to update
+     * @param size new size
+     * @return the new order
+     */
+    public Shipment updateSize(Shipment order, String sandwichId, String size) {
+        Sandwich sandwich = sandwichResource.findById(sandwichId);
+
+        if (sandwich == null || !Sandwich.isSizeOk(size) || order.getStatus() != Shipment.ORDER_CREATED)
+            return null;
+
+        sandwich.setSize(size);
+        sandwichResource.update(sandwich);
+        return entityManager.merge(order);
     }
 
     /**

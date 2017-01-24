@@ -51,6 +51,7 @@ public class Shipment implements Serializable {
 
     public Shipment(){
         this.price = 0;
+        this.status = ORDER_CREATED;
     }
 
     public Shipment(Account customer, Date dateTime, List<Sandwich> sandwiches) {
@@ -92,7 +93,7 @@ public class Shipment implements Serializable {
         return false;
     }
     
-    //méthode pour modifier l'état de la commande, prend en paramètre l'état auquel on
+    //mï¿½thode pour modifier l'ï¿½tat de la commande, prend en paramï¿½tre l'ï¿½tat auquel on
     //veut la mettre
     public boolean changeState(String etat) {
         if(this.isStatusOk(etat) == true) {
@@ -126,6 +127,17 @@ public class Shipment implements Serializable {
             e.printStackTrace();
         }
         return date;
+    }
+
+    /**
+     * Helper function to know if the status given exists
+     * @param status of the order
+     * @return if it exists
+     */
+    public static boolean isStatusOk(String status) {
+        return status.equals(ORDER_CREATED) || status.equals(ORDER_PAYED) ||
+               status.equals(ORDER_IN_PROCESS) || status.equals(ORDER_READY) ||
+               status.equals(ORDER_DELIVERED);
     }
 
     public void addLink(String uri, String rel) {
