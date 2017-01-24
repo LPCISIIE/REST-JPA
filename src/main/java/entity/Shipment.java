@@ -24,11 +24,11 @@ public class Shipment implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    final static String ORDER_CREATED = "Created";
-    final static String ORDER_PAYED = "Payed";
-    final static String ORDER_IN_PROCESS = "In process";
-    final static String ORDER_READY = "Available for pickup";
-    final static String ORDER_DELIVERED = "Order delivered";
+    public final static String ORDER_CREATED = "Created";
+    public final static String ORDER_PAYED = "Payed";
+    public final static String ORDER_IN_PROCESS = "In process";
+    public final static String ORDER_READY = "Available for pickup";
+    public final static String ORDER_DELIVERED = "Order delivered";
 
     private Date dateTime;
     private String status;
