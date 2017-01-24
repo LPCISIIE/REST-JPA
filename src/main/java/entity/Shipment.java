@@ -24,11 +24,11 @@ public class Shipment implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    final static String ORDER_CREATED = "Created";
-    final static String ORDER_PAYED = "Payed";
-    final static String ORDER_IN_PROCESS = "In process";
-    final static String ORDER_READY = "Available for pickup";
-    final static String ORDER_DELIVERED = "Order delivered";
+    public final static String ORDER_CREATED = "Created";
+    public final static String ORDER_PAYED = "Payed";
+    public final static String ORDER_IN_PROCESS = "In process";
+    public final static String ORDER_READY = "Available for pickup";
+    public final static String ORDER_DELIVERED = "Order delivered";
 
     private Date dateTime;
     private String status;
@@ -51,6 +51,7 @@ public class Shipment implements Serializable {
 
     public Shipment(){
         this.price = 0;
+        this.status = ORDER_CREATED;
     }
 
     public Shipment(Account customer, Date dateTime, List<Sandwich> sandwiches) {
@@ -106,6 +107,17 @@ public class Shipment implements Serializable {
             e.printStackTrace();
         }
         return date;
+    }
+
+    /**
+     * Helper function to know if the status given exists
+     * @param status of the order
+     * @return if it exists
+     */
+    public static boolean isStatusOk(String status) {
+        return status.equals(ORDER_CREATED) || status.equals(ORDER_PAYED) ||
+               status.equals(ORDER_IN_PROCESS) || status.equals(ORDER_READY) ||
+               status.equals(ORDER_DELIVERED);
     }
 
     public void addLink(String uri, String rel) {
