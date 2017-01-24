@@ -92,8 +92,9 @@ public class OrderRepresentation {
         }
         
         //on met la commande en paid
-        shipment.changeState("Paid");
-        orderResource.update(shipment);
+        if(orderResource.update(shipment, "Paid") == null)
+            return Response.status(Response.Status.NOT_FOUND).build();
+        
         return Response.ok(shipment, MediaType.APPLICATION_JSON).build();
     }
     
@@ -113,14 +114,14 @@ public class OrderRepresentation {
     @Path("/modify")
     @Secured({AccountRole.ADMIN})
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response modifyOrderState(@Context SecurityContext securityContext, @FormParam("orderId") String orderId, @FormParam("etat") String orderState) {
+    public Response modifyOrderState(@Context SecurityContext securityContext, @FormParam("orderId") String orderId, @FormParam("state") String orderState) {
         Shipment shipment = orderResource.findById(orderId);
         
         if(shipment == null)
             return Response.status(Response.Status.UNAUTHORIZED).build();
         
-        shipment.changeState(orderState);
-        orderResource.update(shipment);
+        if(orderResource.update(shipment,orderState) == null) 
+            return Response.status(Response.Status.NOT_FOUND).build();
         
         return Response.ok(shipment, MediaType.APPLICATION_JSON).build();
     }

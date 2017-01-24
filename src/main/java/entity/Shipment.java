@@ -94,22 +94,12 @@ public class Shipment implements Serializable {
     
     //méthode pour modifier l'état de la commande, prend en paramètre l'état auquel on
     //veut la mettre
-    public void changeState(String etat) {
-        if(etat.equals(Shipment.ORDER_CREATED)) {
-            this.status = Shipment.ORDER_CREATED;
+    public boolean changeState(String etat) {
+        if(this.isStatusOk(etat) == true) {
+            this.status = etat;
+            return true;
         }
-        else if(etat.equals(Shipment.ORDER_DELIVERED)) {
-            this.status = Shipment.ORDER_DELIVERED;
-        }
-        else if(etat.equals(Shipment.ORDER_IN_PROCESS)) {
-            this.status = Shipment.ORDER_IN_PROCESS;
-        }
-        else if(etat.equals(Shipment.ORDER_PAYED)) {
-            this.status = Shipment.ORDER_PAYED;
-        }
-        else if(etat.equals(Shipment.ORDER_READY)) {
-            this.status = Shipment.ORDER_READY;
-        }
+        return false;
     }
     
     public double getHighestOrderSandwich() {
