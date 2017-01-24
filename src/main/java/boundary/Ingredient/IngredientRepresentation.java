@@ -1,5 +1,6 @@
 package boundary.Ingredient;
 
+import boundary.Category.CategoryRepresentation;
 import boundary.Category.CategoryResource;
 import boundary.Sandwich.SandwichResource;
 import control.DatabaseSeeder;
@@ -10,9 +11,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
 import javax.ws.rs.container.PreMatching;
-import javax.ws.rs.core.GenericEntity;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.*;
 import java.util.List;
 
 @Path("/catalog")
@@ -30,12 +29,18 @@ public class IngredientRepresentation {
 
     @EJB
     SandwichResource sandwichResource;
-
-
+    
     @GET
-    public Response getIngredients() {
+    public Response getIngredients(@Context UriInfo uriInfo) {
         DatabaseSeeder.feedCatalog(ingredientResource,categoryResource, sandwichResource);
-        GenericEntity<List<Ingredient>> list = new GenericEntity<List<Ingredient>>(ingredientResource.findAll()){};
+        List<Ingredient> ingredients = ingredientResource.findAll();
+
+        ingredients.stream().forEach(ingredient -> {
+            ingredient.getLinks().clear();
+            ingredient.addLink(this.getUriForSelfCategory(uriInfo,ingredient.getCategory()),"category");
+        });
+
+        GenericEntity<List<Ingredient>> list = new GenericEntity<List<Ingredient>>(ingredients){};
         return Response.ok(list, MediaType.APPLICATION_JSON).build();
     }
 
@@ -142,6 +147,12 @@ public class IngredientRepresentation {
         return Response.ok().build();
     }
 
-
+    private String getUriForSelfCategory(UriInfo uriInfo, Category category) {
+        return uriInfo.getBaseUriBuilder()
+                .path(CategoryRepresentation.class)
+                .path("id/" + category.getId())
+                .build()
+                .toString();
+    }
 
 }
