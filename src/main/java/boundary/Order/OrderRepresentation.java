@@ -68,9 +68,25 @@ public class OrderRepresentation {
 
         return Response.ok(shipment, MediaType.APPLICATION_JSON).build();
     }
+    
+    @PUT
+    @Path("/modify")
+    @Secured({AccountRole.ADMIN})
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response modifyOrderState(@Context SecurityContext securityContext, @FormParam("orderId") String orderId, @FormParam("etat") String orderState) {
+        Shipment shipment = orderResource.findById(orderId);
+        
+        if(shipment == null)
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        
+        shipment.changeState(orderState);
+        orderResource.update(shipment);
+        
+        return Response.ok(shipment, MediaType.APPLICATION_JSON).build();
+    }
 
     @POST
-    @Secured({AccountRole.CUSTOMER})
+    @Secured({AccountRole.CUSTOMER, AccountRole.ADMIN})
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("/add")
     public Response add(@Context SecurityContext securityContext, @FormParam("dateTime") String dateTime, @FormParam("sandwichId") String sandwichId) {
