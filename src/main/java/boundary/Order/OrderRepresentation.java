@@ -125,7 +125,6 @@ public class OrderRepresentation {
         if (!account.getRole().equals(AccountRole.ADMIN) && !account.getEmail().equals(shipment.getCustomer().getEmail()) )
             return Response.status(Response.Status.UNAUTHORIZED).build();
 
-        System.out.println("test");
         if (orderResource.updateDate(shipment,date) == null)
             return Response.status(Response.Status.NOT_FOUND)
                     .type("text/plain")
@@ -198,16 +197,16 @@ public class OrderRepresentation {
         if(shipment == null)
             return Response.status(Response.Status.NOT_FOUND).build();
         
-        //gérer le cas ou le client possède la carte fidélité
+        //gï¿½rer le cas ou le client possï¿½de la carte fidï¿½litï¿½
         //on utilise le string fidelite, qui faut soit oui ou non, si oui
-        //et montant fidelite supérieur à 30 points, le sandwich le plus cher est gratuit
+        //et montant fidelite supï¿½rieur ï¿½ 30 points, le sandwich le plus cher est gratuit
         if(fidelite.equals("oui")) {
-            //il faudra ajouter la condition nécessitant 30 points dans la carte (placée face cachée)
+            //il faudra ajouter la condition nï¿½cessitant 30 points dans la carte (placï¿½e face cachï¿½e)
             shipment.setPrice(shipment.getPrice() - shipment.getHighestOrderSandwich());
         }
         else {
-            //on gagne un nombre de points égal à 50% du prix de la commande
-            //ex : si on paye une commande de 30€, on gagne 15 points
+            //on gagne un nombre de points ï¿½gal ï¿½ 50% du prix de la commande
+            //ex : si on paye une commande de 30ï¿½, on gagne 15 points
         }
         
         //on met la commande en paid
