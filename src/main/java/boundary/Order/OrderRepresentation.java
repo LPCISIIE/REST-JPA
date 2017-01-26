@@ -12,6 +12,7 @@ import javax.ejb.Stateless;
 import javax.ws.rs.*;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.*;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -80,9 +81,65 @@ public class OrderRepresentation {
         return Response.ok(order, MediaType.APPLICATION_JSON).build();
     }
 
+    @DELETE
+    @Path("/{id}")
+    @Secured({AccountRole.CUSTOMER, AccountRole.ADMIN})
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response delete(@Context SecurityContext securityContext, @FormParam("sandwichId") String sandwich, @PathParam("id") String id) {
+        Account account = accountResource.findByEmail(securityContext.getUserPrincipal().getName());
+
+        if (account == null)
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+
+        Shipment shipment = orderResource.findById(id);
+
+        if (shipment == null)
+            return Response.status(Response.Status.NOT_FOUND).build();
+
+        if (!account.getRole().equals(AccountRole.ADMIN) && !account.getEmail().equals(shipment.getCustomer().getEmail()) )
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+
+        boolean isDeleted = orderResource.delete(shipment);
+
+        if (isDeleted)
+            return Response.ok().build();
+
+        return Response.status(Response.Status.NOT_FOUND).build();
+    }
+
+    @POST
+    @Path("/remove_sandwich")
+    @Secured({AccountRole.CUSTOMER, AccountRole.ADMIN})
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response removeSandwich(@Context SecurityContext securityContext, @FormParam("sandwichId") String sandwich, @FormParam("orderId") String id) {
+        Account account = accountResource.findByEmail(securityContext.getUserPrincipal().getName());
+
+        if (account == null)
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+
+        Shipment shipment = orderResource.findById(id);
+
+        if (shipment == null)
+            return Response.status(Response.Status.NOT_FOUND).build();
+
+        if (!account.getRole().equals(AccountRole.ADMIN) && !account.getEmail().equals(shipment.getCustomer().getEmail()) )
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+
+       if (sandwich == null)
+           return Response.status(Response.Status.NOT_FOUND).build();
+
+        boolean isDeleted =  orderResource.removeSandwich(shipment,sandwich);
+
+        if (isDeleted)
+            return Response.ok().build();
+
+        return Response.status(Response.Status.NOT_FOUND).build();
+    }
+
     @PUT
     @Path("/{id}")
     @Secured({AccountRole.CUSTOMER})
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response update(@Context SecurityContext securityContext, @PathParam("id") String id,@FormParam("sandwichId") String sandwichId, @FormParam("size") String size ) {
         Account account = accountResource.findByEmail(securityContext.getUserPrincipal().getName());
 
@@ -106,20 +163,67 @@ public class OrderRepresentation {
     @POST
     @Secured({AccountRole.CUSTOMER})
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response add(@Context SecurityContext securityContext, @FormParam("dateTime") String dateTime, @FormParam("sandwichId") String sandwichId) {
+    public Response add(
+            @Context SecurityContext securityContext,
+            @FormParam("dateTime") String dateTime,
+            @FormParam("sandwichId") String sandwichId,
+            @FormParam("sandwichId2") String sandwichId2,
+            @FormParam("sandwichId3") String sandwichId3,
+            @FormParam("sandwichId4") String sandwichId4
+    ) {
         Account account = accountResource.findByEmail(securityContext.getUserPrincipal().getName());
 
         if (account == null)
             return Response.status(Response.Status.UNAUTHORIZED).build();
 
-        Shipment shipment = orderResource.insert(account, dateTime, sandwichId);
+        Boolean isEmpty = (sandwichId == null && sandwichId2 == null && sandwichId3 == null && sandwichId4 == null );
+
+        if (isEmpty)
+            return Response.status(Response.Status.NOT_FOUND).build();
+
+        ArrayList<String> sandwiches = new ArrayList<>();
+
+        sandwiches.add(sandwichId);
+        if (sandwichId2 != null)
+            sandwiches.add(sandwichId2);
+        if (sandwichId3 != null)
+            sandwiches.add(sandwichId3);
+        if (sandwichId4 != null)
+            sandwiches.add(sandwichId4);
+
+        Shipment shipment = orderResource.insert(account, dateTime, sandwiches);
 
         if (shipment == null)
             return Response.status(Response.Status.NOT_FOUND).build();
 
         shipment.addLink(getUriForSelfShipment(uriInfo, shipment), "self");
         return Response.ok(shipment, MediaType.APPLICATION_JSON).build();
+    }
 
+    @POST
+    @Secured({AccountRole.ADMIN, AccountRole.CUSTOMER})
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Path("/add_sandwich")
+    public Response addSandwich(@Context SecurityContext securityContext, @FormParam("orderId") String id, @FormParam("sandwichId") String sandwichId) {
+        Account account = accountResource.findByEmail(securityContext.getUserPrincipal().getName());
+
+        if (account == null)
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+
+        Shipment shipment = orderResource.findById(id);
+
+        if (shipment == null)
+            return Response.status(Response.Status.NOT_FOUND).build();
+
+        if (!account.getEmail().equals(shipment.getCustomer().getEmail()) )
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+
+        if (orderResource.addSandwich(shipment, sandwichId) == null)
+            return Response.status(Response.Status.NOT_FOUND).build();
+
+        shipment.getLinks().clear();
+        shipment.addLink(getUriForSelfShipment(uriInfo, shipment), "self");
+        return Response.ok(shipment, MediaType.APPLICATION_JSON).build();
     }
 
     private String getUriForSelfShipment(UriInfo uriInfo, Shipment Commande) {
