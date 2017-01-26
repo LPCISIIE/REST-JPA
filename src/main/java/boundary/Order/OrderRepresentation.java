@@ -187,9 +187,66 @@ public class OrderRepresentation {
 
         return Response.status(Response.Status.NOT_FOUND).build();
     }
+    
+    @PUT
+    @Path("/{id}/buy")
+    @Secured({AccountRole.CUSTOMER})
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response payOrder(@Context SecurityContext securityContext, @PathParam("id") String id, @PathParam("fidelite") String fidelite) {
+        Shipment shipment = orderResource.findById(id);
+        
+        if(shipment == null)
+            return Response.status(Response.Status.NOT_FOUND).build();
+        
+        //gérer le cas ou le client possède la carte fidélité
+        //on utilise le string fidelite, qui faut soit oui ou non, si oui
+        //et montant fidelite supérieur à 30 points, le sandwich le plus cher est gratuit
+        if(fidelite.equals("oui")) {
+            //il faudra ajouter la condition nécessitant 30 points dans la carte (placée face cachée)
+            shipment.setPrice(shipment.getPrice() - shipment.getHighestOrderSandwich());
+        }
+        else {
+            //on gagne un nombre de points égal à 50% du prix de la commande
+            //ex : si on paye une commande de 30€, on gagne 15 points
+        }
+        
+        //on met la commande en paid
+        if(orderResource.update(shipment, "Paid") == null)
+            return Response.status(Response.Status.NOT_FOUND).build();
+        
+        return Response.ok(shipment, MediaType.APPLICATION_JSON).build();
+    }
+    
+    @GET
+    @Path("/turnover")
+    @Secured({AccountRole.ADMIN})
+    public Response getTurnover(@Context SecurityContext securityContext) {
+        List<Shipment> list = orderResource.findAll();
+        double turnover = 0.0;
+        for(int i=0;i<list.size();i++) {
+            turnover += list.get(i).getPrice();
+        }
+        return Response.ok(turnover, MediaType.APPLICATION_JSON).build();
+    }
+    
+    @PUT
+    @Path("/modify")
+    @Secured({AccountRole.ADMIN})
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response modifyOrderState(@Context SecurityContext securityContext, @FormParam("orderId") String orderId, @FormParam("state") String orderState) {
+        Shipment shipment = orderResource.findById(orderId);
+        
+        if(shipment == null)
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        
+        if(orderResource.update(shipment,orderState) == null) 
+            return Response.status(Response.Status.NOT_FOUND).build();
+        
+        return Response.ok(shipment, MediaType.APPLICATION_JSON).build();
+    }
 
     @POST
-    @Secured({AccountRole.CUSTOMER})
+    @Secured({AccountRole.CUSTOMER, AccountRole.ADMIN})
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response add(
             @Context SecurityContext securityContext,

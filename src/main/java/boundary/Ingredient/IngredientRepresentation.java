@@ -120,9 +120,12 @@ public class IngredientRepresentation {
             @FormParam("price") double price,
             @FormParam("description") String description
     ) {
+
         Ingredient ingredient = new Ingredient(categoryResource.findById(categoryId),name,price,description);
 
         if (ingredientResource.insert(ingredient) == null)
+
+
             return Response.status(Response.Status.NOT_FOUND).build();
 
        return Response.ok().build();
