@@ -7,7 +7,6 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -25,7 +24,7 @@ public class Shipment implements Serializable {
     private static final long serialVersionUID = 1L;
 
     public final static String ORDER_CREATED = "Created";
-    public final static String ORDER_PAYED = "Payed";
+    public final static String ORDER_PAID = "Paid";
     public final static String ORDER_IN_PROCESS = "In process";
     public final static String ORDER_READY = "Available for pickup";
     public final static String ORDER_DELIVERED = "Order delivered";
@@ -115,7 +114,7 @@ public class Shipment implements Serializable {
      * @return if it exists
      */
     public static boolean isStatusOk(String status) {
-        return status.equals(ORDER_CREATED) || status.equals(ORDER_PAYED) ||
+        return status.equals(ORDER_CREATED) || status.equals(ORDER_PAID) ||
                status.equals(ORDER_IN_PROCESS) || status.equals(ORDER_READY) ||
                status.equals(ORDER_DELIVERED);
     }
