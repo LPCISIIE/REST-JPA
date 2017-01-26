@@ -107,6 +107,34 @@ public class OrderRepresentation {
         return Response.status(Response.Status.NOT_FOUND).build();
     }
 
+    @PUT
+    @Path("/edit_delivering")
+    @Secured({AccountRole.CUSTOMER, AccountRole.ADMIN})
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response editDate(@Context SecurityContext securityContext, @FormParam("date") String date, @FormParam("orderId") String id) {
+         Account account = accountResource.findByEmail(securityContext.getUserPrincipal().getName());
+
+        if (account == null)
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+
+        Shipment shipment = orderResource.findById(id);
+
+        if (shipment == null || date == null)
+            return Response.status(Response.Status.NOT_FOUND).build();
+
+        if (!account.getRole().equals(AccountRole.ADMIN) && !account.getEmail().equals(shipment.getCustomer().getEmail()) )
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+
+        System.out.println("test");
+        if (orderResource.updateDate(shipment,date) == null)
+            return Response.status(Response.Status.NOT_FOUND)
+                    .type("text/plain")
+                    .entity("Invalid date : should be in this format : '01/01/2018 21:30'")
+                    .build();
+
+        return Response.ok().build();
+    }
+
     @POST
     @Path("/remove_sandwich")
     @Secured({AccountRole.CUSTOMER, AccountRole.ADMIN})
