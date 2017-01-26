@@ -100,6 +100,7 @@ public class SandwichRepresentation {
 
     @PUT
     @Path("/id/{sandwichId}")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response editIngredient(
             @PathParam("sandwichId") String sandwichId,
             @FormParam("name") String name,
