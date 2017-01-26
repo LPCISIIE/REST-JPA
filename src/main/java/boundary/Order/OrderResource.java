@@ -10,6 +10,7 @@ import javax.ejb.Stateless;
 import javax.persistence.CacheStoreMode;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -42,7 +43,7 @@ public class OrderResource {
                 .getResultList();
     }
 
-    public Shipment insert(Account account, String dateTime, String ...sandwichesId) {
+    public Shipment insert(Account account, String dateTime, List<String> sandwichesId) {
 
         Shipment order = new Shipment();
         order.setCustomer(account);
@@ -102,18 +103,56 @@ public class OrderResource {
     }
 
     /**
-     * Method that deletes an Order
-     * @param orderId
+     * Method to add a sandwich to an order
+     * @param order
+     * @param sandwichId
+     * @return
+     */
+    public Shipment addSandwich(Shipment order, String sandwichId) {
+        Sandwich sandwich = sandwichResource.findById(sandwichId);
+        if (sandwich == null)
+            return null;
+        order.addSandwich(sandwich);
+        return entityManager.merge(order);
+    }
+
+    /**
+     * Method that removes a sandwich in an order
+     * @param order the Shipment
+     * @param sandwichId the id of the sandwich asked
      * @return if it's deleted
      */
-    public boolean delete(String orderId) {
-        Shipment order = entityManager.find(Shipment.class, orderId);
-
+    public boolean removeSandwich(Shipment order, String sandwichId) {
         if (order != null) {
-            entityManager.remove(order);
-            return true;
+            if (order.getStatus().equals(Shipment.ORDER_CREATED)) {
+                Sandwich sandwich = sandwichResource.findById(sandwichId);
+                if (sandwich != null) {
+                    order.removeSandwich(sandwichId);
+                    sandwichResource.delete(sandwich.getId());
+                    entityManager.merge(order);
+                    if (order.getSandwiches().size() == 0)
+                        delete(order);
+                    return true;
+                }
+            }
         }
+        return false;
+    }
 
+    /**
+     * Method that deletes an Order
+     * @param order
+     * @return if it's deleted
+     */
+    public boolean delete(Shipment order) {
+       if (order != null) {
+           if (order.getStatus().equals(Shipment.ORDER_CREATED)) {
+               for (Sandwich sandwich : order.getSandwiches())
+                    sandwichResource.delete(sandwich.getId());
+                entityManager.remove(order);
+                return true;
+            }
+        }
         return false;
     }
 }
