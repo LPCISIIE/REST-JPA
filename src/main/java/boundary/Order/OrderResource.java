@@ -117,6 +117,25 @@ public class OrderResource {
     }
 
     /**
+     * Function to update the delivering date
+     * @param order
+     * @param dateTime
+     * @return a shipment if it's ok else null
+     */
+    public Shipment updateDate(Shipment order, String dateTime ) {
+        if (order != null && dateTime != null) {
+            if (order.getStatus().equals(Shipment.ORDER_CREATED)) {
+                Date date = order.toDate(dateTime);
+                if (date != null) {
+                    order.setDateTime(date);
+                    return entityManager.merge(order);
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
      * Method that removes a sandwich in an order
      * @param order the Shipment
      * @param sandwichId the id of the sandwich asked
