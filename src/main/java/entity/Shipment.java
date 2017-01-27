@@ -27,12 +27,6 @@ public class Shipment implements Serializable {
     public final static String ORDER_READY = "Available for pickup";
     public final static String ORDER_DELIVERED = "Order delivered";
 
-    final static String ORDER_CREATED = "Created";
-    final static String ORDER_PAYED = "Paid";
-    final static String ORDER_IN_PROCESS = "In process";
-    final static String ORDER_READY = "Available for pickup";
-    final static String ORDER_DELIVERED = "Order delivered";
-
     private Date dateTime;
     private String status;
     private double price;
