@@ -53,8 +53,16 @@ public class Account implements Serializable {
      * @return boolean
      */
     public boolean hasVIPCard() {
-        return (this.vipCard == NO_VIP_CARD);
+        return (this.vipCard != NO_VIP_CARD);
     }
+
+    /**
+     * Method to create a VIP Card
+     */
+    public void createCard() {
+        this.vipCard = 0;
+    }
+
     /**
      * - Getter and Setter functions -
      */
