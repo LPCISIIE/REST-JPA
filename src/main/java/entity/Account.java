@@ -18,12 +18,14 @@ public class Account implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private final static double NO_VIP_CARD = -1;
+
     @Id
     private String email;
 
     private String name, password;
 
-    private boolean hasVIPCard;
+    private double vipCard;
 
     private AccountRole role;
 
@@ -42,10 +44,17 @@ public class Account implements Serializable {
         this.name = n;
         this.email = e;
         this.password = p;
-        this.hasVIPCard = false;
+        this.vipCard = NO_VIP_CARD;
         this.role = AccountRole.CUSTOMER;
     }
 
+    /**
+     * Check if the customer has a VIP Card
+     * @return boolean
+     */
+    public boolean hasVIPCard() {
+        return (this.vipCard == NO_VIP_CARD);
+    }
     /**
      * - Getter and Setter functions -
      */
@@ -74,19 +83,19 @@ public class Account implements Serializable {
         this.email = email;
     }
 
-    public boolean hasVIPCard() {
-        return hasVIPCard;
-    }
-
-    public void setVIPCard(boolean answer){
-        hasVIPCard = answer;
-    }
-
     public AccountRole getRole() {
         return role;
     }
 
     public void setRole(AccountRole role) {
         this.role = role;
+    }
+
+    public double getVipCard() {
+        return vipCard;
+    }
+
+    public void setVipCard(double vipCard) {
+        this.vipCard = vipCard;
     }
 }
