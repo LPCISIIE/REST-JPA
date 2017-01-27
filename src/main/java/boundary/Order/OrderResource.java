@@ -80,11 +80,10 @@ public class OrderResource {
      * @param state of the order
      * @return the new order
      */
-
     public Shipment update(Shipment order, String state) {
-        if(order.changeState(state)) {
+        if ( order.changeState(state) )
             return entityManager.merge(order);
-        }
+        return null;
     }
   
     /**
