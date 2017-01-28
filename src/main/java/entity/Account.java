@@ -72,6 +72,16 @@ public class Account implements Serializable {
     }
 
     /**
+     * Method to use when a discount is used
+     */
+    public void usePoints() {
+        if (vipCard < 50)
+            vipCard -= 0;
+        else
+            vipCard -= 50;
+    }
+
+    /**
      * Method to add points on the vip card
      * @param price
      * @return
