@@ -31,8 +31,9 @@ public class AccountRepresentation {
             notes = "Accès: Client")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK"),
-        @ApiResponse(code = 500, message = "Something wrong in Server")})
-
+        @ApiResponse(code = 401, message = "Unauthorized"),
+        @ApiResponse(code = 409, message = "Conflict"),
+        @ApiResponse(code = 500, message = "Internal server error")})
     public Response createCard(@Context SecurityContext securityContext) {
         Account account = accountResource.findByEmail(securityContext.getUserPrincipal().getName());
 
@@ -53,6 +54,12 @@ public class AccountRepresentation {
 
     @GET
     @Path("/email/{email}")
+    @ApiOperation(value = "Récuperer un client par son email",
+            notes = "Accès: Client, Admin")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "Not Found"),
+        @ApiResponse(code = 500, message = "Internal server error")})
     public Response get(@PathParam("email") String email) {
         Account account = accountResource.findByEmail(email);
         if (account != null)
@@ -63,6 +70,11 @@ public class AccountRepresentation {
 
     @GET
     @Secured({AccountRole.ADMIN})
+    @ApiOperation(value = "Récuperation de tous les profils",
+            notes = "Accès: Admin")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 500, message = "Internal server error")})
     public Response getAll(){
         GenericEntity<List<Account>> list = new GenericEntity<List<Account>>(accountResource.findAll()){};
         return Response.ok(list, MediaType.APPLICATION_JSON).build();
@@ -71,6 +83,13 @@ public class AccountRepresentation {
     @POST
     @Path("/signup")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @ApiOperation(value = "Création d'un profil utilisateur",
+            notes = "Accès: Client, Admin")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "Not Found"),
+        @ApiResponse(code = 409, message = "Conflict"),
+        @ApiResponse(code = 500, message = "Internal server error")})
     public Response signup(
             @FormParam("name") String name,
             @FormParam("email") String email,
