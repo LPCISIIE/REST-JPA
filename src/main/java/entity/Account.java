@@ -64,6 +64,27 @@ public class Account implements Serializable {
     }
 
     /**
+     * Method to know if a customer can get a discount card
+     * @return boolean
+     */
+    public boolean canGetDiscount() {
+         return vipCard >= 50;
+    }
+
+    /**
+     * Method to add points on the vip card
+     * @param price
+     * @return
+     */
+    public boolean addPoints(Double price){
+        if (!hasVIPCard())
+            return false;
+
+        vipCard+= price/3;
+        return true;
+    }
+
+    /**
      * - Getter and Setter functions -
      */
 
