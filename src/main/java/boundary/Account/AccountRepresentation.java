@@ -8,9 +8,7 @@ import provider.Secured;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
-import javax.ws.rs.core.GenericEntity;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.*;
 import java.util.List;
 
 @Path("/accounts")
@@ -20,6 +18,28 @@ public class AccountRepresentation {
 
     @EJB
     AccountResource accountResource;
+
+
+
+    @GET
+    @Secured({AccountRole.CUSTOMER})
+    @Path("/create_card")
+    public Response createCard(@Context SecurityContext securityContext) {
+        Account account = accountResource.findByEmail(securityContext.getUserPrincipal().getName());
+
+        if (account == null)
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+
+        if (account.hasVIPCard())
+            return Response.status(Response.Status.FORBIDDEN)
+                    .type("text/plain")
+                    .entity("This customer has already a VIP Card with the amount : " + account.getVipCard() + "€ ")
+                    .build();
+
+        account.createCard();
+
+        return Response.ok().build();
+    }
 
 
     @GET

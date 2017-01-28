@@ -25,8 +25,6 @@ public class CategoryResource {
         return entityManager.find(Category.class, id);
     }
 
-
-
     /**
      * Method that returns all the categories
      * @return List of Category

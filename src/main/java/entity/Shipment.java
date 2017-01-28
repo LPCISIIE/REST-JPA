@@ -1,13 +1,10 @@
 package entity;
 
-
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -24,11 +21,11 @@ public class Shipment implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    final static String ORDER_CREATED = "Created";
-    final static String ORDER_PAYED = "Paid";
-    final static String ORDER_IN_PROCESS = "In process";
-    final static String ORDER_READY = "Available for pickup";
-    final static String ORDER_DELIVERED = "Order delivered";
+    public final static String ORDER_CREATED = "Created";
+    public final static String ORDER_PAID = "Paid";
+    public final static String ORDER_IN_PROCESS = "In process";
+    public final static String ORDER_READY = "Available for pickup";
+    public final static String ORDER_DELIVERED = "Order delivered";
 
     private Date dateTime;
     private String status;
@@ -92,27 +89,41 @@ public class Shipment implements Serializable {
         }
         return false;
     }
-    
-    //m�thode pour modifier l'�tat de la commande, prend en param�tre l'�tat auquel on
-    //veut la mettre
-    public boolean changeState(String etat) {
-        if(this.isStatusOk(etat) == true) {
-            this.status = etat;
-            return true;
-        }
-        return false;
+
+    /**
+     * Method to change the status of an order
+     * @param status
+     * @return is the status changed
+     */
+    public boolean changeState(String status) {
+        if (!isStatusOk(status))
+            return false;
+        this.status = status;
+        return true;
     }
-    
-    public double getHighestOrderSandwich() {
-        double price = 0.0;
-        for(int i=0;i<this.sandwiches.size();i++) {
-            if(this.sandwiches.get(i).getPrice() > price) {
-                price = this.sandwiches.get(i).getPrice();
-            }
-        }
+
+    /**
+     * Method to get the higher price in our sandwiches
+     * @return the higher price
+     */
+    public double getHigherPrice() {
+        double price = 0;
+        for (Sandwich sandwich : sandwiches)
+            if (sandwich.getPrice() > price)
+                price = sandwich.getPrice();
         return price;
     }
 
+
+    /**
+     * Method to apply discount on the order
+     */
+    public void applyDiscount(){
+        if (price - getHigherPrice() < 0)
+            price = 0;
+        else
+            price -= getHigherPrice();
+    }
     /**
      * Helper function that converts a String into a Date
      * @param s the String in the format 'dd/MM/yyyy HH:mm'
@@ -135,7 +146,7 @@ public class Shipment implements Serializable {
      * @return if it exists
      */
     public static boolean isStatusOk(String status) {
-        return status.equals(ORDER_CREATED) || status.equals(ORDER_PAYED) ||
+        return status.equals(ORDER_CREATED) || status.equals(ORDER_PAID) ||
                status.equals(ORDER_IN_PROCESS) || status.equals(ORDER_READY) ||
                status.equals(ORDER_DELIVERED);
     }
