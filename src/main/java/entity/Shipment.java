@@ -5,11 +5,15 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.text.Format;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 @Entity
 @XmlRootElement
@@ -27,7 +31,7 @@ public class Shipment implements Serializable {
     public final static String ORDER_READY = "Available for pickup";
     public final static String ORDER_DELIVERED = "Order delivered";
 
-    private Date dateTime;
+    private String dateTime;
     private String status;
     private double price;
 
@@ -51,7 +55,7 @@ public class Shipment implements Serializable {
         this.status = ORDER_CREATED;
     }
 
-    public Shipment(Account customer, Date dateTime, List<Sandwich> sandwiches) {
+    public Shipment(Account customer, String dateTime, List<Sandwich> sandwiches) {
         this.price = 0;
         this.customer = customer;
         this.dateTime = dateTime;
@@ -123,7 +127,9 @@ public class Shipment implements Serializable {
             price = 0;
         else
             price -= getHigherPrice();
+
     }
+
     /**
      * Helper function that converts a String into a Date
      * @param s the String in the format 'dd/MM/yyyy HH:mm'
@@ -132,11 +138,29 @@ public class Shipment implements Serializable {
     public Date toDate(String s) {
         Date date = null;
         SimpleDateFormat inputDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+        inputDateFormat.setTimeZone(TimeZone.getDefault());
+        Date dateMax = Date.from(LocalDateTime
+                        .now()
+                        .plusMinutes(10)
+                        .atZone(ZoneId.systemDefault())
+                        .toInstant());
+
+
+        
+        String dateString = inputDateFormat.format(dateMax);
+
         try {
             date = inputDateFormat.parse(s);
+            dateMax = inputDateFormat.parse(dateString);
         } catch (ParseException e) {
             e.printStackTrace();
         }
+
+        if (date != null) {
+           if (!(date.compareTo(dateMax) > 0))
+                date = null;
+        }
+
         return date;
     }
 
@@ -159,12 +183,13 @@ public class Shipment implements Serializable {
         return links;
     }
 
-    public Date getDateTime() {
+    public String getDateTime() {
         return dateTime;
     }
 
     public void setDateTime(Date dateTime) {
-        this.dateTime = dateTime;
+        Format formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+        this.dateTime = formatter.format(dateTime);
     }
 
     public String getId() {
