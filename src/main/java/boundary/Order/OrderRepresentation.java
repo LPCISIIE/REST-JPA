@@ -199,49 +199,25 @@ public class OrderRepresentation {
             return Response.status(Response.Status.UNAUTHORIZED).build();
 
         if (vipCard != null) {
-            if (account.hasVIPCard()) {
-                if (account.canGetDiscount())
-                    account.addPoints(shipment.getHigherPrice());
+            if (!account.hasVIPCard())
+                return Response.status(Response.Status.NOT_FOUND)
+                        .type("text/plain")
+                        .entity("Supposed to use VIP Card but customer doesn't have one")
+                        .build();
 
+            if (account.canGetDiscount()) {
                 shipment.applyDiscount();
+                account.usePoints();
+            } else {
+                account.addPoints(shipment.getHigherPrice());
             }
-        } else {
-            return Response.status(Response.Status.NOT_FOUND)
-                    .type("text/plain")
-                    .entity("Supposed to use VIP Card but customer doesn't have one")
-                    .build();
-        }
 
+        } else {
+            if (account.hasVIPCard())
+                account.addPoints(shipment.getHigherPrice());
+        }
 
         if (orderResource.update(shipment, Shipment.ORDER_PAID) == null)
-            return Response.status(Response.Status.NOT_FOUND).build();
-        
-        return Response.ok(shipment, MediaType.APPLICATION_JSON).build();
-    }
-    
-    @GET
-    @Path("/turnover")
-    @Secured({AccountRole.ADMIN})
-    public Response getTurnover(@Context SecurityContext securityContext) {
-        List<Shipment> list = orderResource.findAll();
-        double turnover = 0.0;
-        for(int i=0;i<list.size();i++) {
-            turnover += list.get(i).getPrice();
-        }
-        return Response.ok(turnover, MediaType.APPLICATION_JSON).build();
-    }
-    
-    @PUT
-    @Path("/modify")
-    @Secured({AccountRole.ADMIN})
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response modifyOrderState(@Context SecurityContext securityContext, @FormParam("orderId") String orderId, @FormParam("state") String orderState) {
-        Shipment shipment = orderResource.findById(orderId);
-        
-        if(shipment == null)
-            return Response.status(Response.Status.UNAUTHORIZED).build();
-        
-        if(orderResource.update(shipment,orderState) == null) 
             return Response.status(Response.Status.NOT_FOUND).build();
         
         return Response.ok(shipment, MediaType.APPLICATION_JSON).build();
@@ -302,7 +278,7 @@ public class OrderRepresentation {
         if (shipment == null)
             return Response.status(Response.Status.NOT_FOUND).build();
 
-        if (!account.getEmail().equals(shipment.getCustomer().getEmail()) )
+        if (account.getRole() != AccountRole.ADMIN && !account.getEmail().equals(shipment.getCustomer().getEmail()) )
             return Response.status(Response.Status.UNAUTHORIZED).build();
 
         if (orderResource.addSandwich(shipment, sandwichId) == null)
