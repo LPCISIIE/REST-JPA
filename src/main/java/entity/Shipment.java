@@ -89,27 +89,41 @@ public class Shipment implements Serializable {
         }
         return false;
     }
-    
-    //m�thode pour modifier l'�tat de la commande, prend en param�tre l'�tat auquel on
-    //veut la mettre
-    public boolean changeState(String etat) {
-        if(this.isStatusOk(etat) == true) {
-            this.status = etat;
-            return true;
-        }
-        return false;
+
+    /**
+     * Method to change the status of an order
+     * @param status
+     * @return is the status changed
+     */
+    public boolean changeState(String status) {
+        if (!isStatusOk(status))
+            return false;
+        this.status = status;
+        return true;
     }
-    
-    public double getHighestOrderSandwich() {
-        double price = 0.0;
-        for(int i=0;i<this.sandwiches.size();i++) {
-            if(this.sandwiches.get(i).getPrice() > price) {
-                price = this.sandwiches.get(i).getPrice();
-            }
-        }
+
+    /**
+     * Method to get the higher price in our sandwiches
+     * @return the higher price
+     */
+    public double getHigherPrice() {
+        double price = 0;
+        for (Sandwich sandwich : sandwiches)
+            if (sandwich.getPrice() > price)
+                price = sandwich.getPrice();
         return price;
     }
 
+
+    /**
+     * Method to apply discount on the order
+     */
+    public void applyDiscount(){
+        if (price - getHigherPrice() < 0)
+            price = 0;
+        else
+            price -= getHigherPrice();
+    }
     /**
      * Helper function that converts a String into a Date
      * @param s the String in the format 'dd/MM/yyyy HH:mm'
