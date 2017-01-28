@@ -6,16 +6,12 @@ import boundary.Ingredient.IngredientRepresentation;
 import boundary.Sandwich.SandwichRepresentation;
 import entity.*;
 import provider.Secured;
-
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
-import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.*;
 import java.util.ArrayList;
 import java.util.List;
-
-
 
 @Produces(MediaType.APPLICATION_JSON)
 @Stateless
@@ -188,29 +184,36 @@ public class OrderRepresentation {
     }
     
     @PUT
-    @Path("/{id}/buy")
+    @Path("/{id}/process")
     @Secured({AccountRole.CUSTOMER})
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response payOrder(@Context SecurityContext securityContext, @PathParam("id") String id, @PathParam("fidelite") String fidelite) {
+    public Response payOrder(@Context SecurityContext securityContext, @PathParam("id") String id, @FormParam("vipCard") String vipCard) {
         Shipment shipment = orderResource.findById(id);
-        
+
         if(shipment == null)
             return Response.status(Response.Status.NOT_FOUND).build();
-        
-        //g�rer le cas ou le client poss�de la carte fid�lit�
-        //on utilise le string fidelite, qui faut soit oui ou non, si oui
-        //et montant fidelite sup�rieur � 30 points, le sandwich le plus cher est gratuit
-        if(fidelite.equals("oui")) {
-            //il faudra ajouter la condition n�cessitant 30 points dans la carte (plac�e face cach�e)
-            shipment.setPrice(shipment.getPrice() - shipment.getHighestOrderSandwich());
+
+        Account account = accountResource.findByEmail(securityContext.getUserPrincipal().getName());
+
+        if (account == null || !shipment.getCustomer().equals(account))
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+
+        if (vipCard != null) {
+            if (account.hasVIPCard()) {
+                if (account.canGetDiscount())
+                    account.addPoints(shipment.getHigherPrice());
+
+                shipment.applyDiscount();
+            }
+        } else {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .type("text/plain")
+                    .entity("Supposed to use VIP Card but customer doesn't have one")
+                    .build();
         }
-        else {
-            //on gagne un nombre de points �gal � 50% du prix de la commande
-            //ex : si on paye une commande de 30�, on gagne 15 points
-        }
-        
-        //on met la commande en paid
-        if(orderResource.update(shipment, "Paid") == null)
+
+
+        if (orderResource.update(shipment, Shipment.ORDER_PAID) == null)
             return Response.status(Response.Status.NOT_FOUND).build();
         
         return Response.ok(shipment, MediaType.APPLICATION_JSON).build();
