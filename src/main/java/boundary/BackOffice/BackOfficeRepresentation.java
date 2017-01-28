@@ -2,6 +2,7 @@ package boundary.BackOffice;
 
 import boundary.Account.AccountResource;
 import boundary.Order.OrderResource;
+import com.wordnik.swagger.annotations.Api;
 import control.PasswordManagement;
 import entity.Account;
 import entity.AccountRole;
