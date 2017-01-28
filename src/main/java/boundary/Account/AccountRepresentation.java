@@ -24,8 +24,6 @@ public class AccountRepresentation {
     @EJB
     AccountResource accountResource;
 
-
-
     @GET
     @Secured({AccountRole.CUSTOMER})
     @Path("/create_card")
@@ -42,7 +40,7 @@ public class AccountRepresentation {
             return Response.status(Response.Status.UNAUTHORIZED).build();
 
         if (account.hasVIPCard())
-            return Response.status(Response.Status.FORBIDDEN)
+            return Response.status(409)
                     .type("text/plain")
                     .entity("This customer has already a VIP Card with the amount : " + account.getVipCard() + "€ ")
                     .build();
@@ -81,6 +79,12 @@ public class AccountRepresentation {
         if ((name == null || email == null || password == null))
             return Response.status(Response.Status.NOT_FOUND).build();
 
+        if (accountResource.findByEmail(email) != null)
+            return Response.status(409)
+                    .type("text/plain")
+                    .entity("This email address is already used")
+                    .build();
+
         try {
             accountResource.insert(new Account(name,email, PasswordManagement.digestPassword(password)));
             return Response.ok().build();
@@ -88,27 +92,5 @@ public class AccountRepresentation {
             return Response.serverError().build();
         }
     }
-
-    @POST
-    @Path("/admin-signup")
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response createAdmin(
-            @FormParam("name") String name,
-            @FormParam("email") String email,
-            @FormParam("password") String password)
-    {
-        if ((name == null || email == null || password == null))
-            return Response.status(Response.Status.NOT_FOUND).build();
-
-        try {
-            Account admin = new Account(name,email, PasswordManagement.digestPassword(password));
-            admin.setRole(AccountRole.ADMIN);
-            accountResource.insert(admin);
-            return Response.ok().build();
-        } catch (Exception e) {
-            return Response.serverError().build();
-        }
-    }
-
 
 }

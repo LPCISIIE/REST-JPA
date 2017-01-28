@@ -52,7 +52,6 @@ public class OrderRepresentation {
         return Response.ok(listGenericEntity, MediaType.APPLICATION_JSON).build();
     }
 
-
     @GET
     @Path("/{id}")
     public Response get(@PathParam("id") String id) {
@@ -124,7 +123,8 @@ public class OrderRepresentation {
         if (orderResource.updateDate(shipment,date) == null)
             return Response.status(Response.Status.NOT_FOUND)
                     .type("text/plain")
-                    .entity("Invalid date : should be in this format : '01/01/2018 21:30'")
+                    .entity("Invalid date : should be in this format : '01/01/2018 21:30' " +
+                            "and have to be in more than 10 minutes")
                     .build();
 
         return Response.ok().build();
@@ -199,49 +199,25 @@ public class OrderRepresentation {
             return Response.status(Response.Status.UNAUTHORIZED).build();
 
         if (vipCard != null) {
-            if (account.hasVIPCard()) {
-                if (account.canGetDiscount())
-                    account.addPoints(shipment.getHigherPrice());
+            if (!account.hasVIPCard())
+                return Response.status(Response.Status.NOT_FOUND)
+                        .type("text/plain")
+                        .entity("Supposed to use VIP Card but customer doesn't have one")
+                        .build();
 
+            if (account.canGetDiscount()) {
                 shipment.applyDiscount();
+                account.usePoints();
+            } else {
+                account.addPoints(shipment.getHigherPrice());
             }
-        } else {
-            return Response.status(Response.Status.NOT_FOUND)
-                    .type("text/plain")
-                    .entity("Supposed to use VIP Card but customer doesn't have one")
-                    .build();
-        }
 
+        } else {
+            if (account.hasVIPCard())
+                account.addPoints(shipment.getHigherPrice());
+        }
 
         if (orderResource.update(shipment, Shipment.ORDER_PAID) == null)
-            return Response.status(Response.Status.NOT_FOUND).build();
-        
-        return Response.ok(shipment, MediaType.APPLICATION_JSON).build();
-    }
-    
-    @GET
-    @Path("/turnover")
-    @Secured({AccountRole.ADMIN})
-    public Response getTurnover(@Context SecurityContext securityContext) {
-        List<Shipment> list = orderResource.findAll();
-        double turnover = 0.0;
-        for(int i=0;i<list.size();i++) {
-            turnover += list.get(i).getPrice();
-        }
-        return Response.ok(turnover, MediaType.APPLICATION_JSON).build();
-    }
-    
-    @PUT
-    @Path("/modify")
-    @Secured({AccountRole.ADMIN})
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response modifyOrderState(@Context SecurityContext securityContext, @FormParam("orderId") String orderId, @FormParam("state") String orderState) {
-        Shipment shipment = orderResource.findById(orderId);
-        
-        if(shipment == null)
-            return Response.status(Response.Status.UNAUTHORIZED).build();
-        
-        if(orderResource.update(shipment,orderState) == null) 
             return Response.status(Response.Status.NOT_FOUND).build();
         
         return Response.ok(shipment, MediaType.APPLICATION_JSON).build();
@@ -281,7 +257,12 @@ public class OrderRepresentation {
         Shipment shipment = orderResource.insert(account, dateTime, sandwiches);
 
         if (shipment == null)
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NOT_FOUND)
+                    .type("text/plain")
+                    .entity("Error : Sandwiches given do not exit or error with the date" +
+                            " / Date should be in this format : '01/01/2018 21:30' " +
+                            "and have to be in more than 10 minutes")
+                    .build();
 
         shipment.addLink(getUriForSelfShipment(uriInfo, shipment), "self");
         return Response.ok(shipment, MediaType.APPLICATION_JSON).build();
@@ -302,7 +283,7 @@ public class OrderRepresentation {
         if (shipment == null)
             return Response.status(Response.Status.NOT_FOUND).build();
 
-        if (!account.getEmail().equals(shipment.getCustomer().getEmail()) )
+        if (account.getRole() != AccountRole.ADMIN && !account.getEmail().equals(shipment.getCustomer().getEmail()) )
             return Response.status(Response.Status.UNAUTHORIZED).build();
 
         if (orderResource.addSandwich(shipment, sandwichId) == null)
