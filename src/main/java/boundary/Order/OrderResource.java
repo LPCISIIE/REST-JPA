@@ -43,6 +43,13 @@ public class OrderResource {
                 .getResultList();
     }
 
+    /**
+     * Method to insert an order with a list of sandwiches
+     * @param account
+     * @param dateTime
+     * @param sandwichesId
+     * @return the order
+     */
     public Shipment insert(Account account, String dateTime, List<String> sandwichesId) {
 
         Shipment order = new Shipment();
@@ -58,19 +65,14 @@ public class OrderResource {
 
         for (String id : sandwichesId) {
            sandwich = sandwichResource.findById(id);
-
-            if (sandwich == null) {
+            if (sandwich == null)
                 return null;
-            } else {
-                Sandwich copy = new Sandwich(sandwich);
-                sandwichResource.insert(copy);
-                order.addSandwich(copy);
-            }
+            Sandwich copy = new Sandwich(sandwich);
+            sandwichResource.insert(copy);
+            order.addSandwich(copy);
         }
 
-
         order.setId(UUID.randomUUID().toString());
-
         return entityManager.merge(order);
     }
 
@@ -92,7 +94,6 @@ public class OrderResource {
      * @return the new order
      */    
     public Shipment update(Shipment order) {
-
         return entityManager.merge(order);
     }
 
