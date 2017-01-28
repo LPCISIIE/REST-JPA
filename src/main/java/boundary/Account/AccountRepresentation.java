@@ -1,5 +1,9 @@
 package boundary.Account;
 
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;
 import control.PasswordManagement;
 import entity.Account;
 import entity.AccountRole;
@@ -13,6 +17,7 @@ import java.util.List;
 
 @Path("/accounts")
 @Stateless
+@Api(value = "/accounts", description = "Gestion des comptes")
 @Produces(MediaType.APPLICATION_JSON)
 public class AccountRepresentation {
 
@@ -24,6 +29,12 @@ public class AccountRepresentation {
     @GET
     @Secured({AccountRole.CUSTOMER})
     @Path("/create_card")
+    @ApiOperation(value = "Création de la carte de fidélité",
+            notes = "Accès: Client")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 500, message = "Something wrong in Server")})
+
     public Response createCard(@Context SecurityContext securityContext) {
         Account account = accountResource.findByEmail(securityContext.getUserPrincipal().getName());
 
