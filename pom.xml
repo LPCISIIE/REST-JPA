@@ -22,7 +22,11 @@
             <artifactId>jjwt</artifactId>
             <version>0.7.0</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>itextpdf</artifactId>
+            <version>LATEST</version>
+        </dependency>
     </dependencies>
     <build>
         <finalName>le-bon-sandwich-api</finalName>
