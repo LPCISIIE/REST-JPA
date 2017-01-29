@@ -29,7 +29,7 @@ import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 
 
 @Path("/authentication")
-@Api(value = "/authentication", description = "Authentification des utilisateurs")
+@Api(value = "/authentication", description = "Route to login")
 public class AuthenticationEndpoint {
 
     @Inject
@@ -44,8 +44,7 @@ public class AuthenticationEndpoint {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @ApiOperation(value = "Authentification de l'utilisateur",
-         notes = "Accès: Client, Admin")
+    @ApiOperation(value = "Authentication for users", notes = "Token given available for 5 minutes")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK"),
         @ApiResponse(code = 401, message = "Unauthorized"),
