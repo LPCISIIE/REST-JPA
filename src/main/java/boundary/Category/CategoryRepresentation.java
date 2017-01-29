@@ -1,6 +1,10 @@
 package boundary.Category;
 
 import boundary.Ingredient.IngredientResource;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;
 import entity.Category;
 import entity.Ingredient;
 
@@ -16,6 +20,7 @@ import java.util.List;
 
 @Produces(MediaType.APPLICATION_JSON)
 @Stateless
+@Api(value = "/categories", description = "Gestion des catégories d'aliments")
 public class CategoryRepresentation {
 
     @EJB
@@ -26,6 +31,11 @@ public class CategoryRepresentation {
 
 
     @GET
+    @ApiOperation(value = "Récupération de toutes les catégories existantes",
+         notes = "Accès: Client, Admin")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 500, message = "Internal server error")})
     public Response getCategories() {
         GenericEntity<List<Category>> list = new GenericEntity<List<Category>>(categoryResource.findAll()){};
         return Response.ok(list, MediaType.APPLICATION_JSON).build();
@@ -34,6 +44,12 @@ public class CategoryRepresentation {
 
     @GET
     @Path("/id/{id}")
+    @ApiOperation(value = "Recupération d'une catégorie par son id",
+         notes = "Accès: Client, Admin")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "Not Found"),
+        @ApiResponse(code = 500, message = "Internal server error")})
     public Response getCategory(@PathParam("id") String id) {
         Category categorie = categoryResource.findById(id);
         if (categorie != null)
@@ -44,6 +60,12 @@ public class CategoryRepresentation {
 
     @GET
     @Path("/name/{name}")
+    @ApiOperation(value = "Recupération d'une catégorie par son nom",
+         notes = "Accès: Client, Admin")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "Not Found"),
+        @ApiResponse(code = 500, message = "Internal server error")})
     public Response getCategoryByName(@PathParam("name") String categoryName) {
         List<Category> categories = categoryResource.findByName(categoryName);
 
@@ -56,6 +78,12 @@ public class CategoryRepresentation {
 
     @GET
     @Path("/ingredients/{id}")
+    @ApiOperation(value = "Recupération des ingrédients d'une catégorie",
+         notes = "Accès: Client, Admin")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "Not Found"),
+        @ApiResponse(code = 500, message = "Internal server error")})
     public Response getCategoryIngredients(@PathParam("id") String categoryId) {
         Category cat = categoryResource.findById(categoryId);
         
