@@ -1,13 +1,13 @@
 package entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @XmlRootElement
@@ -39,7 +39,7 @@ public class Sandwich implements Serializable {
     @JsonManagedReference
     List<Ingredient> ingredientsList;
 
-    @XmlElement(name="_links")
+    @XmlElement(name = "_links")
     @Transient
     private List<Link> links = new ArrayList<>();
 
@@ -56,9 +56,10 @@ public class Sandwich implements Serializable {
 
     /**
      * Constructor of a sandwich
+     *
      * @param ingredients the ingredients in a sandwich
      */
-    public Sandwich(String size, Ingredient ... ingredients) {
+    public Sandwich(String size, Ingredient... ingredients) {
         price = 0;
         name = SANDWICH_CUSTOM;
         this.size = size;
@@ -66,15 +67,15 @@ public class Sandwich implements Serializable {
         ingredientsList = new ArrayList<>();
         for (Ingredient ingredient : ingredients)
             ingredientsList.add(ingredient);
-
     }
 
     /**
      * Constructor of a sandwich
+     *
      * @param name the sandwich name
      * @param ingredients the ingredients in a sandwich
      */
-    public Sandwich(String size, String name, String description, Ingredient ... ingredients) {
+    public Sandwich(String size, String name, String description, Ingredient... ingredients) {
         price = 0;
         this.size = size;
         this.name = name;
@@ -87,7 +88,8 @@ public class Sandwich implements Serializable {
 
     /**
      * Constructor that copies a Sandwich but changes the id
-     * @param sandwich to copy
+     *
+     * @param sandwich The sandwich to copy
      */
     public Sandwich(Sandwich sandwich) {
         this.price = sandwich.getPrice();
@@ -100,61 +102,61 @@ public class Sandwich implements Serializable {
 
     /**
      * Method that updates details about a sandwich
-     * @param size String
-     * @param name String
+     *
+     * @param size        String
+     * @param name        String
      * @param description String
      * @return a Sandwich
      */
-    public Sandwich update(String size, String name, String description){
-        
+    public Sandwich update(String size, String name, String description) {
         this.name = name;
         this.description = description;
 
-        switch(this.size) {
-            case (SANDWICH_SIZE_1)  :
+        switch (this.size) {
+            case (SANDWICH_SIZE_1):
                 // If we switch on a one with 7 ingredients
-                if (ingredientsList.size() == 8 && size.equals(SANDWICH_SIZE_0) )
+                if (ingredientsList.size() == 8 && size.equals(SANDWICH_SIZE_0))
                     ingredientsList.remove(ingredientsList.size() - 1);
 
                 break;
 
-            case (SANDWICH_SIZE_2) :
+            case (SANDWICH_SIZE_2):
                 // If we switch on a one with 7 ingredients
-                if (ingredientsList.size() == 8 && size.equals(SANDWICH_SIZE_0)  ) {
+                if (ingredientsList.size() == 8 && size.equals(SANDWICH_SIZE_0)) {
                     ingredientsList.remove(ingredientsList.size() - 1);
-                // If we switch on a one with 7 ingredients
-                } else if (ingredientsList.size() == 9 && size.equals(SANDWICH_SIZE_0) ) {
+                    // If we switch on a one with 7 ingredients
+                } else if (ingredientsList.size() == 9 && size.equals(SANDWICH_SIZE_0)) {
                     ingredientsList.remove(ingredientsList.size() - 1);
                     ingredientsList.remove(ingredientsList.size() - 1);
-                // If we switch on a one with 8 ingredients
-                } else if (ingredientsList.size() == 9 && size.equals(SANDWICH_SIZE_1) ) {
+                    // If we switch on a one with 8 ingredients
+                } else if (ingredientsList.size() == 9 && size.equals(SANDWICH_SIZE_1)) {
                     ingredientsList.remove(ingredientsList.size() - 1);
                 }
 
                 break;
 
-            case (SANDWICH_SIZE_3) :
+            case (SANDWICH_SIZE_3):
                 // If we switch on a one with 7 ingredients
-                if (ingredientsList.size() == 8 && size.equals(SANDWICH_SIZE_0) ) {
+                if (ingredientsList.size() == 8 && size.equals(SANDWICH_SIZE_0)) {
                     ingredientsList.remove(ingredientsList.size() - 1);
-                // If we switch on a one with 7 ingredients
-                } else if (ingredientsList.size() == 9 && size.equals(SANDWICH_SIZE_0) ) {
-                    ingredientsList.remove(ingredientsList.size() - 1);
-                    ingredientsList.remove(ingredientsList.size() - 1);
-                // If we switch on a one with 7 ingredients
-                } else if (ingredientsList.size() == 10 && size.equals(SANDWICH_SIZE_0) ) {
+                    // If we switch on a one with 7 ingredients
+                } else if (ingredientsList.size() == 9 && size.equals(SANDWICH_SIZE_0)) {
                     ingredientsList.remove(ingredientsList.size() - 1);
                     ingredientsList.remove(ingredientsList.size() - 1);
-                    ingredientsList.remove(ingredientsList.size() - 1);
-                // If we switch on a one with 8 ingredients
-                } else if (ingredientsList.size() == 9 && size.equals(SANDWICH_SIZE_1) ) {
-                    ingredientsList.remove(ingredientsList.size() - 1);
-                // If we switch on a one with 8 ingredients
-                } else if (ingredientsList.size() == 10 && size.equals(SANDWICH_SIZE_1) ) {
+                    // If we switch on a one with 7 ingredients
+                } else if (ingredientsList.size() == 10 && size.equals(SANDWICH_SIZE_0)) {
                     ingredientsList.remove(ingredientsList.size() - 1);
                     ingredientsList.remove(ingredientsList.size() - 1);
-                // If we switch on a one with 9 ingredients
-                } else if (ingredientsList.size() == 10 && size.equals(SANDWICH_SIZE_2) ) {
+                    ingredientsList.remove(ingredientsList.size() - 1);
+                    // If we switch on a one with 8 ingredients
+                } else if (ingredientsList.size() == 9 && size.equals(SANDWICH_SIZE_1)) {
+                    ingredientsList.remove(ingredientsList.size() - 1);
+                    // If we switch on a one with 8 ingredients
+                } else if (ingredientsList.size() == 10 && size.equals(SANDWICH_SIZE_1)) {
+                    ingredientsList.remove(ingredientsList.size() - 1);
+                    ingredientsList.remove(ingredientsList.size() - 1);
+                    // If we switch on a one with 9 ingredients
+                } else if (ingredientsList.size() == 10 && size.equals(SANDWICH_SIZE_2)) {
                     ingredientsList.remove(ingredientsList.size() - 1);
                 }
 
@@ -168,35 +170,39 @@ public class Sandwich implements Serializable {
     }
 
     /**
-     * Method that tell you if the size exists
-     * @param size the size to test
+     * Method that tells you if the size exists
+     *
+     * @param size The size to test
      * @return boolean
      */
     public static boolean isSizeOk(String size) {
-        if (size.equals(SANDWICH_SIZE_0) || size.equals(SANDWICH_SIZE_1) || size.equals(SANDWICH_SIZE_2) || size.equals(SANDWICH_SIZE_3))
-            return true;
-
-        return false;
+        return (
+            size.equals(SANDWICH_SIZE_0) ||
+            size.equals(SANDWICH_SIZE_1) ||
+            size.equals(SANDWICH_SIZE_2) ||
+            size.equals(SANDWICH_SIZE_3)
+        );
     }
 
-     @Override
+    @Override
     public String toString() {
         String res = "Sandwich{" +
                 "id='" + id + '\''
                 + " Ingredients : [";
-        for (Ingredient i: ingredientsList)
+        for (Ingredient i : ingredientsList)
             res += i.getName() + " - " + i.getId() + '\'';
-        res+= ']';
+        res += ']';
 
         return res;
     }
 
     public void addLink(String uri, String rel) {
-        this.links.add(new Link(rel,uri));
+        this.links.add(new Link(rel, uri));
     }
 
     /**
      * Method that returns the ingredients which belongs the category given
+     *
      * @param category of the ingredient
      * @return List of Ingredient if it's found else null
      */
@@ -210,42 +216,45 @@ public class Sandwich implements Serializable {
             if (!res.isEmpty())
                 return res;
         }
+
         return null;
     }
 
     /**
      * Helper function that validates the composition of a sandwich
+     *
      * @return if it's valid
      */
     public boolean validate() {
-        boolean salad =    getIngredient("Salade") != null;
-        boolean meat =     getIngredient("Viande") != null;
+        boolean salad = getIngredient("Salade") != null;
+        boolean meat = getIngredient("Viande") != null;
         boolean coldMeat = getIngredient("Charcuterie") != null;
-        boolean cheese =   getIngredient("Fromage") != null;
-        boolean sauce =    getIngredient("Sauce") != null;
+        boolean cheese = getIngredient("Fromage") != null;
+        boolean sauce = getIngredient("Sauce") != null;
         boolean crudite = getIngredient("Crudité") != null;
-        boolean bread =    getIngredient("Pain") != null;
+        boolean bread = getIngredient("Pain") != null;
 
-        if ( salad && meat && coldMeat && cheese && sauce && crudite && bread) {
-            switch(this.size) {
-                case (SANDWICH_SIZE_0) :
+        if (salad && meat && coldMeat && cheese && sauce && crudite && bread) {
+            switch (this.size) {
+                case (SANDWICH_SIZE_0):
                     if (ingredientsList.size() == 7)
                         return true;
                     break;
-                case (SANDWICH_SIZE_1) :
+                case (SANDWICH_SIZE_1):
                     if (ingredientsList.size() <= 8)
                         return true;
                     break;
-                case (SANDWICH_SIZE_2) :
+                case (SANDWICH_SIZE_2):
                     if (ingredientsList.size() <= 9)
                         return true;
                     break;
-                case (SANDWICH_SIZE_3) :
+                case (SANDWICH_SIZE_3):
                     if (ingredientsList.size() <= 10)
                         return true;
                     break;
             }
         }
+
         return false;
     }
 
@@ -256,19 +265,20 @@ public class Sandwich implements Serializable {
         double price = 0;
 
         switch (size) {
-            case (SANDWICH_SIZE_1) :
+            case (SANDWICH_SIZE_1):
                 price += 1.0;
                 break;
-            case (SANDWICH_SIZE_2) :
+            case (SANDWICH_SIZE_2):
                 price += 1.5;
                 break;
-            case (SANDWICH_SIZE_3) :
+            case (SANDWICH_SIZE_3):
                 price += 2.0;
                 break;
         }
 
         for (Ingredient ingredient : ingredientsList)
             price += ingredient.getPrice();
+
         this.price = price;
     }
 

@@ -5,8 +5,7 @@ public class Link {
     private String href;
     private String rel;
 
-    public Link() {
-    }
+    public Link() {}
 
     public Link(String rel, String uri) {
         this.rel = rel;
