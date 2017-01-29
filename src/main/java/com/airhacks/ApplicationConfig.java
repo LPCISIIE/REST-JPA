@@ -30,6 +30,7 @@ public class ApplicationConfig extends Application {
         resources.add(boundary.BackOffice.BackOfficeRepresentation.class);
         resources.add(boundary.Category.CategoryRepresentation.class);
         resources.add(boundary.Ingredient.IngredientRepresentation.class);
+        resources.add(boundary.Order.OrderRepresentation.class);
     }
 
 }
