@@ -4,7 +4,7 @@ package com.airhacks;
 import java.util.Set;
 import javax.ws.rs.core.Application;
 
-@javax.ws.rs.ApplicationPath("rest")
+@javax.ws.rs.ApplicationPath("docs")
 public class ApplicationConfig extends Application {
 
     @Override
