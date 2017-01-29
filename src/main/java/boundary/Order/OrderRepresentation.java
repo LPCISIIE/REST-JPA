@@ -45,6 +45,14 @@ public class OrderRepresentation {
     @Produces("application/pdf")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Secured({AccountRole.CUSTOMER, AccountRole.ADMIN})
+    @ApiOperation(value = "Création d'une facture",
+	    notes = "Accès: Client, Admin")
+    @ApiResponses(value = {
+	@ApiResponse(code = 200, message = "OK"),
+	@ApiResponse(code = 401, message = "Unauthorized"),
+	@ApiResponse(code = 403, message = "Forbidden"),
+	@ApiResponse(code = 404, message = "Not Found"),
+	@ApiResponse(code = 500, message = "Internal server error")})
     public Response receipt(
             @Context SecurityContext securityContext,
             @Context UriInfo uriInfo,
