@@ -6,7 +6,6 @@ import javax.ejb.Stateless;
 import javax.persistence.CacheStoreMode;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,7 +17,7 @@ public class CategoryResource {
 
     /**
      * Method that returns a category for an id given
-     * @param id
+     * @param id ID of the category
      * @return Category
      */
     public Category findById(String id) {
@@ -29,7 +28,7 @@ public class CategoryResource {
      * Method that returns all the categories
      * @return List of Category
      */
-    public List<Category> findAll(){
+    public List<Category> findAll() {
         return entityManager.createNamedQuery("Category.findAll", Category.class)
                 .setHint("javax.persistence.cache.storeMode", CacheStoreMode.REFRESH)
                 .getResultList();
@@ -37,10 +36,10 @@ public class CategoryResource {
 
     /**
      * Method that returns categories for a name given
-     * @param name of the category we're looking for
+     * @param name Name of the category we're looking for
      * @return List of Category
      */
-    public List<Category> findByName(String name){
+    public List<Category> findByName(String name) {
         return entityManager.createQuery("SELECT c FROM Category c where c.name = :name ")
                 .setParameter("name", name)
                 .setHint("javax.persistence.cache.storeMode", CacheStoreMode.REFRESH)
@@ -49,13 +48,12 @@ public class CategoryResource {
 
     /**
      * Method that inserts a category into the database
-     * @param category to add
-     * @return the category added
+     * @param category The category to add
+     * @return The newly created category
      */
     public Category insert(Category category) {
         category.setId(UUID.randomUUID().toString());
         return this.entityManager.merge(category);
     }
-
 
 }

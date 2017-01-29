@@ -33,15 +33,16 @@ public class Ingredient implements Serializable {
     /**
      * Empty constructor
      */
-    public Ingredient(){}
+    public Ingredient() {}
 
     /**
      * Constructor of an ingredient
+     *
      * @param c the category
      * @param n the name
      * @param p the price
      */
-    public Ingredient(Category c , String n, double p, String d) {
+    public Ingredient(Category c, String n, double p, String d) {
         this.category = c;
         this.name = n;
         this.price = p;
@@ -50,11 +51,12 @@ public class Ingredient implements Serializable {
 
     /**
      * Method that updates an ingredient
+     *
      * @param c the category
      * @param n the name
      * @param p the price
      */
-    public Ingredient update(Category c , String n, double p, String d){
+    public Ingredient update(Category c, String n, double p, String d) {
         this.category = c;
         this.name = n;
         this.price = p;
@@ -64,6 +66,7 @@ public class Ingredient implements Serializable {
 
     /**
      * Helper method
+     *
      * @return the category name
      */
     public String categoryName() {
@@ -72,6 +75,7 @@ public class Ingredient implements Serializable {
 
     /**
      * Helper method
+     *
      * @return the category id
      */
     public String categoryId() {
@@ -79,7 +83,7 @@ public class Ingredient implements Serializable {
     }
 
     public void addLink(String uri, String rel) {
-        this.links.add(new Link(rel,uri));
+        this.links.add(new Link(rel, uri));
     }
 
     /**
@@ -98,7 +102,7 @@ public class Ingredient implements Serializable {
         this.id = id;
     }
 
-    public Category getCategory(){
+    public Category getCategory() {
         return category;
     }
 
@@ -106,7 +110,7 @@ public class Ingredient implements Serializable {
         this.category = category;
     }
 
-    public String getName(){
+    public String getName() {
         return name;
     }
 
@@ -114,7 +118,7 @@ public class Ingredient implements Serializable {
         this.name = name;
     }
 
-    public String getDescription(){
+    public String getDescription() {
         return description;
     }
 

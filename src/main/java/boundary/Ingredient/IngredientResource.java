@@ -1,7 +1,6 @@
 package boundary.Ingredient;
 
 import boundary.Category.CategoryResource;
-import entity.Category;
 import entity.Ingredient;
 
 import javax.ejb.EJB;
@@ -24,7 +23,7 @@ public class IngredientResource {
 
     /**
      * Method that returns an ingredient for an id given
-     * @param id
+     * @param id ID of the ingredient
      * @return Ingredient
      */
     public Ingredient findById(String id) {
@@ -35,7 +34,7 @@ public class IngredientResource {
      * Method that returns all the ingredients
      * @return List of Ingredient
      */
-    public List<Ingredient> findAll(){
+    public List<Ingredient> findAll() {
         return entityManager.createNamedQuery("Ingredient.findAll", Ingredient.class)
                 .setHint("javax.persistence.cache.storeMode", CacheStoreMode.REFRESH)
                 .getResultList();
@@ -43,7 +42,7 @@ public class IngredientResource {
 
     /**
      * Method that returns ingredients for a name given
-     * @param name of the ingredient we're looking for
+     * @param name Name of the ingredient we're looking for
      * @return List of Ingredient
      */
     public List<Ingredient> findByName(String name){
@@ -62,12 +61,11 @@ public class IngredientResource {
 
     /**
      * Method that inserts an ingredient into the database
-     * @param ingredient to add
+     * @param ingredient The ingredient to add
      * @return the ingredient added or null if the Category doesn't exist
      */
     public Ingredient insert(Ingredient ingredient) {
         ingredient.setId(UUID.randomUUID().toString());
-
 
         if (categoryResource.findById(ingredient.getCategory().getId()) != null)
             return entityManager.merge(ingredient);
@@ -85,12 +83,12 @@ public class IngredientResource {
     }
 
     /**
-     * Method that delete an ingredient
-     * @param ingredientId
+     * Method that deletes an ingredient
+     * @param id ID of the ingredient
      * @return if it's deleted
      */
-    public boolean delete(String ingredientId) {
-        Ingredient ingredient = entityManager.find(Ingredient.class, ingredientId);
+    public boolean delete(String id) {
+        Ingredient ingredient = entityManager.find(Ingredient.class, id);
 
         if (ingredient != null) {
             entityManager.remove(ingredient);
