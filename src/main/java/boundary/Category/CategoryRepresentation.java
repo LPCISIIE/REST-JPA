@@ -24,20 +24,18 @@ public class CategoryRepresentation {
     @EJB
     CategoryResource categoryResource;
 
-
     @GET
     public Response getCategories() {
         GenericEntity<List<Category>> list = new GenericEntity<List<Category>>(categoryResource.findAll()){};
         return Response.ok(list, MediaType.APPLICATION_JSON).build();
     }
 
-
     @GET
     @Path("/id/{id}")
     public Response getCategory(@PathParam("id") String id) {
-        Category categorie = categoryResource.findById(id);
-        if (categorie != null)
-            return Response.ok(categorie, MediaType.APPLICATION_JSON).build();
+        Category category = categoryResource.findById(id);
+        if (category != null)
+            return Response.ok(category, MediaType.APPLICATION_JSON).build();
         else
             return Response.status(Response.Status.NOT_FOUND).build();
     }
@@ -68,8 +66,6 @@ public class CategoryRepresentation {
             
         GenericEntity<List<Ingredient>> list = new GenericEntity<List<Ingredient>>(ingredients){};
         return Response.ok(list, MediaType.APPLICATION_JSON).build();
-        
     }
-
 
 }

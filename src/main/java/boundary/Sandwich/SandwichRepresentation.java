@@ -1,7 +1,6 @@
 package boundary.Sandwich;
 
 import boundary.Ingredient.IngredientRepresentation;
-import boundary.Ingredient.IngredientResource;
 import entity.Ingredient;
 import entity.Sandwich;
 
@@ -26,15 +25,16 @@ public class SandwichRepresentation {
 
         list.stream().forEach(sandwich -> {
             List<Ingredient> ingredientsList = sandwich.getIngredientsList();
-            sandwich.addLink(this.getUriForSelfSandwich(uriInfo,sandwich),"self");
+            sandwich.addLink(this.getUriForSelfSandwich(uriInfo, sandwich), "self");
             for (Ingredient ingredient : ingredientsList) {
                 ingredient.getLinks().clear();
-                ingredient.addLink(this.getUriForSelfIngredient(uriInfo,ingredient), "self");
+                ingredient.addLink(this.getUriForSelfIngredient(uriInfo, ingredient), "self");
             }
             sandwich.setIngredientsList(ingredientsList);
         });
 
-        GenericEntity<List<Sandwich>> listGenericEntity = new GenericEntity<List<Sandwich>>(list) {};
+        GenericEntity<List<Sandwich>> listGenericEntity = new GenericEntity<List<Sandwich>>(list) {
+        };
 
         return Response.ok(listGenericEntity, MediaType.APPLICATION_JSON).build();
     }
@@ -51,7 +51,7 @@ public class SandwichRepresentation {
 
         for (Ingredient ingredient : ingredientsList) {
             ingredient.getLinks().clear();
-            ingredient.addLink(this.getUriForSelfIngredient(uriInfo,ingredient), "self");
+            ingredient.addLink(this.getUriForSelfIngredient(uriInfo, ingredient), "self");
         }
 
         sandwich.setIngredientsList(ingredientsList);
@@ -60,9 +60,9 @@ public class SandwichRepresentation {
     }
 
     @POST
-    @Path("/add") 
+    @Path("/add")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response add (
+    public Response add(
             @FormParam("size") String size,
             @FormParam("bread") String bread,
             @FormParam("meat") String meat,
@@ -85,8 +85,8 @@ public class SandwichRepresentation {
             if (sandwichResource.insert(size, bread, meat, coldMeats, cheese, salad, crudite, sauce) == null)
                 return Response.status(Response.Status.EXPECTATION_FAILED).build();
         } else if (extra != null && extra2 == null && extra3 == null) {
-             if (sandwichResource.insert(size, bread, meat, coldMeats, cheese, salad, crudite, sauce, extra) == null)
-                 return Response.status(Response.Status.EXPECTATION_FAILED).build();
+            if (sandwichResource.insert(size, bread, meat, coldMeats, cheese, salad, crudite, sauce, extra) == null)
+                return Response.status(Response.Status.EXPECTATION_FAILED).build();
         } else if (extra != null && extra2 != null && extra3 == null) {
             if (sandwichResource.insert(size, bread, meat, coldMeats, cheese, salad, crudite, sauce, extra, extra2) == null)
                 return Response.status(Response.Status.EXPECTATION_FAILED).build();
@@ -115,10 +115,8 @@ public class SandwichRepresentation {
         if (sandwich == null || isFormEmpty)
             return Response.notModified().build();
 
-        String n,d;
-
-        n = (name == null) ? sandwich.getName() : name ;
-        d = (description == null) ? sandwich.getDescription() : description ;
+        String n = (name == null) ? sandwich.getName() : name;
+        String d = (description == null) ? sandwich.getDescription() : description;
 
         if (size != null) {
             if (!Sandwich.isSizeOk(size))
@@ -127,7 +125,7 @@ public class SandwichRepresentation {
             size = sandwich.getSize();
         }
 
-        if (sandwichResource.update(sandwich.update(size,n,d)) == null)
+        if (sandwichResource.update(sandwich.update(size, n, d)) == null)
             return Response.notModified().build();
 
         return Response.ok().build();

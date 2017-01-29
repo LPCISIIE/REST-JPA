@@ -1,6 +1,7 @@
 package entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -46,11 +47,11 @@ public class Shipment implements Serializable {
     @JsonManagedReference
     private List<Sandwich> sandwiches = new ArrayList<>();
 
-    @XmlElement(name="_links")
+    @XmlElement(name = "_links")
     @Transient
     private List<Link> links = new ArrayList<>();
 
-    public Shipment(){
+    public Shipment() {
         this.price = 0;
         this.status = ORDER_CREATED;
     }
@@ -71,15 +72,17 @@ public class Shipment implements Serializable {
 
     /**
      * Method to add a sandwich to the order
+     *
      * @param sandwich to add
      */
     public void addSandwich(Sandwich sandwich) {
         sandwiches.add(sandwich);
-        price+= sandwich.getPrice();
+        price += sandwich.getPrice();
     }
 
     /**
      * Method to remove a sandwich from the order
+     *
      * @param id of the Sandwich to remove
      * @return boolean : if the sandwich has been removed
      */
@@ -87,27 +90,31 @@ public class Shipment implements Serializable {
         for (Sandwich sandwich : sandwiches) {
             if (sandwich.getId().equals(id)) {
                 sandwiches.remove(sandwich);
-                price-= sandwich.getPrice();
+                price -= sandwich.getPrice();
                 return true;
             }
         }
+
         return false;
     }
 
     /**
      * Method to change the status of an order
+     *
      * @param status
      * @return is the status changed
      */
     public boolean changeState(String status) {
         if (!isStatusOk(status))
             return false;
+
         this.status = status;
         return true;
     }
 
     /**
      * Method to get the higher price in our sandwiches
+     *
      * @return the higher price
      */
     public double getHigherPrice() {
@@ -115,23 +122,23 @@ public class Shipment implements Serializable {
         for (Sandwich sandwich : sandwiches)
             if (sandwich.getPrice() > price)
                 price = sandwich.getPrice();
+
         return price;
     }
-
 
     /**
      * Method to apply discount on the order
      */
-    public void applyDiscount(){
+    public void applyDiscount() {
         if (price - getHigherPrice() < 0)
             price = 0;
         else
             price -= getHigherPrice();
-
     }
 
     /**
      * Helper function that converts a String into a Date
+     *
      * @param s the String in the format 'dd/MM/yyyy HH:mm'
      * @return the Date if it's ok else null
      */
@@ -140,13 +147,11 @@ public class Shipment implements Serializable {
         SimpleDateFormat inputDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
         inputDateFormat.setTimeZone(TimeZone.getDefault());
         Date dateMax = Date.from(LocalDateTime
-                        .now()
-                        .plusMinutes(10)
-                        .atZone(ZoneId.systemDefault())
-                        .toInstant());
+                .now()
+                .plusMinutes(10)
+                .atZone(ZoneId.systemDefault())
+                .toInstant());
 
-
-        
         String dateString = inputDateFormat.format(dateMax);
 
         try {
@@ -157,7 +162,7 @@ public class Shipment implements Serializable {
         }
 
         if (date != null) {
-           if (!(date.compareTo(dateMax) > 0))
+            if (!(date.compareTo(dateMax) > 0))
                 date = null;
         }
 
@@ -166,17 +171,18 @@ public class Shipment implements Serializable {
 
     /**
      * Helper function to know if the status given exists
+     *
      * @param status of the order
      * @return if it exists
      */
     public static boolean isStatusOk(String status) {
         return status.equals(ORDER_CREATED) || status.equals(ORDER_PAID) ||
-               status.equals(ORDER_IN_PROCESS) || status.equals(ORDER_READY) ||
-               status.equals(ORDER_DELIVERED);
+                status.equals(ORDER_IN_PROCESS) || status.equals(ORDER_READY) ||
+                status.equals(ORDER_DELIVERED);
     }
 
     public void addLink(String uri, String rel) {
-        this.links.add(new Link(rel,uri));
+        this.links.add(new Link(rel, uri));
     }
 
     public List<Link> getLinks() {
@@ -231,4 +237,5 @@ public class Shipment implements Serializable {
     public void setPrice(double price) {
         this.price = price;
     }
+
 }
