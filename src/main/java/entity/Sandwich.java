@@ -39,7 +39,7 @@ public class Sandwich implements Serializable {
     @JsonManagedReference
     List<Ingredient> ingredientsList;
 
-    @XmlElement(name = "_links")
+    @XmlElement(name="_links")
     @Transient
     private List<Link> links = new ArrayList<>();
 
@@ -226,13 +226,13 @@ public class Sandwich implements Serializable {
      * @return if it's valid
      */
     public boolean validate() {
-        boolean salad = getIngredient("Salade") != null;
-        boolean meat = getIngredient("Viande") != null;
+        boolean salad =    getIngredient("Salade") != null;
+        boolean meat =     getIngredient("Viande") != null;
         boolean coldMeat = getIngredient("Charcuterie") != null;
-        boolean cheese = getIngredient("Fromage") != null;
-        boolean sauce = getIngredient("Sauce") != null;
-        boolean crudite = getIngredient("Crudité") != null;
-        boolean bread = getIngredient("Pain") != null;
+        boolean cheese =   getIngredient("Fromage") != null;
+        boolean sauce =    getIngredient("Sauce") != null;
+        boolean crudite =  getIngredient("Crudité") != null;
+        boolean bread =    getIngredient("Pain") != null;
 
         if (salad && meat && coldMeat && cheese && sauce && crudite && bread) {
             switch (this.size) {
