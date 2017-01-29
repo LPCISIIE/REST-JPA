@@ -70,7 +70,7 @@ public class AccountRepresentation {
 
     @GET
     @Secured({AccountRole.ADMIN})
-    @ApiOperation(value = "Récuperation de tous les profils",
+    @ApiOperation(value = "Récupération de tous les profils",
             notes = "Accès: Admin")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK"),

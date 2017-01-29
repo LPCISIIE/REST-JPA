@@ -42,7 +42,7 @@ public class CategoryRepresentation {
 
     @GET
     @Path("/id/{id}")
-    @ApiOperation(value = "Recupération d'une catégorie par son id",
+    @ApiOperation(value = "Récupération d'une catégorie par son id",
          notes = "Accès: Client, Admin")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK"),
@@ -58,7 +58,7 @@ public class CategoryRepresentation {
 
     @GET
     @Path("/name/{name}")
-    @ApiOperation(value = "Recupération d'une catégorie par son nom",
+    @ApiOperation(value = "Récupération d'une catégorie par son nom",
          notes = "Accès: Client, Admin")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK"),
@@ -76,7 +76,7 @@ public class CategoryRepresentation {
 
     @GET
     @Path("/ingredients/{id}")
-    @ApiOperation(value = "Recupération des ingrédients d'une catégorie",
+    @ApiOperation(value = "Récupération des ingrédients d'une catégorie",
          notes = "Accès: Client, Admin")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK"),
