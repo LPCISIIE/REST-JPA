@@ -6,31 +6,37 @@ import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiResponse;
 import com.wordnik.swagger.annotations.ApiResponses;
+import entity.Account;
+import entity.AccountRole;
 import entity.Ingredient;
 import entity.Sandwich;
+import provider.Secured;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
+import java.io.File;
+import java.net.URI;
+import java.net.URL;
 import java.util.List;
 
 @Path("/sandwiches")
 
 @Produces(MediaType.APPLICATION_JSON)
 @Stateless
-@Api(value = "/sandwiches", description = "Gestion des sandwichs")
+@Api(value = "/sandwiches", description = "Sandwiches management")
 public class SandwichRepresentation {
 
     @EJB
     SandwichResource sandwichResource;
 
     @GET
-    @ApiOperation(value = "Récupération de tous les sandwichs existants",
-	    notes = "Accès: Client, Admin")
+    @ApiOperation(value = "Get all the sandwiches", notes = "Access : Guest, Customer and Admin")
     @ApiResponses(value = {
-	@ApiResponse(code = 200, message = "OK"),
-	@ApiResponse(code = 500, message = "Internal server error")})
+	    @ApiResponse(code = 200, message = "OK"),
+	    @ApiResponse(code = 500, message = "Internal server error")
+    })
     public Response getSandwiches(@Context UriInfo uriInfo) {
         List<Sandwich> list = sandwichResource.findAll();
 
@@ -51,13 +57,13 @@ public class SandwichRepresentation {
     }
 
     @GET
-    @Path("/id/{sandwichId}")
-    @ApiOperation(value = "Récupération d'un sandwich par son id",
-	    notes = "Accès: Client, Admin")
+    @Path("/{sandwichId}")
+    @ApiOperation(value = "Get a sandwich by its id", notes = "Access : Guest, Customer and Admin")
     @ApiResponses(value = {
-	@ApiResponse(code = 200, message = "OK"),
-	@ApiResponse(code = 404, message = "Not Found"),
-	@ApiResponse(code = 500, message = "Internal server error")})
+	    @ApiResponse(code = 200, message = "OK"),
+	    @ApiResponse(code = 404, message = "Not Found"),
+	    @ApiResponse(code = 500, message = "Internal server error")
+    })
     public Response getSandwich(@Context UriInfo uriInfo, @PathParam("sandwichId") String sandwichId) {
         Sandwich sandwich = sandwichResource.findById(sandwichId);
 
@@ -79,13 +85,13 @@ public class SandwichRepresentation {
     @POST
     @Path("/add")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @ApiOperation(value = "Création d'un sandwich",
-	    notes = "Accès: Client, Admin")
+    @ApiOperation(value = "Create a sandwich", notes = "Access : Guest, Customer and Admin")
     @ApiResponses(value = {
-	@ApiResponse(code = 200, message = "OK"),
+	@ApiResponse(code = 201, message = "Created"),
 	@ApiResponse(code = 417, message = "Expectation failed"),
 	@ApiResponse(code = 500, message = "Internal server error")})
     public Response add (
+            @Context UriInfo uriInfo,
             @FormParam("size") String size,
             @FormParam("bread") String bread,
             @FormParam("meat") String meat,
@@ -104,33 +110,40 @@ public class SandwichRepresentation {
         if (isEmpty)
             return Response.status(Response.Status.EXPECTATION_FAILED).build();
 
+        Sandwich sandwich = new Sandwich();
         if (extra == null && extra2 == null && extra3 == null) {
-            if (sandwichResource.insert(size, bread, meat, coldMeats, cheese, salad, crudite, sauce) == null)
+            sandwich = sandwichResource.insert(size, bread, meat, coldMeats, cheese, salad, crudite, sauce);
+            if (sandwich == null)
                 return Response.status(Response.Status.EXPECTATION_FAILED).build();
         } else if (extra != null && extra2 == null && extra3 == null) {
-            if (sandwichResource.insert(size, bread, meat, coldMeats, cheese, salad, crudite, sauce, extra) == null)
+            sandwich = sandwichResource.insert(size, bread, meat, coldMeats, cheese, salad, crudite, sauce, extra);
+            if (sandwich == null)
                 return Response.status(Response.Status.EXPECTATION_FAILED).build();
         } else if (extra != null && extra2 != null && extra3 == null) {
-            if (sandwichResource.insert(size, bread, meat, coldMeats, cheese, salad, crudite, sauce, extra, extra2) == null)
+            sandwich = sandwichResource.insert(size, bread, meat, coldMeats, cheese, salad, crudite, sauce, extra, extra2);
+            if (sandwich == null)
                 return Response.status(Response.Status.EXPECTATION_FAILED).build();
         } else if (extra != null && extra2 != null && extra3 != null) {
-            if (sandwichResource.insert(size, bread, meat, coldMeats, cheese, salad, crudite, sauce, extra, extra2, extra3) == null)
+            sandwich = sandwichResource.insert(size, bread, meat, coldMeats, cheese, salad, crudite, sauce, extra, extra2, extra3);
+            if (sandwich == null)
                 return Response.status(Response.Status.EXPECTATION_FAILED).build();
         }
 
-        return Response.ok().build();
+        File file = new File(getUriForSelfSandwich(uriInfo,sandwich));
+
+        return Response.created(file.toURI()).build();
     }
 
     @PUT
-    @Path("/id/{sandwichId}")
+    @Path("/{sandwichId}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @ApiOperation(value = "Modification d'un sandwich",
-	    notes = "Accès: Client, Admin")
+    @ApiOperation(value = "Edit a sandwich", notes = "Access : Admin only")
     @ApiResponses(value = {
 	@ApiResponse(code = 200, message = "OK"),
 	@ApiResponse(code = 304, message = "Not Modified"),
 	@ApiResponse(code = 500, message = "Internal server error")})
-    public Response editIngredient(
+    @Secured({AccountRole.ADMIN})
+    public Response editSandwich(
             @PathParam("sandwichId") String sandwichId,
             @FormParam("name") String name,
             @FormParam("description") String description,
@@ -161,13 +174,13 @@ public class SandwichRepresentation {
     }
 
     @DELETE
-    @Path("/id/{sandwichId}")
-    @ApiOperation(value = "Suppression d'un sandwich",
-	    notes = "Accès: Client, Admin")
+    @Path("/{sandwichId}")
+    @ApiOperation(value = "Delete a sandwich by its id", notes = "Access : Admin only")
     @ApiResponses(value = {
 	@ApiResponse(code = 200, message = "OK"),
 	@ApiResponse(code = 404, message = "Not Found"),
 	@ApiResponse(code = 500, message = "Internal server error")})
+    @Secured({AccountRole.ADMIN})
     public Response deleteIngredient(@PathParam("sandwichId") String sandwichId) {
         if (sandwichResource.delete(sandwichId))
             return Response.ok().build();
