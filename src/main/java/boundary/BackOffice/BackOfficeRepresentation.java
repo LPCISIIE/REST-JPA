@@ -23,7 +23,7 @@ import java.util.Map;
 @Produces(MediaType.APPLICATION_JSON)
 @Stateless
 @Path("/admin")
-@Api(value = "/admin", description = "Gestion des fonctionnalités administrateurs   ")
+@Api(value = "/admin", description = "Backoffice : the admin dashboard")
 public class BackOfficeRepresentation {
 
     @EJB
@@ -36,8 +36,7 @@ public class BackOfficeRepresentation {
     @Path("/order_status")
     @Secured({AccountRole.ADMIN})
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @ApiOperation(value = "Modification du statut d'une commande",
-         notes = "Accès: Admin")
+    @ApiOperation(value = "Edit the status of an order", notes = "Access : Admin only")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK"),
         @ApiResponse(code = 401, message = "Unauthorized"),
@@ -58,8 +57,7 @@ public class BackOfficeRepresentation {
     @GET
     @Path("/dashboard")
     @Secured({AccountRole.ADMIN})
-    @ApiOperation(value = "Consultation des commandes",
-         notes = "Accès: Admin")
+    @ApiOperation(value = "Get the amount of orders and the turnover", notes = "Access : Admin only")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK"),
         @ApiResponse(code = 401, message = "Unauthorized"),
@@ -80,15 +78,13 @@ public class BackOfficeRepresentation {
 
     @POST
     @Path("/signup")
-    @Secured({AccountRole.ADMIN})
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @ApiOperation(value = "Création d'un profil administrateur",
-         notes = "Accès: Admin")
+    @ApiOperation(value = "Create an admin account", notes = "Email address is unique")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK"),
         @ApiResponse(code = 401, message = "Unauthorized"),
         @ApiResponse(code = 404, message = "Not Found"),
-        @ApiResponse(code = 409, message = "Conflict"),
+        @ApiResponse(code = 409, message = "Conflict : email address is already used"),
         @ApiResponse(code = 500, message = "Internal server error")})
     public Response createAdmin(
             @FormParam("name") String name,
