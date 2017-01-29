@@ -10,7 +10,6 @@ import javax.ejb.Stateless;
 import javax.persistence.CacheStoreMode;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -26,7 +25,8 @@ public class OrderResource {
 
     /**
      * Method that returns an order for an id given
-     * @param id
+     *
+     * @param id ID of the order
      * @return Order
      */
     public Shipment findById(String id) {
@@ -35,6 +35,7 @@ public class OrderResource {
 
     /**
      * Method that returns all the orders
+     *
      * @return List of Order
      */
     public List<Shipment> findAll() {
@@ -45,13 +46,13 @@ public class OrderResource {
 
     /**
      * Method to insert an order with a list of sandwiches
-     * @param account
-     * @param dateTime
-     * @param sandwichesId
+     *
+     * @param account      Account related to the order
+     * @param dateTime     Date and time of the order
+     * @param sandwichesId IDs of sandwiches in the order
      * @return the order
      */
     public Shipment insert(Account account, String dateTime, List<String> sandwichesId) {
-
         Shipment order = new Shipment();
         order.setCustomer(account);
         Date date = order.toDate(dateTime);
@@ -64,7 +65,7 @@ public class OrderResource {
         Sandwich sandwich;
 
         for (String id : sandwichesId) {
-           sandwich = sandwichResource.findById(id);
+            sandwich = sandwichResource.findById(id);
             if (sandwich == null)
                 return null;
             Sandwich copy = new Sandwich(sandwich);
@@ -78,30 +79,33 @@ public class OrderResource {
 
     /**
      * Method that updates an Order
+     *
      * @param order to update
      * @param state of the order
      * @return the new order
      */
     public Shipment update(Shipment order, String state) {
-        if ( order.changeState(state) )
+        if (order.changeState(state))
             return entityManager.merge(order);
         return null;
     }
-  
+
     /**
      * Method that updates an Order
+     *
      * @param order to update
      * @return the new order
-     */    
+     */
     public Shipment update(Shipment order) {
         return entityManager.merge(order);
     }
 
     /**
      * Method that updates the size of a Sandwich
-     * @param order to update
+     *
+     * @param order      to update
      * @param sandwichId to update
-     * @param size new size
+     * @param size       new size
      * @return the new order
      */
     public Shipment updateSize(Shipment order, String sandwichId, String size) {
@@ -117,9 +121,10 @@ public class OrderResource {
 
     /**
      * Method to add a sandwich to an order
-     * @param order
-     * @param sandwichId
-     * @return
+     *
+     * @param order      The order in which we want to add a sandwich
+     * @param sandwichId The ID of the sandwich we want to add
+     * @return Shipment
      */
     public Shipment addSandwich(Shipment order, String sandwichId) {
         Sandwich sandwich = sandwichResource.findById(sandwichId);
@@ -131,11 +136,12 @@ public class OrderResource {
 
     /**
      * Function to update the delivering date
-     * @param order
-     * @param dateTime
+     *
+     * @param order    The order of which we want to update the delivering date
+     * @param dateTime The date and time of delivery
      * @return a shipment if it's ok else null
      */
-    public Shipment updateDate(Shipment order, String dateTime ) {
+    public Shipment updateDate(Shipment order, String dateTime) {
         if (order != null && dateTime != null) {
             if (order.getStatus().equals(Shipment.ORDER_CREATED)) {
                 Date date = order.toDate(dateTime);
@@ -145,12 +151,14 @@ public class OrderResource {
                 }
             }
         }
+
         return null;
     }
 
     /**
      * Method that removes a sandwich in an order
-     * @param order the Shipment
+     *
+     * @param order      the Shipment
      * @param sandwichId the id of the sandwich asked
      * @return if it's deleted
      */
@@ -158,33 +166,41 @@ public class OrderResource {
         if (order != null) {
             if (order.getStatus().equals(Shipment.ORDER_CREATED)) {
                 Sandwich sandwich = sandwichResource.findById(sandwichId);
+
                 if (sandwich != null) {
                     order.removeSandwich(sandwichId);
                     sandwichResource.delete(sandwich.getId());
                     entityManager.merge(order);
+
                     if (order.getSandwiches().size() == 0)
                         delete(order);
+
                     return true;
                 }
             }
         }
+
         return false;
     }
 
     /**
      * Method that deletes an Order
+     *
      * @param order
      * @return if it's deleted
      */
     public boolean delete(Shipment order) {
-       if (order != null) {
-           if (order.getStatus().equals(Shipment.ORDER_CREATED)) {
-               for (Sandwich sandwich : order.getSandwiches())
+        if (order != null) {
+            if (order.getStatus().equals(Shipment.ORDER_CREATED)) {
+                for (Sandwich sandwich : order.getSandwiches())
                     sandwichResource.delete(sandwich.getId());
+
                 entityManager.remove(order);
                 return true;
             }
         }
+
         return false;
     }
+
 }

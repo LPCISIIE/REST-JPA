@@ -2,15 +2,20 @@
 <p align="center"><img style="margin-bottom:3em;" width="150"src="http://www.monitis.com/blog/wp-content/uploads/uploads/2012/03/jboss_logo2.jpg"> 
 </p>  <br>
 
+## About
+This is an example of a RESTful API written in Java, using Jax-RS and JPA.
+This application allows you to manage an online fast-food store.
+Therefore, you can create, edit and remove : sandwiches, customers, orders, receipts, ingredients and categories. </br>
+This application follows the Entity-Control-Boundary pattern.
 
-## API Docs
-https://app.swaggerhub.com/api/xchopin/JPA-Example/1.0.0
-
-## Install
-
-Add this dependency to the project : 
-https://mvnrepository.com/artifact/com.airhacks/javaee7-essentials-archetype/1.3
-
+## Features
+- Account
+- CORS Filter
+- Digest access authentication
+- JToken
+- Password Hashing
+- PDF Generator
+- Role Accounts
 
 ## Authors
 

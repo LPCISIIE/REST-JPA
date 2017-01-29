@@ -8,12 +8,16 @@ import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiResponse;
 import com.wordnik.swagger.annotations.ApiResponses;
+import control.ReceiptGenerator;
 import entity.*;
 import provider.Secured;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.servlet.ServletContext;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +38,48 @@ public class OrderRepresentation {
 
     @EJB
     AccountResource accountResource;
+
+
+    @POST
+    @Path("/receipt")
+    @Produces("application/pdf")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Secured({AccountRole.CUSTOMER, AccountRole.ADMIN})
+    public Response receipt(
+            @Context SecurityContext securityContext,
+            @Context UriInfo uriInfo,
+            @Context ServletContext servletContext,
+            @FormParam("orderId") String orderId
+    ) throws Exception {
+       Shipment order = orderResource.findById(orderId);
+
+       if (order == null)
+         return Response.status(Response.Status.NOT_FOUND).build();
+
+        Account account = accountResource.findByEmail(securityContext.getUserPrincipal().getName());
+
+        if (account == null)
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+
+        if (!account.getRole().equals(AccountRole.ADMIN) && !account.getEmail().equals(order.getCustomer().getEmail()) )
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+
+        if (!order.getStatus().equals(Shipment.ORDER_PAID))
+            return Response.status(Response.Status.FORBIDDEN)
+                    .type("text/plain")
+                    .entity("Your order is not yet paid")
+                    .build();
+
+
+        ReceiptGenerator.create(order, uriInfo, servletContext);
+        String fileName = ReceiptGenerator.FOLDER + order.getId() + ".pdf";
+        File file = new File(fileName);
+        FileInputStream fileInputStream = new FileInputStream(file);
+
+        return Response.ok((Object) fileInputStream)
+                .header("Content-Disposition", "filename="+fileName)
+                .build();
+    }
 
     @Secured({AccountRole.ADMIN})
     @GET
@@ -138,7 +184,7 @@ public class OrderRepresentation {
 	@ApiResponse(code = 404, message = "Not Found"),
 	@ApiResponse(code = 500, message = "Internal server error")})
     public Response editDate(@Context SecurityContext securityContext, @FormParam("date") String date, @FormParam("orderId") String id) {
-         Account account = accountResource.findByEmail(securityContext.getUserPrincipal().getName());
+        Account account = accountResource.findByEmail(securityContext.getUserPrincipal().getName());
 
         if (account == null)
             return Response.status(Response.Status.UNAUTHORIZED).build();
@@ -186,8 +232,8 @@ public class OrderRepresentation {
         if (!account.getRole().equals(AccountRole.ADMIN) && !account.getEmail().equals(shipment.getCustomer().getEmail()) )
             return Response.status(Response.Status.UNAUTHORIZED).build();
 
-       if (sandwich == null)
-           return Response.status(Response.Status.NOT_FOUND).build();
+        if (sandwich == null)
+            return Response.status(Response.Status.NOT_FOUND).build();
 
         boolean isDeleted =  orderResource.removeSandwich(shipment,sandwich);
 
@@ -227,7 +273,7 @@ public class OrderRepresentation {
 
         return Response.status(Response.Status.NOT_FOUND).build();
     }
-    
+
     @PUT
     @Path("/{id}/process")
     @Secured({AccountRole.CUSTOMER})
@@ -271,7 +317,7 @@ public class OrderRepresentation {
 
         if (orderResource.update(shipment, Shipment.ORDER_PAID) == null)
             return Response.status(Response.Status.NOT_FOUND).build();
-        
+
         return Response.ok(shipment, MediaType.APPLICATION_JSON).build();
     }
 

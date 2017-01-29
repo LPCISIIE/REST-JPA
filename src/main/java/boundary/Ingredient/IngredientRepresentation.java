@@ -14,7 +14,6 @@ import entity.Ingredient;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
-import javax.ws.rs.container.PreMatching;
 import javax.ws.rs.core.*;
 import java.util.List;
 
@@ -24,7 +23,6 @@ import java.util.List;
 @Stateless
 @Api(value = "/catalog", description = "Gestion des ingrédients")
 public class IngredientRepresentation {
-
 
     @EJB
     IngredientResource ingredientResource;
@@ -42,7 +40,7 @@ public class IngredientRepresentation {
         @ApiResponse(code = 200, message = "OK"),
         @ApiResponse(code = 500, message = "Internal server error")})
     public Response getIngredients(@Context UriInfo uriInfo) {
-        DatabaseSeeder.feedCatalog(ingredientResource,categoryResource, sandwichResource);
+        DatabaseSeeder.feedCatalog(ingredientResource, categoryResource, sandwichResource);
         List<Ingredient> ingredients = ingredientResource.findAll();
 
         ingredients.stream().forEach(ingredient -> {
@@ -63,7 +61,7 @@ public class IngredientRepresentation {
         @ApiResponse(code = 404, message = "Not Found"),
         @ApiResponse(code = 500, message = "Internal server error")})
     public Response getIngredient(@PathParam("ingredientId") String ingredientId) {
-        DatabaseSeeder.feedCatalog(ingredientResource,categoryResource, sandwichResource);
+        DatabaseSeeder.feedCatalog(ingredientResource, categoryResource, sandwichResource);
 
         Ingredient ingredient = ingredientResource.findById(ingredientId);
         if (ingredient != null)
@@ -81,7 +79,7 @@ public class IngredientRepresentation {
         @ApiResponse(code = 404, message = "Not Found"),
         @ApiResponse(code = 500, message = "Internal server error")})
     public Response getIngredientByName(@PathParam("ingredientName") String ingredientName) {
-        DatabaseSeeder.feedCatalog(ingredientResource,categoryResource, sandwichResource);
+        DatabaseSeeder.feedCatalog(ingredientResource, categoryResource, sandwichResource);
 
         List<Ingredient> ingredients = ingredientResource.findByName(ingredientName);
 
@@ -115,14 +113,10 @@ public class IngredientRepresentation {
         if (ingredient == null || isFormEmpty)
             return Response.notModified().build();
 
-        Category c;
-        String n,d;
-        double p;
-
-        n = (name == null) ? ingredient.getName() : name ;
-        d = (description == null) ? ingredient.getDescription() : description ;
-        p = (Double.toString(price) == null) ? ingredient.getPrice() : price;
-        c = (categoryId == null) ? ingredient.getCategory() : categoryResource.findById(categoryId);
+        String n = (name == null) ? ingredient.getName() : name ;
+        String d = (description == null) ? ingredient.getDescription() : description ;
+        double p = (Double.toString(price) == null) ? ingredient.getPrice() : price;
+        Category c = (categoryId == null) ? ingredient.getCategory() : categoryResource.findById(categoryId);
 
         if (c == null || ingredientResource.update(ingredient.update(c,n,p,d)) == null)
             return Response.notModified().build();
@@ -164,8 +158,6 @@ public class IngredientRepresentation {
         Ingredient ingredient = new Ingredient(categoryResource.findById(categoryId),name,price,description);
 
         if (ingredientResource.insert(ingredient) == null)
-
-
             return Response.status(Response.Status.NOT_FOUND).build();
 
        return Response.ok().build();
