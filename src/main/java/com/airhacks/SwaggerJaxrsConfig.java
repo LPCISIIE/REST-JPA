@@ -13,7 +13,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 
 @WebServlet(name = "SwaggerJaxrsConfig", loadOnStartup = 1)
-public class SwaggerJaxrsConfig extends HttpServlet {
+public class SwaggerJAXRSConfig extends HttpServlet {
 
     @Override
     public void init(ServletConfig servletConfig) {
