@@ -4,6 +4,10 @@ import boundary.Account.AccountRepresentation;
 import boundary.Account.AccountResource;
 import boundary.Ingredient.IngredientRepresentation;
 import boundary.Sandwich.SandwichRepresentation;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;
 import control.ReceiptGenerator;
 import entity.*;
 import provider.Secured;
@@ -20,6 +24,7 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 @Stateless
 @Path("/orders")
+@Api(value = "/orders", description = "Gestion des commandes")
 public class OrderRepresentation {
 
     @Context
@@ -40,6 +45,14 @@ public class OrderRepresentation {
     @Produces("application/pdf")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Secured({AccountRole.CUSTOMER, AccountRole.ADMIN})
+    @ApiOperation(value = "Création d'une facture",
+	    notes = "Accès: Client, Admin")
+    @ApiResponses(value = {
+	@ApiResponse(code = 200, message = "OK"),
+	@ApiResponse(code = 401, message = "Unauthorized"),
+	@ApiResponse(code = 403, message = "Forbidden"),
+	@ApiResponse(code = 404, message = "Not Found"),
+	@ApiResponse(code = 500, message = "Internal server error")})
     public Response receipt(
             @Context SecurityContext securityContext,
             @Context UriInfo uriInfo,
@@ -78,6 +91,12 @@ public class OrderRepresentation {
 
     @Secured({AccountRole.ADMIN})
     @GET
+    @ApiOperation(value = "Récupération de toutes les commandes existantes",
+	    notes = "Accès: Admin")
+    @ApiResponses(value = {
+	@ApiResponse(code = 200, message = "OK"),
+	@ApiResponse(code = 401, message = "Unauthorized"),
+	@ApiResponse(code = 500, message = "Internal server error")})
     public Response getAll(){
         List<Shipment> list = orderResource.findAll();
         list.stream().forEach(order -> {
@@ -100,6 +119,12 @@ public class OrderRepresentation {
 
     @GET
     @Path("/{id}")
+    @ApiOperation(value = "Récupération d'une commande par son id",
+	    notes = "Accès: Client, Admin")
+    @ApiResponses(value = {
+	@ApiResponse(code = 200, message = "OK"),
+	@ApiResponse(code = 404, message = "Not Found"),
+	@ApiResponse(code = 500, message = "Internal server error")})
     public Response get(@PathParam("id") String id) {
         Shipment order = orderResource.findById(id);
 
@@ -126,6 +151,13 @@ public class OrderRepresentation {
     @Path("/{id}")
     @Secured({AccountRole.CUSTOMER, AccountRole.ADMIN})
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @ApiOperation(value = "Suppression d'une commande par son id",
+	    notes = "Accès: Client, Admin")
+    @ApiResponses(value = {
+	@ApiResponse(code = 204, message = "No Content"),
+	@ApiResponse(code = 401, message = "Unauthorized"),
+	@ApiResponse(code = 404, message = "Not Found"),
+	@ApiResponse(code = 500, message = "Internal server error")})
     public Response delete(@Context SecurityContext securityContext, @FormParam("sandwichId") String sandwich, @PathParam("id") String id) {
         Account account = accountResource.findByEmail(securityContext.getUserPrincipal().getName());
 
@@ -152,6 +184,13 @@ public class OrderRepresentation {
     @Path("/edit_delivering")
     @Secured({AccountRole.CUSTOMER, AccountRole.ADMIN})
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @ApiOperation(value = "Modification de la date de livraison",
+	    notes = "Accès: Client, Admin")
+    @ApiResponses(value = {
+	@ApiResponse(code = 200, message = "OK"),
+	@ApiResponse(code = 401, message = "Unauthorized"),
+	@ApiResponse(code = 404, message = "Not Found"),
+	@ApiResponse(code = 500, message = "Internal server error")})
     public Response editDate(@Context SecurityContext securityContext, @FormParam("date") String date, @FormParam("orderId") String id) {
         Account account = accountResource.findByEmail(securityContext.getUserPrincipal().getName());
 
@@ -180,6 +219,13 @@ public class OrderRepresentation {
     @Path("/remove_sandwich")
     @Secured({AccountRole.CUSTOMER, AccountRole.ADMIN})
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @ApiOperation(value = "Suppression d'un sandwich dans une commande",
+	    notes = "Accès: Client, Admin")
+    @ApiResponses(value = {
+	@ApiResponse(code = 200, message = "OK"),
+	@ApiResponse(code = 401, message = "Unauthorized"),
+	@ApiResponse(code = 404, message = "Not Found"),
+	@ApiResponse(code = 500, message = "Internal server error")})
     public Response removeSandwich(@Context SecurityContext securityContext, @FormParam("sandwichId") String sandwich, @FormParam("orderId") String id) {
         Account account = accountResource.findByEmail(securityContext.getUserPrincipal().getName());
 
@@ -209,6 +255,13 @@ public class OrderRepresentation {
     @Path("/{id}")
     @Secured({AccountRole.CUSTOMER})
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @ApiOperation(value = "Modification d'une commande",
+	    notes = "Accès: Client")
+    @ApiResponses(value = {
+	@ApiResponse(code = 200, message = "OK"),
+	@ApiResponse(code = 401, message = "Unauthorized"),
+	@ApiResponse(code = 404, message = "Not Found"),
+	@ApiResponse(code = 500, message = "Internal server error")})
     public Response update(@Context SecurityContext securityContext, @PathParam("id") String id,@FormParam("sandwichId") String sandwichId, @FormParam("size") String size ) {
         Account account = accountResource.findByEmail(securityContext.getUserPrincipal().getName());
 
@@ -233,6 +286,13 @@ public class OrderRepresentation {
     @Path("/{id}/process")
     @Secured({AccountRole.CUSTOMER})
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @ApiOperation(value = "Paiement de la commande",
+	    notes = "Accès: Client")
+    @ApiResponses(value = {
+	@ApiResponse(code = 200, message = "OK"),
+	@ApiResponse(code = 401, message = "Unauthorized"),
+	@ApiResponse(code = 404, message = "Not Found"),
+	@ApiResponse(code = 500, message = "Internal server error")})
     public Response payOrder(@Context SecurityContext securityContext, @PathParam("id") String id, @FormParam("vipCard") String vipCard) {
         Shipment shipment = orderResource.findById(id);
 
@@ -272,6 +332,13 @@ public class OrderRepresentation {
     @POST
     @Secured({AccountRole.CUSTOMER, AccountRole.ADMIN})
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @ApiOperation(value = "Ajout d'une commande",
+	    notes = "Accès: Client, Admin")
+    @ApiResponses(value = {
+	@ApiResponse(code = 200, message = "OK"),
+	@ApiResponse(code = 401, message = "Unauthorized"),
+	@ApiResponse(code = 404, message = "Not Found"),
+	@ApiResponse(code = 500, message = "Internal server error")})
     public Response add(
             @Context SecurityContext securityContext,
             @FormParam("dateTime") String dateTime,
@@ -318,6 +385,13 @@ public class OrderRepresentation {
     @Secured({AccountRole.ADMIN, AccountRole.CUSTOMER})
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("/add_sandwich")
+    @ApiOperation(value = "Ajout d'un sandwich à une commande",
+	    notes = "Accès: Client, Admin")
+    @ApiResponses(value = {
+	@ApiResponse(code = 200, message = "OK"),
+	@ApiResponse(code = 401, message = "Unauthorized"),
+	@ApiResponse(code = 404, message = "Not Found"),
+	@ApiResponse(code = 500, message = "Internal server error")})
     public Response addSandwich(@Context SecurityContext securityContext, @FormParam("orderId") String id, @FormParam("sandwichId") String sandwichId) {
         Account account = accountResource.findByEmail(securityContext.getUserPrincipal().getName());
 
