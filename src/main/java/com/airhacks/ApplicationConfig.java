@@ -27,6 +27,7 @@ public class ApplicationConfig extends Application {
     private void addRestResourceClasses(Set<Class<?>> resources) {
         resources.add(boundary.Account.AccountRepresentation.class);
         resources.add(boundary.Account.AuthenticationEndpoint.class);
+        resources.add(boundary.BackOffice.BackOfficeRepresentation.class);
     }
 
 }
