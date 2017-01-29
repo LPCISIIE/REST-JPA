@@ -1,6 +1,7 @@
 package boundary.Ingredient;
 
 import boundary.Category.CategoryResource;
+import entity.Category;
 import entity.Ingredient;
 
 import javax.ejb.EJB;
@@ -52,7 +53,7 @@ public class IngredientResource {
                 .getResultList();
     }
     
-    public List<Ingredient> findByCategory(String category) {
+    public List<Ingredient> findByCategory(Category category) {
         return entityManager.createQuery("SELECT i from Ingredient i where i.category = :category ")
                 .setParameter("category", category)
                 .setHint("javax.persistence.cache.storeMode", CacheStoreMode.REFRESH)
