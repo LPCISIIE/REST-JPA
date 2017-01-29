@@ -98,7 +98,7 @@ public class ReceiptGenerator {
         addEmptyLine(preface, 3);
         preface.add(new Paragraph("Dear " + order.getCustomer().getName() + ",",  small));
         addEmptyLine(preface, 1);
-        preface.add(new Paragraph("Here is the pdf of your receipt : ", small));
+        preface.add(new Paragraph("Here is your receipt : ", small));
         addEmptyLine(preface, 2);
 
         document.add(preface);
