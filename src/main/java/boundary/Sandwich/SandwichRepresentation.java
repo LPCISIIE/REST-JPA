@@ -2,6 +2,10 @@ package boundary.Sandwich;
 
 import boundary.Ingredient.IngredientRepresentation;
 import boundary.Ingredient.IngredientResource;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;
 import entity.Ingredient;
 import entity.Sandwich;
 
@@ -15,12 +19,18 @@ import java.util.List;
 
 @Produces(MediaType.APPLICATION_JSON)
 @Stateless
+@Api(value = "/sandwiches", description = "Gestion des sandwichs")
 public class SandwichRepresentation {
 
     @EJB
     SandwichResource sandwichResource;
 
     @GET
+    @ApiOperation(value = "Récupération de tous les sandwichs existants",
+	    notes = "Accès: Client, Admin")
+    @ApiResponses(value = {
+	@ApiResponse(code = 200, message = "OK"),
+	@ApiResponse(code = 500, message = "Internal server error")})
     public Response getSandwiches(@Context UriInfo uriInfo) {
         List<Sandwich> list = sandwichResource.findAll();
 
@@ -41,6 +51,12 @@ public class SandwichRepresentation {
 
     @GET
     @Path("/id/{sandwichId}")
+    @ApiOperation(value = "Récupération d'un sandwich par son id",
+	    notes = "Accès: Client, Admin")
+    @ApiResponses(value = {
+	@ApiResponse(code = 200, message = "OK"),
+	@ApiResponse(code = 404, message = "Not Found"),
+	@ApiResponse(code = 500, message = "Internal server error")})
     public Response getSandwich(@Context UriInfo uriInfo, @PathParam("sandwichId") String sandwichId) {
         Sandwich sandwich = sandwichResource.findById(sandwichId);
 
@@ -62,6 +78,12 @@ public class SandwichRepresentation {
     @POST
     @Path("/add") 
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @ApiOperation(value = "Création d'un sandwich",
+	    notes = "Accès: Client, Admin")
+    @ApiResponses(value = {
+	@ApiResponse(code = 200, message = "OK"),
+	@ApiResponse(code = 417, message = "Expectation failed"),
+	@ApiResponse(code = 500, message = "Internal server error")})
     public Response add (
             @FormParam("size") String size,
             @FormParam("bread") String bread,
@@ -101,6 +123,12 @@ public class SandwichRepresentation {
     @PUT
     @Path("/id/{sandwichId}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @ApiOperation(value = "Modification d'un sandwich",
+	    notes = "Accès: Client, Admin")
+    @ApiResponses(value = {
+	@ApiResponse(code = 200, message = "OK"),
+	@ApiResponse(code = 304, message = "Not Modified"),
+	@ApiResponse(code = 500, message = "Internal server error")})
     public Response editIngredient(
             @PathParam("sandwichId") String sandwichId,
             @FormParam("name") String name,
@@ -135,6 +163,12 @@ public class SandwichRepresentation {
 
     @DELETE
     @Path("/id/{sandwichId}")
+    @ApiOperation(value = "Suppression d'un sandwich",
+	    notes = "Accès: Client, Admin")
+    @ApiResponses(value = {
+	@ApiResponse(code = 200, message = "OK"),
+	@ApiResponse(code = 404, message = "Not Found"),
+	@ApiResponse(code = 500, message = "Internal server error")})
     public Response deleteIngredient(@PathParam("sandwichId") String sandwichId) {
         if (sandwichResource.delete(sandwichId))
             return Response.ok().build();
