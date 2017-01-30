@@ -45,6 +45,21 @@ public class OrderResource {
     }
 
     /**
+     * Method that returns the orders with pagination and limit method
+     *
+     * @param offset start at the nth position
+     * @param limit number max of result
+     * @return List of Order
+     */
+    public List<Shipment> offsetLimit(int offset, int limit) {
+        return entityManager.createNamedQuery("Shipment.findAll", Shipment.class)
+                .setFirstResult(offset)
+                .setMaxResults(limit)
+                .setHint("javax.persistence.cache.storeMode", CacheStoreMode.REFRESH)
+                .getResultList();
+    }
+
+    /**
      * Method to insert an order with a list of sandwiches
      *
      * @param account      Account related to the order
