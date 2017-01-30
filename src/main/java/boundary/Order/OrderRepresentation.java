@@ -4,10 +4,7 @@ import boundary.Account.AccountRepresentation;
 import boundary.Account.AccountResource;
 import boundary.Ingredient.IngredientRepresentation;
 import boundary.Sandwich.SandwichRepresentation;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiResponse;
-import com.wordnik.swagger.annotations.ApiResponses;
+import com.wordnik.swagger.annotations.*;
 import control.ReceiptGenerator;
 import entity.*;
 import provider.Secured;
@@ -347,10 +344,18 @@ public class OrderRepresentation {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @ApiOperation(value = "Create an order", notes = "Access : Customer only - Have to fill at least one sandwichId field - Date has to be 10 min later from now and in this format : 'dd/MM/yyy HH:mm'")
     @ApiResponses(value = {
-	@ApiResponse(code = 200, message = "OK"),
-	@ApiResponse(code = 401, message = "Unauthorized"),
-	@ApiResponse(code = 404, message = "Not Found"),
-	@ApiResponse(code = 500, message = "Internal server error")})
+	    @ApiResponse(code = 200, message = "OK"),
+	    @ApiResponse(code = 401, message = "Unauthorized"),
+	    @ApiResponse(code = 404, message = "Not Found"),
+	    @ApiResponse(code = 500, message = "Internal server error")
+    })
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "dateTime", required = true, dataType = "String : 'dd/MM/yyy HH:mm'", paramType = "query"),
+            @ApiImplicitParam(name = "sandwichId", required = true, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "sandwichId2", required = false, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "sandwichId3", required = false, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "sandwichId4", required = false, dataType = "String", paramType = "query"),
+    })
     public Response add(
             @Context SecurityContext securityContext,
             @FormParam("dateTime") String dateTime,
@@ -424,6 +429,49 @@ public class OrderRepresentation {
         shipment.addLink(getUriForSelfShipment(uriInfo, shipment), "self");
         return Response.ok(shipment, MediaType.APPLICATION_JSON).build();
     }
+
+
+    @GET
+    @Secured({AccountRole.ADMIN})
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Path("/navigate/{offset}/{limit}")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "offset", required = true, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "limit", required = true, dataType = "int", paramType = "query"),
+    })
+    @ApiOperation(value = "Show orders with pagination and limit params", notes = "Access: Admin only - Pagination starts at 1 ! 0 is unlimited")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 401, message = "Unauthorized"),
+            @ApiResponse(code = 404, message = "Not Found"),
+            @ApiResponse(code = 500, message = "Internal server error")
+    })
+    public Response pagination(@PathParam("offset") int offset, @PathParam("limit") int limit) {
+
+        if (offset < 0 || limit < 0)
+            return Response.status(Response.Status.NOT_FOUND).build();
+
+        List<Shipment> list = orderResource.offsetLimit(offset,limit);
+        System.out.println(list.size());
+
+        list.stream().forEach(order -> {
+            List<Sandwich> sandwiches = order.getSandwiches();
+            order.addLink(this.getUriForSelfShipment(uriInfo,order),"self");
+            for (Sandwich sandwich : sandwiches) {
+                sandwich.getLinks().clear();
+                sandwich.addLink(this.getUriForSelfSandwich(uriInfo,sandwich), "self");
+                for (Ingredient ingredient : sandwich.getIngredientsList()) {
+                    ingredient.getLinks().clear();
+                    ingredient.addLink(this.getUriForSelfIngredient(uriInfo,ingredient), "self");
+                }
+            }
+            order.setSandwiches(sandwiches);
+        });
+
+        GenericEntity<List<Shipment>> listGenericEntity = new GenericEntity<List<Shipment>>(list){};
+        return Response.ok(listGenericEntity, MediaType.APPLICATION_JSON).build();
+    }
+
 
     private String getUriForSelfShipment(UriInfo uriInfo, Shipment Commande) {
         return uriInfo.getBaseUriBuilder()
