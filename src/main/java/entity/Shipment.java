@@ -19,7 +19,7 @@ import java.util.TimeZone;
 @Entity
 @XmlRootElement
 @NamedQueries({
-        @NamedQuery(name = "Shipment.findAll", query = "SELECT s FROM Shipment s")
+        @NamedQuery(name = "Shipment.findAll", query = "SELECT s FROM Shipment s ORDER BY s.dateTime"),
 })
 public class Shipment implements Serializable {
 // NOT ORDER because JAVA is so stupid it makes a SQL error with the name Order ... thanks Oracle
