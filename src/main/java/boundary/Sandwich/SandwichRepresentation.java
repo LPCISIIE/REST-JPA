@@ -177,13 +177,13 @@ public class SandwichRepresentation {
     @Path("/{sandwichId}")
     @ApiOperation(value = "Delete a sandwich by its id", notes = "Access : Admin only")
     @ApiResponses(value = {
-	@ApiResponse(code = 200, message = "OK"),
+	@ApiResponse(code = 204, message = "No content"),
 	@ApiResponse(code = 404, message = "Not Found"),
 	@ApiResponse(code = 500, message = "Internal server error")})
     @Secured({AccountRole.ADMIN})
     public Response deleteIngredient(@PathParam("sandwichId") String sandwichId) {
         if (sandwichResource.delete(sandwichId))
-            return Response.ok().build();
+            return Response.status(204).build();
         else
             return Response.status(Response.Status.NOT_FOUND).build();
     }

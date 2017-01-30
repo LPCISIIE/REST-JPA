@@ -140,7 +140,7 @@ public class IngredientRepresentation {
     @Secured({AccountRole.ADMIN})
     public Response deleteIngredient(@PathParam("ingredientId") String ingredientId) {
         if (ingredientResource.delete(ingredientId))
-            return Response.ok().build();
+            return Response.status(204).build();
         else
             return Response.status(Response.Status.NOT_FOUND).build();
     }
