@@ -49,7 +49,7 @@ public class OrderRepresentation {
     @ApiResponses(value = {
 	    @ApiResponse(code = 200, message = "OK"),
 	    @ApiResponse(code = 401, message = "Unauthorized"),
-	    @ApiResponse(code = 403, message = "Forbidden"),
+	    @ApiResponse(code = 402, message = "Payment Required (Order not yet paid)"),
 	    @ApiResponse(code = 404, message = "Not Found"),
 	    @ApiResponse(code = 500, message = "Internal server error")
     })
@@ -73,12 +73,8 @@ public class OrderRepresentation {
             return Response.status(Response.Status.UNAUTHORIZED).build();
 
         if (!order.getStatus().equals(Shipment.ORDER_PAID))
-            return Response.status(Response.Status.FORBIDDEN)
-                    .type("text/plain")
-                    .entity("Your order is not yet paid")
-                    .build();
-
-
+            return Response.status(402).build();
+        
         ReceiptGenerator.create(order, uriInfo, servletContext);
         String fileName = ReceiptGenerator.FOLDER + order.getId() + ".pdf";
         File file = new File(fileName);
@@ -188,7 +184,7 @@ public class OrderRepresentation {
         boolean isDeleted = orderResource.delete(shipment);
 
         if (isDeleted)
-            return Response.ok().build();
+            return Response.status(204).build();
 
         return Response.status(Response.Status.NOT_FOUND).build();
     }
