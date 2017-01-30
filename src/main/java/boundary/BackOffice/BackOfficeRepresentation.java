@@ -2,6 +2,10 @@ package boundary.BackOffice;
 
 import boundary.Account.AccountResource;
 import boundary.Order.OrderResource;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;
 import control.PasswordManagement;
 import entity.Account;
 import entity.AccountRole;
@@ -19,6 +23,7 @@ import java.util.Map;
 @Produces(MediaType.APPLICATION_JSON)
 @Stateless
 @Path("/admin")
+@Api(value = "/admin", description = "Backoffice : the admin dashboard")
 public class BackOfficeRepresentation {
 
     @EJB
@@ -31,6 +36,12 @@ public class BackOfficeRepresentation {
     @Path("/order_status")
     @Secured({AccountRole.ADMIN})
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @ApiOperation(value = "Edit the status of an order", notes = "Access : Admin only")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 401, message = "Unauthorized"),
+        @ApiResponse(code = 404, message = "Not Found"),
+        @ApiResponse(code = 500, message = "Internal server error")})
     public Response editOrderStatus(@FormParam("orderId") String orderId, @FormParam("status") String orderStatus) {
         Shipment shipment = orderResource.findById(orderId);
 
@@ -46,6 +57,11 @@ public class BackOfficeRepresentation {
     @GET
     @Path("/dashboard")
     @Secured({AccountRole.ADMIN})
+    @ApiOperation(value = "Get the amount of orders and the turnover", notes = "Access : Admin only")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 401, message = "Unauthorized"),
+        @ApiResponse(code = 500, message = "Internal server error")})
     public Response getTurnover(@Context SecurityContext securityContext) {
         List<Shipment> orders = orderResource.findAll();
         double turnover = 0.0;
@@ -63,6 +79,13 @@ public class BackOfficeRepresentation {
     @POST
     @Path("/signup")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @ApiOperation(value = "Create an admin account", notes = "Email address is unique")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 401, message = "Unauthorized"),
+        @ApiResponse(code = 404, message = "Not Found"),
+        @ApiResponse(code = 409, message = "Conflict : email address is already used"),
+        @ApiResponse(code = 500, message = "Internal server error")})
     public Response createAdmin(
             @FormParam("name") String name,
             @FormParam("email") String email,
