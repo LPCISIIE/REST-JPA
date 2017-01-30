@@ -1,6 +1,10 @@
 package boundary.Account;
 
 
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;
 import control.KeyGenerator;
 import entity.Account;
 import io.jsonwebtoken.Jwts;
@@ -25,6 +29,7 @@ import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 
 
 @Path("/authentication")
+@Api(value = "/authentication", description = "Route to login")
 public class AuthenticationEndpoint {
 
     @Inject
@@ -39,6 +44,11 @@ public class AuthenticationEndpoint {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @ApiOperation(value = "Authentication for users", notes = "Token given available for 5 minutes")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 401, message = "Unauthorized"),
+        @ApiResponse(code = 500, message = "Internal server error")})
     public Response authenticateUser(@FormParam("email") String email, @FormParam("password") String password) {
         try {
             authenticate(email, password);

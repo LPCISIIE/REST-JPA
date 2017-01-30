@@ -3,9 +3,15 @@ package boundary.Ingredient;
 import boundary.Category.CategoryRepresentation;
 import boundary.Category.CategoryResource;
 import boundary.Sandwich.SandwichResource;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;
 import control.DatabaseSeeder;
+import entity.AccountRole;
 import entity.Category;
 import entity.Ingredient;
+import provider.Secured;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -13,10 +19,12 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import java.util.List;
 
-@Path("/catalog")
+
 
 @Produces(MediaType.APPLICATION_JSON)
 @Stateless
+@Api(value = "/ingredients", description = "Ingredients management")
+@Path("/ingredients")
 public class IngredientRepresentation {
 
     @EJB
@@ -29,6 +37,11 @@ public class IngredientRepresentation {
     SandwichResource sandwichResource;
     
     @GET
+    @ApiOperation(value = "Get all ingredients", notes = "Access : Guest, Customer and Admin")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 500, message = "Internal server error")
+    })
     public Response getIngredients(@Context UriInfo uriInfo) {
         DatabaseSeeder.feedCatalog(ingredientResource, categoryResource, sandwichResource);
         List<Ingredient> ingredients = ingredientResource.findAll();
@@ -43,7 +56,13 @@ public class IngredientRepresentation {
     }
 
     @GET
-    @Path("/id/{ingredientId}")
+    @Path("/{ingredientId}")
+    @ApiOperation(value = "Get an ingredient by its id", notes = "Access : Guest, Customer and Admin")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "Not Found"),
+        @ApiResponse(code = 500, message = "Internal server error")
+    })
     public Response getIngredient(@PathParam("ingredientId") String ingredientId) {
         DatabaseSeeder.feedCatalog(ingredientResource, categoryResource, sandwichResource);
 
@@ -56,6 +75,12 @@ public class IngredientRepresentation {
 
     @GET
     @Path("/name/{ingredientName}")
+    @ApiOperation(value = "Get ingredients by their name", notes = "Access : Guest, Customer and Admin - Can return one or many ingredients")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "Not Found"),
+        @ApiResponse(code = 500, message = "Internal server error")
+    })
     public Response getIngredientByName(@PathParam("ingredientName") String ingredientName) {
         DatabaseSeeder.feedCatalog(ingredientResource, categoryResource, sandwichResource);
 
@@ -69,8 +94,16 @@ public class IngredientRepresentation {
 
     }
 
+
+    @ApiOperation(value = "Edit an ingredient", notes = "Access : Admin only - Have to fill one field at least")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 304, message = "Not Modified"),
+        @ApiResponse(code = 500, message = "Internal server error")
+    })
     @PUT
-    @Path("/id/{ingredientId}")
+    @Secured({AccountRole.ADMIN})
+    @Path("/{ingredientId}")
     public Response editIngredient(
             @PathParam("ingredientId") String ingredientId,
             @FormParam("name") String name,
@@ -97,10 +130,17 @@ public class IngredientRepresentation {
     }
 
     @DELETE
-    @Path("/id/{ingredientId}")
+    @Path("/{ingredientId}")
+    @ApiOperation(value = "Delete an ingredient", notes = "Access : Admin only")
+    @ApiResponses(value = {
+        @ApiResponse(code = 204, message = "No Content"),
+        @ApiResponse(code = 404, message = "Not Found"),
+        @ApiResponse(code = 500, message = "Internal server error")
+    })
+    @Secured({AccountRole.ADMIN})
     public Response deleteIngredient(@PathParam("ingredientId") String ingredientId) {
         if (ingredientResource.delete(ingredientId))
-            return Response.ok().build();
+            return Response.status(204).build();
         else
             return Response.status(Response.Status.NOT_FOUND).build();
     }
@@ -108,6 +148,13 @@ public class IngredientRepresentation {
     @POST
     @Path("/add")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @ApiOperation(value = "Create an ingredient", notes = "Access : Admin only")
+    @Secured({AccountRole.ADMIN})
+    @ApiResponses(value = {
+        @ApiResponse(code = 201, message = "Created"),
+        @ApiResponse(code = 404, message = "Not Found"),
+        @ApiResponse(code = 500, message = "Internal server error")
+    })
     public Response add (
             @FormParam("name") String name,
             @FormParam("categoryId") String categoryId,
@@ -126,6 +173,13 @@ public class IngredientRepresentation {
     @POST
     @Path("/bread/add")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @ApiOperation(value = "Create a bread ingredient", notes = "Access : Admin only")
+    @Secured({AccountRole.ADMIN})
+    @ApiResponses(value = {
+        @ApiResponse(code = 201, message = "Created"),
+        @ApiResponse(code = 417, message = "Expectation failed"),
+        @ApiResponse(code = 500, message = "Internal server error")
+    })
     public Response addBread (
             @FormParam("name") String name,
             @FormParam("price") double price,
@@ -149,5 +203,4 @@ public class IngredientRepresentation {
                 .build()
                 .toString();
     }
-
 }
