@@ -57,8 +57,10 @@ public class AccountRepresentation {
     @ApiOperation(value = "Get an account by its email address", notes = "Access : Admin only")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 401, message = "Unauthorized"),
         @ApiResponse(code = 404, message = "Not Found"),
-        @ApiResponse(code = 500, message = "Internal server error")})
+        @ApiResponse(code = 500, message = "Internal server error")
+    })
     public Response get(@PathParam("email") String email) {
         Account account = accountResource.findByEmail(email);
         if (account != null)
@@ -72,7 +74,9 @@ public class AccountRepresentation {
     @ApiOperation(value = "Get all the accounts", notes = "Access: Admin only")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK"),
-        @ApiResponse(code = 500, message = "Internal server error")})
+        @ApiResponse(code = 401, message = "Unauthorized"),
+        @ApiResponse(code = 500, message = "Internal server error")
+    })
     public Response getAll(){
         GenericEntity<List<Account>> list = new GenericEntity<List<Account>>(accountResource.findAll()){};
         return Response.ok(list, MediaType.APPLICATION_JSON).build();
