@@ -60,6 +60,34 @@ public class OrderResource {
     }
 
     /**
+     * Method that returns order for a specific status
+     *
+     * @param status
+     * @return List of Shipment
+     */
+    public List<Shipment> findByStatus(int status){
+        return entityManager.createQuery("SELECT s FROM Shipment s WHERE s._status = :status ")
+                .setParameter("status", status)
+                .setHint("javax.persistence.cache.storeMode", CacheStoreMode.REFRESH)
+                .getResultList();
+    }
+
+
+    /**
+     * Method that returns order for a specific time
+     *
+     * @param date
+     * @return List of Shipment
+     */
+    public List<Shipment> findByDate(String date){
+        return entityManager.createQuery("SELECT s FROM Shipment s WHERE s.dateTime = :date ")
+                .setParameter("date", date)
+                .setHint("javax.persistence.cache.storeMode", CacheStoreMode.REFRESH)
+                .getResultList();
+    }
+
+
+    /**
      * Method to insert an order with a list of sandwiches
      *
      * @param account      Account related to the order
@@ -89,6 +117,7 @@ public class OrderResource {
         }
 
         order.setId(UUID.randomUUID().toString());
+
         return entityManager.merge(order);
     }
 
@@ -96,11 +125,11 @@ public class OrderResource {
      * Method that updates an Order
      *
      * @param order to update
-     * @param state of the order
+     * @param status of the order
      * @return the new order
      */
-    public Shipment update(Shipment order, String state) {
-        if (order.changeState(state))
+    public Shipment update(Shipment order, int status) {
+        if (order.changeState(status))
             return entityManager.merge(order);
         return null;
     }
@@ -126,7 +155,7 @@ public class OrderResource {
     public Shipment updateSize(Shipment order, String sandwichId, String size) {
         Sandwich sandwich = sandwichResource.findById(sandwichId);
 
-        if (sandwich == null || !Sandwich.isSizeOk(size) || order.getStatus() != Shipment.ORDER_CREATED)
+        if (sandwich == null || !Sandwich.isSizeOk(size) || order.get_status() != Shipment.CREATED)
             return null;
 
         sandwich.setSize(size);
@@ -158,7 +187,7 @@ public class OrderResource {
      */
     public Shipment updateDate(Shipment order, String dateTime) {
         if (order != null && dateTime != null) {
-            if (order.getStatus().equals(Shipment.ORDER_CREATED)) {
+            if (order.get_status() != Shipment.CREATED) {
                 Date date = order.toDate(dateTime);
                 if (date != null) {
                     order.setDateTime(date);
@@ -179,7 +208,7 @@ public class OrderResource {
      */
     public boolean removeSandwich(Shipment order, String sandwichId) {
         if (order != null) {
-            if (order.getStatus().equals(Shipment.ORDER_CREATED)) {
+            if (order.get_status() != Shipment.CREATED) {
                 Sandwich sandwich = sandwichResource.findById(sandwichId);
 
                 if (sandwich != null) {
@@ -206,7 +235,7 @@ public class OrderResource {
      */
     public boolean delete(Shipment order) {
         if (order != null) {
-            if (order.getStatus().equals(Shipment.ORDER_CREATED)) {
+            if (order.get_status() != Shipment.CREATED) {
                 for (Sandwich sandwich : order.getSandwiches())
                     sandwichResource.delete(sandwich.getId());
 
