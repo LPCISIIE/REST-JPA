@@ -33,7 +33,7 @@ public class BackOfficeRepresentation {
     OrderResource orderResource;
 
     @PUT
-    @Path("/order_status")
+    @Path("/orders/{id}")
     @Secured({AccountRole.ADMIN})
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @ApiOperation(value = "Edit the status of an order", notes = "Access : Admin only")
@@ -42,7 +42,7 @@ public class BackOfficeRepresentation {
         @ApiResponse(code = 401, message = "Unauthorized"),
         @ApiResponse(code = 404, message = "Not Found"),
         @ApiResponse(code = 500, message = "Internal server error")})
-    public Response editOrderStatus(@FormParam("orderId") String orderId, @FormParam("status") int orderStatus) {
+    public Response editOrderStatus(@PathParam("id") String orderId, @FormParam("status") int orderStatus) {
         Shipment shipment = orderResource.findById(orderId);
 
         if (shipment == null)

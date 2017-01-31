@@ -187,7 +187,7 @@ public class OrderRepresentation {
     }
 
     @PUT
-    @Path("/edit_delivering")
+    @Path("/{id}")
     @Secured({AccountRole.CUSTOMER, AccountRole.ADMIN})
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @ApiOperation(value = "Edit the delivering date", notes = "Access : Owner (customer) and Admin - Date has to be 10 min later from now and in this format : 'dd/MM/yyy HH:mm'")
@@ -196,7 +196,7 @@ public class OrderRepresentation {
 	    @ApiResponse(code = 401, message = "Unauthorized"),
 	    @ApiResponse(code = 404, message = "Not Found"),
     })
-    public Response editDate(@Context SecurityContext securityContext, @FormParam("date") String date, @FormParam("orderId") String id) {
+    public Response editDate(@Context SecurityContext securityContext, @FormParam("date") String date, @PathParam("id") String id) {
         Account account = accountResource.findByEmail(securityContext.getUserPrincipal().getName());
 
         if (account == null)
@@ -256,7 +256,7 @@ public class OrderRepresentation {
     }
 
     @PUT
-    @Path("/{id}")
+    @Path("/{orderId}/sandwiches/{sandwichId}")
     @Secured({AccountRole.CUSTOMER})
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @ApiOperation(value = "Edit size of a sandwich", notes = "Access : Owner (customer) only - Only if the order is at the status CREATED")
@@ -265,7 +265,7 @@ public class OrderRepresentation {
 	    @ApiResponse(code = 401, message = "Unauthorized"),
 	    @ApiResponse(code = 404, message = "Not Found"),
     })
-    public Response update(@Context SecurityContext securityContext, @PathParam("id") String id, @FormParam("sandwichId") String sandwichId, @FormParam("size") String size ) {
+    public Response update(@Context SecurityContext securityContext, @PathParam("orderId") String id, @PathParam("sandwichId") String sandwichId, @FormParam("size") String size ) {
         Account account = accountResource.findByEmail(securityContext.getUserPrincipal().getName());
 
         if (account == null)

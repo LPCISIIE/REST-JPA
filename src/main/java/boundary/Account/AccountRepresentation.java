@@ -24,9 +24,9 @@ public class AccountRepresentation {
     @EJB
     AccountResource accountResource;
 
-    @GET
+    @POST
     @Secured({AccountRole.CUSTOMER})
-    @Path("/create_card")
+    @Path("/cards")
     @ApiOperation(value = "Create a loyalty card", notes = "Access: Customer only")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK"),
