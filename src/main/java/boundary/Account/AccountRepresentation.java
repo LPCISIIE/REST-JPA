@@ -29,7 +29,7 @@ public class AccountRepresentation {
     @Path("/cards")
     @ApiOperation(value = "Create a loyalty card", notes = "Access: Customer only")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 204, message = "No content"),
         @ApiResponse(code = 401, message = "Unauthorized"),
         @ApiResponse(code = 409, message = "Conflict : the customer has already a loyalty card"),
         @ApiResponse(code = 500, message = "Internal server error")})
@@ -87,7 +87,7 @@ public class AccountRepresentation {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @ApiOperation(value = "Create a customer account", notes = "Email address is unique")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 204, message = "No content"),
         @ApiResponse(code = 404, message = "Not Found"),
         @ApiResponse(code = 409, message = "Conflict : email address is already used"),
         @ApiResponse(code = 500, message = "Internal server error")})

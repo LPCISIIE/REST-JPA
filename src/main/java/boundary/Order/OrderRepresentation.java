@@ -72,7 +72,7 @@ public class OrderRepresentation {
         if (!account.getRole().equals(AccountRole.ADMIN) && !account.getEmail().equals(order.getCustomer().getEmail()) )
             return Response.status(Response.Status.UNAUTHORIZED).build();
 
-        if (order.get_status() != (Shipment.PAID))
+        if (order.getStatus() != (Shipment.PAID))
             return Response.status(402).build();
         
         ReceiptGenerator.create(order, uriInfo, servletContext);
@@ -192,7 +192,7 @@ public class OrderRepresentation {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @ApiOperation(value = "Edit the delivering date", notes = "Access : Owner (customer) and Admin - Date has to be 10 min later from now and in this format : 'dd/MM/yyy HH:mm'")
     @ApiResponses(value = {
-	    @ApiResponse(code = 200, message = "OK"),
+	    @ApiResponse(code = 204, message = "No content"),
 	    @ApiResponse(code = 401, message = "Unauthorized"),
 	    @ApiResponse(code = 404, message = "Not Found"),
     })
@@ -226,7 +226,7 @@ public class OrderRepresentation {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @ApiOperation(value = "Remove a sandwich from an order", notes = "Access : Owner (customer) and Admin")
     @ApiResponses(value = {
-	    @ApiResponse(code = 200, message = "OK"),
+	    @ApiResponse(code = 204, message = "No content"),
 	    @ApiResponse(code = 401, message = "Unauthorized"),
 	    @ApiResponse(code = 404, message = "Not Found"),
     })
@@ -261,7 +261,7 @@ public class OrderRepresentation {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @ApiOperation(value = "Edit size of a sandwich", notes = "Access : Owner (customer) only - Only if the order is at the status CREATED")
     @ApiResponses(value = {
-	    @ApiResponse(code = 200, message = "OK"),
+	    @ApiResponse(code = 204, message = "No content"),
 	    @ApiResponse(code = 401, message = "Unauthorized"),
 	    @ApiResponse(code = 404, message = "Not Found"),
     })

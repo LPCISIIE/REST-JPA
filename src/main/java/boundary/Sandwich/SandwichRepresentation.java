@@ -96,7 +96,7 @@ public class SandwichRepresentation {
     @ApiOperation(value = "Create a sandwich", notes = "Access : Guest, Customer and Admin")
     @ApiResponses(value = {
 	@ApiResponse(code = 201, message = "Created"),
-	@ApiResponse(code = 417, message = "Expectation failed"),
+	@ApiResponse(code = 400, message = "Bad request (missing data)"),
 	@ApiResponse(code = 500, message = "Internal server error")})
     public Response add (
             @Context UriInfo uriInfo,
@@ -112,7 +112,6 @@ public class SandwichRepresentation {
             @FormParam("extra2") String extra2,
             @FormParam("extra3") String extra3
     ) {
-
         boolean isEmpty = (size == null || meat == null || coldMeats == null || cheese == null || salad == null || sauce == null || crudite == null || bread == null);
 
         if (isEmpty)
@@ -134,7 +133,7 @@ public class SandwichRepresentation {
         } else if (extra != null && extra2 != null && extra3 != null) {
             sandwich = sandwichResource.insert(size, bread, meat, coldMeats, cheese, salad, crudite, sauce, extra, extra2, extra3);
             if (sandwich == null)
-                return Response.status(Response.Status.EXPECTATION_FAILED).build();
+                return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
         File file = new File(getUriForSelfSandwich(uriInfo,sandwich));
@@ -147,7 +146,7 @@ public class SandwichRepresentation {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @ApiOperation(value = "Edit a sandwich", notes = "Access : Admin only")
     @ApiResponses(value = {
-	@ApiResponse(code = 200, message = "OK"),
+	@ApiResponse(code = 204, message = "Not content"),
 	@ApiResponse(code = 304, message = "Not Modified"),
 	@ApiResponse(code = 500, message = "Internal server error")})
     @Secured({AccountRole.ADMIN})

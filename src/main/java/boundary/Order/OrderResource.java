@@ -66,7 +66,7 @@ public class OrderResource {
      * @return List of Shipment
      */
     public List<Shipment> findByStatus(int status){
-        return entityManager.createQuery("SELECT s FROM Shipment s WHERE s._status = :status ")
+        return entityManager.createQuery("SELECT s FROM Shipment s WHERE s.status = :status ")
                 .setParameter("status", status)
                 .setHint("javax.persistence.cache.storeMode", CacheStoreMode.REFRESH)
                 .getResultList();
@@ -116,6 +116,8 @@ public class OrderResource {
             order.addSandwich(copy);
         }
 
+
+        order.setStatus(Shipment.CREATED);
         order.setId(UUID.randomUUID().toString());
 
         return entityManager.merge(order);
@@ -155,7 +157,7 @@ public class OrderResource {
     public Shipment updateSize(Shipment order, String sandwichId, String size) {
         Sandwich sandwich = sandwichResource.findById(sandwichId);
 
-        if (sandwich == null || !Sandwich.isSizeOk(size) || order.get_status() != Shipment.CREATED)
+        if (sandwich == null || !Sandwich.isSizeOk(size) || order.getStatus() != Shipment.CREATED)
             return null;
 
         sandwich.setSize(size);
@@ -187,7 +189,7 @@ public class OrderResource {
      */
     public Shipment updateDate(Shipment order, String dateTime) {
         if (order != null && dateTime != null) {
-            if (order.get_status() != Shipment.CREATED) {
+            if (order.getStatus() != Shipment.CREATED) {
                 Date date = order.toDate(dateTime);
                 if (date != null) {
                     order.setDateTime(date);
@@ -208,7 +210,7 @@ public class OrderResource {
      */
     public boolean removeSandwich(Shipment order, String sandwichId) {
         if (order != null) {
-            if (order.get_status() != Shipment.CREATED) {
+            if (order.getStatus() != Shipment.CREATED) {
                 Sandwich sandwich = sandwichResource.findById(sandwichId);
 
                 if (sandwich != null) {
@@ -235,7 +237,7 @@ public class OrderResource {
      */
     public boolean delete(Shipment order) {
         if (order != null) {
-            if (order.get_status() != Shipment.CREATED) {
+            if (order.getStatus() != Shipment.CREATED) {
                 for (Sandwich sandwich : order.getSandwiches())
                     sandwichResource.delete(sandwich.getId());
 

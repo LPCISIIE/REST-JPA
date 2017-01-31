@@ -28,7 +28,7 @@ public class Shipment implements Serializable {
 
     private String dateTime;
 
-    private int _status;
+    private int status;
 
     private double price;
 
@@ -47,15 +47,15 @@ public class Shipment implements Serializable {
     @Transient
     private List<Link> links = new ArrayList<>();
 
-    public final static int CREATED = 0;
-    public final static int PAID = 1;
-    public final static int PROCESS = 2;
-    public final static int READY = 3;
-    public final static int DELIVERED = 4;
+    public final static int CREATED = 1;
+    public final static int PAID = 2;
+    public final static int PROCESS = 3;
+    public final static int READY = 4;
+    public final static int DELIVERED = 5;
 
     public Shipment() {
         this.price = 0;
-        this._status = CREATED;
+        this.status = CREATED;
     }
 
     public Shipment(Account customer, String dateTime, List<Sandwich> sandwiches) {
@@ -63,7 +63,7 @@ public class Shipment implements Serializable {
         this.customer = customer;
         this.dateTime = dateTime;
         this.sandwiches = sandwiches;
-        this._status = CREATED;
+        this.status = CREATED;
 
         if (!sandwiches.isEmpty()) {
             for (Sandwich sandwich : sandwiches) {
@@ -110,7 +110,7 @@ public class Shipment implements Serializable {
         if (!isStatusOk(status))
             return false;
 
-        this._status = status;
+        this.status = status;
         return true;
     }
 
@@ -222,12 +222,12 @@ public class Shipment implements Serializable {
         this.sandwiches = new ArrayList<>(sandwiches);
     }
 
-    public int get_status() {
-        return _status;
+    public int getStatus() {
+        return status;
     }
 
-    public void set_status(int status) {
-        this._status = status;
+    public void setStatus(int status) {
+        this.status = status;
     }
 
     public double getPrice() {
