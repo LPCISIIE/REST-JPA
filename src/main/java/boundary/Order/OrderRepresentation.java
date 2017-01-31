@@ -4,10 +4,7 @@ import boundary.Account.AccountRepresentation;
 import boundary.Account.AccountResource;
 import boundary.Ingredient.IngredientRepresentation;
 import boundary.Sandwich.SandwichRepresentation;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiResponse;
-import com.wordnik.swagger.annotations.ApiResponses;
+import com.wordnik.swagger.annotations.*;
 import control.ReceiptGenerator;
 import entity.*;
 import provider.Secured;
@@ -51,7 +48,6 @@ public class OrderRepresentation {
 	    @ApiResponse(code = 401, message = "Unauthorized"),
 	    @ApiResponse(code = 402, message = "Payment Required (Order not yet paid)"),
 	    @ApiResponse(code = 404, message = "Not Found"),
-	    @ApiResponse(code = 500, message = "Internal server error")
     })
     public Response receipt(
             @Context SecurityContext securityContext,
@@ -59,6 +55,10 @@ public class OrderRepresentation {
             @Context ServletContext servletContext,
             @FormParam("orderId") String orderId
     ) throws Exception {
+
+        if (orderId == null)
+            return Response.status(Response.Status.NOT_FOUND).build();
+
        Shipment order = orderResource.findById(orderId);
 
        if (order == null)
@@ -72,7 +72,7 @@ public class OrderRepresentation {
         if (!account.getRole().equals(AccountRole.ADMIN) && !account.getEmail().equals(order.getCustomer().getEmail()) )
             return Response.status(Response.Status.UNAUTHORIZED).build();
 
-        if (!order.getStatus().equals(Shipment.ORDER_PAID))
+        if (order.get_status() != (Shipment.PAID))
             return Response.status(402).build();
         
         ReceiptGenerator.create(order, uriInfo, servletContext);
@@ -91,10 +91,9 @@ public class OrderRepresentation {
     @ApiResponses(value = {
 	    @ApiResponse(code = 200, message = "OK"),
 	    @ApiResponse(code = 401, message = "Unauthorized"),
-	    @ApiResponse(code = 500, message = "Internal server error")
     })
     @GET
-    @Secured({AccountRole.CUSTOMER, AccountRole.ADMIN})
+    //@Secured({AccountRole.ADMIN})
     public Response getAll(){
         List<Shipment> list = orderResource.findAll();
         list.stream().forEach(order -> {
@@ -121,7 +120,6 @@ public class OrderRepresentation {
 	    @ApiResponse(code = 200, message = "OK"),
         @ApiResponse(code = 401, message = "Unauthorized"),
         @ApiResponse(code = 404, message = "Not Found"),
-	    @ApiResponse(code = 500, message = "Internal server error")
     })
     @GET
     @Path("/{id}")
@@ -165,7 +163,6 @@ public class OrderRepresentation {
 	    @ApiResponse(code = 204, message = "No Content"),
 	    @ApiResponse(code = 401, message = "Unauthorized"),
 	    @ApiResponse(code = 404, message = "Not Found"),
-	    @ApiResponse(code = 500, message = "Internal server error")
     })
     public Response delete(@Context SecurityContext securityContext, @FormParam("sandwichId") String sandwich, @PathParam("id") String id) {
         Account account = accountResource.findByEmail(securityContext.getUserPrincipal().getName());
@@ -195,10 +192,9 @@ public class OrderRepresentation {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @ApiOperation(value = "Edit the delivering date", notes = "Access : Owner (customer) and Admin - Date has to be 10 min later from now and in this format : 'dd/MM/yyy HH:mm'")
     @ApiResponses(value = {
-	@ApiResponse(code = 200, message = "OK"),
+	    @ApiResponse(code = 200, message = "OK"),
 	    @ApiResponse(code = 401, message = "Unauthorized"),
 	    @ApiResponse(code = 404, message = "Not Found"),
-	    @ApiResponse(code = 500, message = "Internal server error")
     })
     public Response editDate(@Context SecurityContext securityContext, @FormParam("date") String date, @FormParam("orderId") String id) {
         Account account = accountResource.findByEmail(securityContext.getUserPrincipal().getName());
@@ -233,7 +229,6 @@ public class OrderRepresentation {
 	    @ApiResponse(code = 200, message = "OK"),
 	    @ApiResponse(code = 401, message = "Unauthorized"),
 	    @ApiResponse(code = 404, message = "Not Found"),
-	    @ApiResponse(code = 500, message = "Internal server error")
     })
     public Response removeSandwich(@Context SecurityContext securityContext, @FormParam("sandwichId") String sandwich, @FormParam("orderId") String id) {
         Account account = accountResource.findByEmail(securityContext.getUserPrincipal().getName());
@@ -269,9 +264,8 @@ public class OrderRepresentation {
 	    @ApiResponse(code = 200, message = "OK"),
 	    @ApiResponse(code = 401, message = "Unauthorized"),
 	    @ApiResponse(code = 404, message = "Not Found"),
-	    @ApiResponse(code = 500, message = "Internal server error")
     })
-    public Response update(@Context SecurityContext securityContext, @PathParam("id") String id,@FormParam("sandwichId") String sandwichId, @FormParam("size") String size ) {
+    public Response update(@Context SecurityContext securityContext, @PathParam("id") String id, @FormParam("sandwichId") String sandwichId, @FormParam("size") String size ) {
         Account account = accountResource.findByEmail(securityContext.getUserPrincipal().getName());
 
         if (account == null)
@@ -301,7 +295,6 @@ public class OrderRepresentation {
 	    @ApiResponse(code = 401, message = "Unauthorized"),
         @ApiResponse(code = 402, message = "Payment Required"),
 	    @ApiResponse(code = 404, message = "Not Found"),
-	    @ApiResponse(code = 500, message = "Internal server error")
     })
     public Response payOrder(@Context SecurityContext securityContext, @PathParam("id") String id, @FormParam("creditCard") String creditCard, @FormParam("loyaltyCard") String vipCard) {
         Shipment shipment = orderResource.findById(id);
@@ -336,7 +329,7 @@ public class OrderRepresentation {
                 account.addPoints(shipment.getHigherPrice());
         }
 
-        if (orderResource.update(shipment, Shipment.ORDER_PAID) == null)
+        if (orderResource.update(shipment, Shipment.PAID) == null)
             return Response.status(Response.Status.NOT_FOUND).build();
 
         return Response.ok(shipment, MediaType.APPLICATION_JSON).build();
@@ -347,10 +340,17 @@ public class OrderRepresentation {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @ApiOperation(value = "Create an order", notes = "Access : Customer only - Have to fill at least one sandwichId field - Date has to be 10 min later from now and in this format : 'dd/MM/yyy HH:mm'")
     @ApiResponses(value = {
-	@ApiResponse(code = 200, message = "OK"),
-	@ApiResponse(code = 401, message = "Unauthorized"),
-	@ApiResponse(code = 404, message = "Not Found"),
-	@ApiResponse(code = 500, message = "Internal server error")})
+	    @ApiResponse(code = 200, message = "OK"),
+	    @ApiResponse(code = 401, message = "Unauthorized"),
+	    @ApiResponse(code = 404, message = "Not Found"),
+    })
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "dateTime", required = true, dataType = "String : 'dd/MM/yyy HH:mm'", paramType = "query"),
+            @ApiImplicitParam(name = "sandwichId", required = true, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "sandwichId2", required = false, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "sandwichId3", required = false, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "sandwichId4", required = false, dataType = "String", paramType = "query"),
+    })
     public Response add(
             @Context SecurityContext securityContext,
             @FormParam("dateTime") String dateTime,
@@ -399,10 +399,10 @@ public class OrderRepresentation {
     @Path("/add_sandwich")
     @ApiOperation(value = "Add a sandwich to an order", notes = "Access: Customer and Admin")
     @ApiResponses(value = {
-	@ApiResponse(code = 200, message = "OK"),
-	@ApiResponse(code = 401, message = "Unauthorized"),
-	@ApiResponse(code = 404, message = "Not Found"),
-	@ApiResponse(code = 500, message = "Internal server error")})
+	    @ApiResponse(code = 200, message = "OK"),
+	    @ApiResponse(code = 401, message = "Unauthorized"),
+	    @ApiResponse(code = 404, message = "Not Found"),
+    })
     public Response addSandwich(@Context SecurityContext securityContext, @FormParam("orderId") String id, @FormParam("sandwichId") String sandwichId) {
         Account account = accountResource.findByEmail(securityContext.getUserPrincipal().getName());
 
@@ -424,6 +424,123 @@ public class OrderRepresentation {
         shipment.addLink(getUriForSelfShipment(uriInfo, shipment), "self");
         return Response.ok(shipment, MediaType.APPLICATION_JSON).build();
     }
+
+
+    @POST
+    @Secured({AccountRole.ADMIN})
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Path("/filter/status/")
+    @ApiOperation(value = "Filter orders by status", notes = "Access: Admin only")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 401, message = "Unauthorized"),
+            @ApiResponse(code = 404, message = "Not Found"),
+    })
+    public Response filterStatus(@FormParam("status") int status) {
+
+        if (!Shipment.isStatusOk(status))
+            return Response.status(Response.Status.NOT_FOUND).build();
+
+        List<Shipment> list = orderResource.findByStatus(status);
+
+        list.stream().forEach(order -> {
+            List<Sandwich> sandwiches = order.getSandwiches();
+            order.addLink(this.getUriForSelfShipment(uriInfo,order),"self");
+            for (Sandwich sandwich : sandwiches) {
+                sandwich.getLinks().clear();
+                sandwich.addLink(this.getUriForSelfSandwich(uriInfo,sandwich), "self");
+                for (Ingredient ingredient : sandwich.getIngredientsList()) {
+                    ingredient.getLinks().clear();
+                    ingredient.addLink(this.getUriForSelfIngredient(uriInfo,ingredient), "self");
+                }
+            }
+            order.setSandwiches(sandwiches);
+        });
+
+        GenericEntity<List<Shipment>> listGenericEntity = new GenericEntity<List<Shipment>>(list){};
+        return Response.ok(listGenericEntity, MediaType.APPLICATION_JSON).build();
+    }
+
+    @POST
+    @Secured({AccountRole.ADMIN})
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Path("/filter/date")
+    @ApiOperation(value = "Filter orders by time", notes = "Access: Admin only")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 401, message = "Unauthorized"),
+            @ApiResponse(code = 404, message = "Not Found"),
+    })
+    public Response filterTime(@FormParam("dateTime") String date) {
+        Shipment shipment = new Shipment();
+
+        System.out.println('o');
+        if (date == null || shipment.toDate(date) == null )
+            return Response.status(Response.Status.NOT_FOUND).build();
+
+        System.out.println('a');
+
+        List<Shipment> list = orderResource.findByDate(date);
+
+
+        list.stream().forEach(order -> {
+            List<Sandwich> sandwiches = order.getSandwiches();
+            order.addLink(this.getUriForSelfShipment(uriInfo,order),"self");
+            for (Sandwich sandwich : sandwiches) {
+                sandwich.getLinks().clear();
+                sandwich.addLink(this.getUriForSelfSandwich(uriInfo,sandwich), "self");
+                for (Ingredient ingredient : sandwich.getIngredientsList()) {
+                    ingredient.getLinks().clear();
+                    ingredient.addLink(this.getUriForSelfIngredient(uriInfo,ingredient), "self");
+                }
+            }
+            order.setSandwiches(sandwiches);
+        });
+
+        GenericEntity<List<Shipment>> listGenericEntity = new GenericEntity<List<Shipment>>(list){};
+        return Response.ok(listGenericEntity, MediaType.APPLICATION_JSON).build();
+    }
+
+    @GET
+    @Secured({AccountRole.ADMIN})
+    @Path("/navigate/{offset}/{limit}")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "offset", required = true, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "limit", required = true, dataType = "int", paramType = "query"),
+    })
+    @ApiOperation(value = "Show orders with pagination and limit params", notes = "Access: Admin only - Pagination starts at 1 ! 0 is unlimited")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 401, message = "Unauthorized"),
+            @ApiResponse(code = 404, message = "Not Found"),
+            @ApiResponse(code = 500, message = "Internal server error")
+    })
+    public Response pagination(@PathParam("offset") int offset, @PathParam("limit") int limit) {
+
+        if (offset < 0 || limit < 0)
+            return Response.status(Response.Status.NOT_FOUND).build();
+
+        List<Shipment> list = orderResource.offsetLimit(offset,limit);
+        System.out.println(list.size());
+
+        list.stream().forEach(order -> {
+            List<Sandwich> sandwiches = order.getSandwiches();
+            order.addLink(this.getUriForSelfShipment(uriInfo,order),"self");
+            for (Sandwich sandwich : sandwiches) {
+                sandwich.getLinks().clear();
+                sandwich.addLink(this.getUriForSelfSandwich(uriInfo,sandwich), "self");
+                for (Ingredient ingredient : sandwich.getIngredientsList()) {
+                    ingredient.getLinks().clear();
+                    ingredient.addLink(this.getUriForSelfIngredient(uriInfo,ingredient), "self");
+                }
+            }
+            order.setSandwiches(sandwiches);
+        });
+
+        GenericEntity<List<Shipment>> listGenericEntity = new GenericEntity<List<Shipment>>(list){};
+        return Response.ok(listGenericEntity, MediaType.APPLICATION_JSON).build();
+    }
+
 
     private String getUriForSelfShipment(UriInfo uriInfo, Shipment Commande) {
         return uriInfo.getBaseUriBuilder()

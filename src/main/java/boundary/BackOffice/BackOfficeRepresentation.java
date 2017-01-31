@@ -42,7 +42,7 @@ public class BackOfficeRepresentation {
         @ApiResponse(code = 401, message = "Unauthorized"),
         @ApiResponse(code = 404, message = "Not Found"),
         @ApiResponse(code = 500, message = "Internal server error")})
-    public Response editOrderStatus(@FormParam("orderId") String orderId, @FormParam("status") String orderStatus) {
+    public Response editOrderStatus(@FormParam("orderId") String orderId, @FormParam("status") int orderStatus) {
         Shipment shipment = orderResource.findById(orderId);
 
         if (shipment == null)

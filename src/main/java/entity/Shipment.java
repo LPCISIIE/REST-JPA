@@ -19,21 +19,17 @@ import java.util.TimeZone;
 @Entity
 @XmlRootElement
 @NamedQueries({
-        @NamedQuery(name = "Shipment.findAll", query = "SELECT s FROM Shipment s")
+        @NamedQuery(name = "Shipment.findAll", query = "SELECT s FROM Shipment s ORDER BY s.dateTime DESC"),
 })
 public class Shipment implements Serializable {
 // NOT ORDER because JAVA is so stupid it makes a SQL error with the name Order ... thanks Oracle
 
     private static final long serialVersionUID = 1L;
 
-    public final static String ORDER_CREATED = "Created";
-    public final static String ORDER_PAID = "Paid";
-    public final static String ORDER_IN_PROCESS = "In process";
-    public final static String ORDER_READY = "Available for pickup";
-    public final static String ORDER_DELIVERED = "Order delivered";
-
     private String dateTime;
-    private String status;
+
+    private int _status;
+
     private double price;
 
     @Id
@@ -51,9 +47,15 @@ public class Shipment implements Serializable {
     @Transient
     private List<Link> links = new ArrayList<>();
 
+    public final static int CREATED = 0;
+    public final static int PAID = 1;
+    public final static int PROCESS = 2;
+    public final static int READY = 3;
+    public final static int DELIVERED = 4;
+
     public Shipment() {
         this.price = 0;
-        this.status = ORDER_CREATED;
+        this._status = CREATED;
     }
 
     public Shipment(Account customer, String dateTime, List<Sandwich> sandwiches) {
@@ -61,7 +63,7 @@ public class Shipment implements Serializable {
         this.customer = customer;
         this.dateTime = dateTime;
         this.sandwiches = sandwiches;
-        this.status = ORDER_CREATED;
+        this._status = CREATED;
 
         if (!sandwiches.isEmpty()) {
             for (Sandwich sandwich : sandwiches) {
@@ -104,11 +106,11 @@ public class Shipment implements Serializable {
      * @param status
      * @return is the status changed
      */
-    public boolean changeState(String status) {
+    public boolean changeState(int status) {
         if (!isStatusOk(status))
             return false;
 
-        this.status = status;
+        this._status = status;
         return true;
     }
 
@@ -175,10 +177,8 @@ public class Shipment implements Serializable {
      * @param status of the order
      * @return if it exists
      */
-    public static boolean isStatusOk(String status) {
-        return status.equals(ORDER_CREATED) || status.equals(ORDER_PAID) ||
-                status.equals(ORDER_IN_PROCESS) || status.equals(ORDER_READY) ||
-                status.equals(ORDER_DELIVERED);
+    public static boolean isStatusOk(int status) {
+        return (status >= CREATED && status <= DELIVERED);
     }
 
     public void addLink(String uri, String rel) {
@@ -222,12 +222,12 @@ public class Shipment implements Serializable {
         this.sandwiches = new ArrayList<>(sandwiches);
     }
 
-    public String getStatus() {
-        return status;
+    public int get_status() {
+        return _status;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void set_status(int status) {
+        this._status = status;
     }
 
     public double getPrice() {

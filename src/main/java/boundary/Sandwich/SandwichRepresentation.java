@@ -1,11 +1,13 @@
 package boundary.Sandwich;
 
+import boundary.Category.CategoryResource;
 import boundary.Ingredient.IngredientRepresentation;
 import boundary.Ingredient.IngredientResource;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiResponse;
 import com.wordnik.swagger.annotations.ApiResponses;
+import control.DatabaseSeeder;
 import entity.Account;
 import entity.AccountRole;
 import entity.Ingredient;
@@ -31,6 +33,12 @@ public class SandwichRepresentation {
     @EJB
     SandwichResource sandwichResource;
 
+    @EJB
+    CategoryResource categoryResource;
+
+    @EJB
+    IngredientResource ingredientResource;
+
     @GET
     @ApiOperation(value = "Get all the sandwiches", notes = "Access : Guest, Customer and Admin")
     @ApiResponses(value = {
@@ -38,6 +46,7 @@ public class SandwichRepresentation {
 	    @ApiResponse(code = 500, message = "Internal server error")
     })
     public Response getSandwiches(@Context UriInfo uriInfo) {
+        DatabaseSeeder.feedCatalog(ingredientResource, categoryResource, sandwichResource);
         List<Sandwich> list = sandwichResource.findAll();
 
         list.stream().forEach(sandwich -> {
