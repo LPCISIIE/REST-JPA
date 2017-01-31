@@ -66,14 +66,14 @@ public class SandwichRepresentation {
     }
 
     @GET
-    @Path("/{sandwichId}")
+    @Path("/{id}")
     @ApiOperation(value = "Get a sandwich by its id", notes = "Access : Guest, Customer and Admin")
     @ApiResponses(value = {
 	    @ApiResponse(code = 200, message = "OK"),
 	    @ApiResponse(code = 404, message = "Not Found"),
 	    @ApiResponse(code = 500, message = "Internal server error")
     })
-    public Response getSandwich(@Context UriInfo uriInfo, @PathParam("sandwichId") String sandwichId) {
+    public Response getSandwich(@Context UriInfo uriInfo, @PathParam("id") String sandwichId) {
         Sandwich sandwich = sandwichResource.findById(sandwichId);
 
         if (sandwich == null)
@@ -92,7 +92,6 @@ public class SandwichRepresentation {
     }
 
     @POST
-    @Path("/add")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @ApiOperation(value = "Create a sandwich", notes = "Access : Guest, Customer and Admin")
     @ApiResponses(value = {
@@ -144,7 +143,7 @@ public class SandwichRepresentation {
     }
 
     @PUT
-    @Path("/{sandwichId}")
+    @Path("/{id}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @ApiOperation(value = "Edit a sandwich", notes = "Access : Admin only")
     @ApiResponses(value = {
@@ -153,7 +152,7 @@ public class SandwichRepresentation {
 	@ApiResponse(code = 500, message = "Internal server error")})
     @Secured({AccountRole.ADMIN})
     public Response editSandwich(
-            @PathParam("sandwichId") String sandwichId,
+            @PathParam("id") String sandwichId,
             @FormParam("name") String name,
             @FormParam("description") String description,
             @FormParam("size") String size
@@ -183,14 +182,14 @@ public class SandwichRepresentation {
     }
 
     @DELETE
-    @Path("/{sandwichId}")
+    @Path("/{id}")
     @ApiOperation(value = "Delete a sandwich by its id", notes = "Access : Admin only")
     @ApiResponses(value = {
 	@ApiResponse(code = 204, message = "No content"),
 	@ApiResponse(code = 404, message = "Not Found"),
 	@ApiResponse(code = 500, message = "Internal server error")})
     @Secured({AccountRole.ADMIN})
-    public Response deleteIngredient(@PathParam("sandwichId") String sandwichId) {
+    public Response deleteIngredient(@PathParam("id") String sandwichId) {
         if (sandwichResource.delete(sandwichId))
             return Response.status(204).build();
         else
