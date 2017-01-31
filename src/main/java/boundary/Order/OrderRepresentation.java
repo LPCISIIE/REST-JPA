@@ -220,8 +220,8 @@ public class OrderRepresentation {
         return Response.ok().build();
     }
 
-    @POST
-    @Path("/remove_sandwich")
+    @DELETE
+    @Path("/{orderId}/sandwiches/{sandwichId}")
     @Secured({AccountRole.CUSTOMER, AccountRole.ADMIN})
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @ApiOperation(value = "Remove a sandwich from an order", notes = "Access : Owner (customer) and Admin")
@@ -230,7 +230,7 @@ public class OrderRepresentation {
 	    @ApiResponse(code = 401, message = "Unauthorized"),
 	    @ApiResponse(code = 404, message = "Not Found"),
     })
-    public Response removeSandwich(@Context SecurityContext securityContext, @FormParam("sandwichId") String sandwich, @FormParam("orderId") String id) {
+    public Response removeSandwich(@Context SecurityContext securityContext, @PathParam("sandwichId") String sandwich, @PathParam("orderId") String id) {
         Account account = accountResource.findByEmail(securityContext.getUserPrincipal().getName());
 
         if (account == null)
@@ -241,13 +241,13 @@ public class OrderRepresentation {
         if (shipment == null)
             return Response.status(Response.Status.NOT_FOUND).build();
 
-        if (!account.getRole().equals(AccountRole.ADMIN) && !account.getEmail().equals(shipment.getCustomer().getEmail()) )
+        if (!account.getRole().equals(AccountRole.ADMIN) && !account.getEmail().equals(shipment.getCustomer().getEmail()))
             return Response.status(Response.Status.UNAUTHORIZED).build();
 
         if (sandwich == null)
             return Response.status(Response.Status.NOT_FOUND).build();
 
-        boolean isDeleted =  orderResource.removeSandwich(shipment,sandwich);
+        boolean isDeleted =  orderResource.removeSandwich(shipment, sandwich);
 
         if (isDeleted)
             return Response.ok().build();
