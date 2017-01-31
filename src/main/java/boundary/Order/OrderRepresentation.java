@@ -38,7 +38,7 @@ public class OrderRepresentation {
 
 
     @POST
-    @Path("/receipt")
+    @Path("/{id}/receipts")
     @Produces("application/pdf")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Secured({AccountRole.CUSTOMER, AccountRole.ADMIN})
@@ -53,7 +53,7 @@ public class OrderRepresentation {
             @Context SecurityContext securityContext,
             @Context UriInfo uriInfo,
             @Context ServletContext servletContext,
-            @FormParam("orderId") String orderId
+            @PathParam("id") String orderId
     ) throws Exception {
 
         if (orderId == null)
@@ -396,7 +396,7 @@ public class OrderRepresentation {
     @POST
     @Secured({AccountRole.ADMIN, AccountRole.CUSTOMER})
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Path("{id}/sandwiches")
+    @Path("/{id}/sandwiches")
     @ApiOperation(value = "Add a sandwich to an order", notes = "Access: Customer and Admin")
     @ApiResponses(value = {
 	    @ApiResponse(code = 200, message = "OK"),
