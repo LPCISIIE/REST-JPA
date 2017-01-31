@@ -146,7 +146,6 @@ public class IngredientRepresentation {
     }
 
     @POST
-    @Path("/add")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @ApiOperation(value = "Create an ingredient", notes = "Access : Admin only")
     @Secured({AccountRole.ADMIN})

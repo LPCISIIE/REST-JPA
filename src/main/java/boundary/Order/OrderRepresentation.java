@@ -474,14 +474,10 @@ public class OrderRepresentation {
     public Response filterTime(@FormParam("dateTime") String date) {
         Shipment shipment = new Shipment();
 
-        System.out.println('o');
         if (date == null || shipment.toDate(date) == null )
             return Response.status(Response.Status.NOT_FOUND).build();
 
-        System.out.println('a');
-
         List<Shipment> list = orderResource.findByDate(date);
-
 
         list.stream().forEach(order -> {
             List<Sandwich> sandwiches = order.getSandwiches();
@@ -521,7 +517,6 @@ public class OrderRepresentation {
             return Response.status(Response.Status.NOT_FOUND).build();
 
         List<Shipment> list = orderResource.offsetLimit(offset,limit);
-        System.out.println(list.size());
 
         list.stream().forEach(order -> {
             List<Sandwich> sandwiches = order.getSandwiches();

@@ -85,7 +85,8 @@ public class BackOfficeRepresentation {
         @ApiResponse(code = 401, message = "Unauthorized"),
         @ApiResponse(code = 404, message = "Not Found"),
         @ApiResponse(code = 409, message = "Conflict : email address is already used"),
-        @ApiResponse(code = 500, message = "Internal server error")})
+        @ApiResponse(code = 500, message = "Internal server error")
+    })
     public Response createAdmin(
             @FormParam("name") String name,
             @FormParam("email") String email,
