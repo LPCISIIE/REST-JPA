@@ -170,7 +170,7 @@ public class IngredientRepresentation {
     }
 
     @POST
-    @Path("/bread/add")
+    @Path("/breads")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @ApiOperation(value = "Create a bread ingredient", notes = "Access : Admin only")
     @Secured({AccountRole.ADMIN})
