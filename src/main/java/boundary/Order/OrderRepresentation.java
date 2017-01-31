@@ -345,11 +345,11 @@ public class OrderRepresentation {
 	    @ApiResponse(code = 404, message = "Not Found"),
     })
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "dateTime", required = true, dataType = "String : 'dd/MM/yyy HH:mm'", paramType = "query"),
-            @ApiImplicitParam(name = "sandwichId", required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "sandwichId2", required = false, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "sandwichId3", required = false, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "sandwichId4", required = false, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "dateTime", required = true, dataType = "String : 'dd/MM/yyy HH:mm'"),
+            @ApiImplicitParam(name = "sandwichId", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "sandwichId2", required = false, dataType = "String"),
+            @ApiImplicitParam(name = "sandwichId3", required = false, dataType = "String"),
+            @ApiImplicitParam(name = "sandwichId4", required = false, dataType = "String"),
     })
     public Response add(
             @Context SecurityContext securityContext,
