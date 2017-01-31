@@ -396,14 +396,14 @@ public class OrderRepresentation {
     @POST
     @Secured({AccountRole.ADMIN, AccountRole.CUSTOMER})
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Path("/add_sandwich")
+    @Path("{id}/sandwiches")
     @ApiOperation(value = "Add a sandwich to an order", notes = "Access: Customer and Admin")
     @ApiResponses(value = {
 	    @ApiResponse(code = 200, message = "OK"),
 	    @ApiResponse(code = 401, message = "Unauthorized"),
 	    @ApiResponse(code = 404, message = "Not Found"),
     })
-    public Response addSandwich(@Context SecurityContext securityContext, @FormParam("orderId") String id, @FormParam("sandwichId") String sandwichId) {
+    public Response addSandwich(@Context SecurityContext securityContext, @PathParam("id") String id, @FormParam("sandwichId") String sandwichId) {
         Account account = accountResource.findByEmail(securityContext.getUserPrincipal().getName());
 
         if (account == null)
@@ -414,7 +414,7 @@ public class OrderRepresentation {
         if (shipment == null)
             return Response.status(Response.Status.NOT_FOUND).build();
 
-        if (account.getRole() != AccountRole.ADMIN && !account.getEmail().equals(shipment.getCustomer().getEmail()) )
+        if (account.getRole() != AccountRole.ADMIN && !account.getEmail().equals(shipment.getCustomer().getEmail()))
             return Response.status(Response.Status.UNAUTHORIZED).build();
 
         if (orderResource.addSandwich(shipment, sandwichId) == null)
