@@ -53,10 +53,7 @@ public class Shipment implements Serializable {
     public final static int READY = 4;
     public final static int DELIVERED = 5;
 
-    public Shipment() {
-        this.price = 0;
-        this.status = CREATED;
-    }
+    public Shipment() {}
 
     public Shipment(Account customer, String dateTime, List<Sandwich> sandwiches) {
         this.price = 0;

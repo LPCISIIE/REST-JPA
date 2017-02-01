@@ -105,6 +105,8 @@ public class OrderResource {
 
         order.setDateTime(date);
 
+        order.setStatus(Shipment.CREATED);
+
         Sandwich sandwich;
 
         for (String id : sandwichesId) {
@@ -116,8 +118,6 @@ public class OrderResource {
             order.addSandwich(copy);
         }
 
-
-        order.setStatus(Shipment.CREATED);
         order.setId(UUID.randomUUID().toString());
 
         return entityManager.merge(order);
