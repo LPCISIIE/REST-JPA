@@ -7,7 +7,10 @@ This is an example of a RESTful API written in Java, using Jax-RS and JPA.
 This application allows you to manage an online fast-food store.
 Therefore, you can create, edit and remove : sandwiches, customers, orders, receipts, ingredients and categories. </br>
 This application follows the Entity-Control-Boundary pattern. <br>
-Documentation available at : http://example.org/
+Documentation available at the index page : http://your-project.org/
+
+## Warning
+In order to create PDF files, the application will create a folder inside of your JBoss Server (such as Wildfly) make sure to have the access right to write files, else you can change the path in ``` src/main/java/control/ReceiptGenerator.java ``` at line 30.
 
 ## Features
 - Account
