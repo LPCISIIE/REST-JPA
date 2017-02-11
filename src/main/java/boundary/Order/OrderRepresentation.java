@@ -364,9 +364,9 @@ public class OrderRepresentation {
         if (account == null)
             return Response.status(Response.Status.UNAUTHORIZED).build();
 
-        Boolean isEmpty = (sandwichId == null && sandwichId2 == null && sandwichId3 == null && sandwichId4 == null );
+        Boolean isEmpty = (sandwichId == null && sandwichId2 == null && sandwichId3 == null && sandwichId4 == null  );
 
-        if (isEmpty)
+        if (isEmpty ||  dateTime == null )
             return Response.status(Response.Status.NOT_FOUND).build();
 
         ArrayList<String> sandwiches = new ArrayList<>();
@@ -429,7 +429,7 @@ public class OrderRepresentation {
     @POST
     @Secured({AccountRole.ADMIN})
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Path("/filter/status/")
+    @Path("/filter/status")
     @ApiOperation(value = "Filter orders by status", notes = "Access: Admin only")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK"),
@@ -499,19 +499,19 @@ public class OrderRepresentation {
 
     @GET
     @Secured({AccountRole.ADMIN})
-    @Path("/navigate/{offset}/{limit}")
+    @Path("/items")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "offset", required = true, dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "limit", required = true, dataType = "int", paramType = "query"),
     })
-    @ApiOperation(value = "Show orders with pagination and limit params", notes = "Access: Admin only - Pagination starts at 1 ! 0 is unlimited")
+    @ApiOperation(value = "Show orders with pagination and limit params", notes = "Access: Admin only - Offset starts at 0 ! Limit : 0 is unlimited")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 401, message = "Unauthorized"),
             @ApiResponse(code = 404, message = "Not Found"),
             @ApiResponse(code = 500, message = "Internal server error")
     })
-    public Response pagination(@PathParam("offset") int offset, @PathParam("limit") int limit) {
+    public Response pagination(@QueryParam("offset") int offset, @QueryParam("limit") int limit) {
 
         if (offset < 0 || limit < 0)
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -533,7 +533,11 @@ public class OrderRepresentation {
         });
 
         GenericEntity<List<Shipment>> listGenericEntity = new GenericEntity<List<Shipment>>(list){};
-        return Response.ok(listGenericEntity, MediaType.APPLICATION_JSON).build();
+        return Response.ok(listGenericEntity, MediaType.APPLICATION_JSON)
+                .header("X-Pagination-Count", orderResource.countAll())
+                .header("X-Pagination-Page", offset)
+                .header("X-Pagination-Limit", limit)
+                .build();
     }
 
 
