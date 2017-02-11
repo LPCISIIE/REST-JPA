@@ -145,15 +145,15 @@ public class Shipment implements Serializable {
         Date date = null;
         SimpleDateFormat inputDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
         inputDateFormat.setTimeZone(TimeZone.getDefault());
-        Date dateMax = Date.from(LocalDateTime
-                .now()
+        Date dateMax = Date.from(LocalDateTime.now()
                 .plusMinutes(10)
                 .atZone(ZoneId.systemDefault())
                 .toInstant());
 
         String dateString = inputDateFormat.format(dateMax);
 
-        try {
+
+       try {
             date = inputDateFormat.parse(s);
             dateMax = inputDateFormat.parse(dateString);
         } catch (ParseException e) {
