@@ -109,7 +109,7 @@ public class OrderResource {
 
         Sandwich sandwich;
 
-        for (String id : sandwichesId) {
+       for (String id : sandwichesId) {
             sandwich = sandwichResource.findById(id);
             if (sandwich == null)
                 return null;
@@ -199,6 +199,19 @@ public class OrderResource {
         }
 
         return null;
+    }
+
+    /**
+     * Method to count Order rows in the database
+     * countAll SQL query bugs as fuck so let's use this ugly way :(
+     *
+     * @return Long
+     */
+    public Long countAll() {
+        return (long) entityManager.createNamedQuery("Shipment.findAll", Shipment.class)
+                .setHint("javax.persistence.cache.storeMode", CacheStoreMode.REFRESH)
+                .getResultList()
+                .size();
     }
 
     /**
