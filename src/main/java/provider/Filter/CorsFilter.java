@@ -11,7 +11,7 @@ public class CorsFilter implements ContainerRequestFilter, ContainerResponseFilt
 
     private final static String METHODS = "GET,POST,PUT,DELETE,OPTIONS,HEAD";
     private final static String HEADERS = "origin,content-type,accept,authorization";
-    private final static int TIME = 5 * 60;
+    private final static int TIME = 10 * 60;
 
     @Override
     public void filter(ContainerRequestContext requestCtx) throws IOException {
