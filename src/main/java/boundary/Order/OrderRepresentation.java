@@ -555,7 +555,7 @@ public class OrderRepresentation {
     private String getUriForSelfAccount(UriInfo uriInfo, Account account) {
         return uriInfo.getBaseUriBuilder()
                 .path(AccountRepresentation.class)
-                .path("email/" + account.getEmail())
+                .path(account.getEmail())
                 .build()
                 .toString();
     }
@@ -563,7 +563,7 @@ public class OrderRepresentation {
     private String getUriForSelfSandwich(UriInfo uriInfo, Sandwich sandwich) {
         return uriInfo.getBaseUriBuilder()
                 .path(SandwichRepresentation.class)
-                .path("id/" + sandwich.getId())
+                .path(sandwich.getId())
                 .build()
                 .toString();
     }
@@ -571,7 +571,7 @@ public class OrderRepresentation {
     private String getUriForSelfIngredient(UriInfo uriInfo, Ingredient ingredient) {
         return uriInfo.getBaseUriBuilder()
                 .path(IngredientRepresentation.class)
-                .path("id/" + ingredient.getId())
+                .path(ingredient.getId())
                 .build()
                 .toString();
     }

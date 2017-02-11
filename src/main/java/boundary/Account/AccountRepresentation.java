@@ -52,7 +52,7 @@ public class AccountRepresentation {
 
 
     @GET
-    @Path("/email/{email}")
+    @Path("/{email}")
     @Secured(AccountRole.ADMIN)
     @ApiOperation(value = "Get an account by its email address", notes = "Access : Admin only")
     @ApiResponses(value = {

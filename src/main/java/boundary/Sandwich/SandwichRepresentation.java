@@ -198,7 +198,7 @@ public class SandwichRepresentation {
     private String getUriForSelfSandwich(UriInfo uriInfo, Sandwich sandwich) {
         return uriInfo.getBaseUriBuilder()
                 .path(SandwichRepresentation.class)
-                .path("id/" + sandwich.getId())
+                .path(sandwich.getId())
                 .build()
                 .toString();
     }
@@ -213,7 +213,7 @@ public class SandwichRepresentation {
     private String getUriForSelfIngredient(UriInfo uriInfo, Ingredient ingredient) {
         return uriInfo.getBaseUriBuilder()
                 .path(IngredientRepresentation.class)
-                .path("id/" + ingredient.getId())
+                .path(ingredient.getId())
                 .build()
                 .toString();
     }

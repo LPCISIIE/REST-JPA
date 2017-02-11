@@ -198,7 +198,7 @@ public class IngredientRepresentation {
     private String getUriForSelfCategory(UriInfo uriInfo, Category category) {
         return uriInfo.getBaseUriBuilder()
                 .path(CategoryRepresentation.class)
-                .path("id/" + category.getId())
+                .path(category.getId())
                 .build()
                 .toString();
     }
