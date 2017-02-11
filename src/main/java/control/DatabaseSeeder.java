@@ -12,7 +12,9 @@ import javax.ejb.EJB;
 public class DatabaseSeeder {
 
     static boolean done = false;
+
     /**
+     * 
      * Method that creates fake insertions into the database
      */
     public static void feedCatalog(IngredientResource ingredientResource, CategoryResource categoryResource, SandwichResource sandwichResource){
@@ -91,7 +93,4 @@ public class DatabaseSeeder {
             done = true;
         }
     }
-
-
-
 }
