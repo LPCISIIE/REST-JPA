@@ -1,5 +1,5 @@
 # RESTful Web Services with JAX-RS (JavaEE)
-<p align="center"><img style="margin-bottom:3em;" width="150"src="http://www.monitis.com/blog/wp-content/uploads/uploads/2012/03/jboss_logo2.jpg"> 
+<p align="center"><img style="margin-bottom:3em;" width="150"src="http://www.monitis.com/blog/wp-content/uploads/uploads/2012/03/jboss_logo2.jpg">
 </p>  <br>
 
 ## About
@@ -15,8 +15,8 @@ In order to create PDF files, the application will create a folder inside of you
 
 ## Features
 - Accounts
+- Bearer Token Authentication
 - CORS Filter
-- Digest access authentication
 - Documentation (Powered by Swagger.io)
 - HATEOAS
 - JSON Web Token
